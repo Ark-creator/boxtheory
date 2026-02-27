@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\DB; // Add this line
 
 class SubscriptionController extends Controller
 {
@@ -28,16 +28,24 @@ public function store(Request $request)
 }//
 public function approve($id)
 {
-    // Find the record in the pivot table
-    $subscription = \DB::table('strategy_user')->where('id', $id)->first();
-    
-    \DB::table('strategy_user')->where('id', $id)->update([
+    DB::table('strategy_user')->where('id', $id)->update([
         'status' => 'active',
-        'expires_at' => now()->addDays(30), // Set the 30-day limit
+        'expires_at' => now()->addDays(30),
         'updated_at' => now(),
     ]);
 
     return back()->with('success', 'User approved for 30 days.');
+}
+
+public function reject($id)
+{
+    DB::table('strategy_user')->where('id', $id)->update([
+        'status' => 'rejected',
+        'expires_at' => null,
+        'updated_at' => now(),
+    ]);
+
+    return back()->with('success', 'Subscription was rejected.');
 }
 
 public function pendingApprovals()
@@ -45,19 +53,22 @@ public function pendingApprovals()
     $pending = DB::table('strategy_user')
         ->join('users', 'strategy_user.user_id', '=', 'users.id')
         ->join('strategies', 'strategy_user.strategy_id', '=', 'strategies.id')
-        ->select('strategy_user.*', 'users.name as user_name', 'strategies.name as strategy_name')
+        ->select(
+            'strategy_user.*',
+            'users.name as user_name',
+            'users.email as user_email',
+            'strategies.name as strategy_name'
+        )
         ->where('strategy_user.status', 'pending')
-        ->get();
+        ->orderByDesc('strategy_user.created_at')
+        ->paginate(20);
 
     return view('admin.approvals', compact('pending'));
 }
 
-// 2. Serve the private image to the admin only
 public function viewReceipt($filename)
 {
     return Storage::disk('private')->response("receipts/{$filename}");
 }
-
-// 3. Approve and set the 30-day timer
 
 }

@@ -5,6 +5,7 @@ use App\Services\TradingService;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TradingController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\SubscriptionController;
 
 Route::get('/', function () {
@@ -12,7 +13,11 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    if (auth()->user()->isAdmin()) {
+        return redirect()->route('admin.dashboard');
+    }
+
+    return redirect()->route('strategies.index');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -40,10 +45,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/signals/{strategy:slug}/latest', [TradingController::class, 'latest'])
         ->name('signals.latest');
 
-    Route::get('/admin/approvals', [SubscriptionController::class, 'pendingApprovals'])
-    ->middleware(['auth', 'can:be-admin']) // Use the Gate we discussed
-    ->name('admin.approvals');
-
 Route::get('/xauusd-price', function (TradingService $service) {
     $data = $service->getXauUsdData();
     return response()->json([
@@ -51,17 +52,21 @@ Route::get('/xauusd-price', function (TradingService $service) {
         'timestamp' => $data['timestamp'] ?? null,
         'error' => $data['error'] ?? null,
     ]);
-});
+})->name('xauusd.price');
 
 Route::middleware(['auth', 'can:admin-access'])->prefix('admin')->group(function () {
-    // List all pending receipts
+    Route::get('/', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::get('/strategies', [AdminController::class, 'strategies'])->name('admin.strategies');
+    Route::get('/signals', [AdminController::class, 'signals'])->name('admin.signals');
+    Route::get('/subscribers', [AdminController::class, 'subscribers'])->name('admin.subscribers');
+    Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
+
     Route::get('/approvals', [SubscriptionController::class, 'pendingApprovals'])->name('admin.approvals');
     
-    // View a private receipt image
     Route::get('/receipts/{filename}', [SubscriptionController::class, 'viewReceipt'])->name('admin.receipt.view');
     
-    // The Approve Button logic
     Route::post('/approve/{id}', [SubscriptionController::class, 'approve'])->name('admin.approve');
+    Route::post('/reject/{id}', [SubscriptionController::class, 'reject'])->name('admin.reject');
 });
 });
 
