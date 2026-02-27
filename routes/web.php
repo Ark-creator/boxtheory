@@ -3,6 +3,7 @@
 use App\Models\Strategy;
 use App\Services\TradingService;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TradingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SubscriptionController;
 
@@ -33,19 +34,22 @@ Route::middleware('auth')->group(function () {
     Route::post('/subscriptions', [SubscriptionController::class, 'store'])
         ->name('subscriptions.store');
 
-    // Live Signals (Protected by 'approved' middleware)
-    // Only users with an 'active' status on the specific strategy can enter
-    // Route::get('/signals/{strategy:slug}', [TradingController::class, 'show'])
-    //     ->name('signals.show');
+    // Live Signals for subscribed users
+    Route::get('/signals/{strategy:slug}', [TradingController::class, 'show'])
+        ->name('signals.show');
+    Route::get('/signals/{strategy:slug}/latest', [TradingController::class, 'latest'])
+        ->name('signals.latest');
 
     Route::get('/admin/approvals', [SubscriptionController::class, 'pendingApprovals'])
     ->middleware(['auth', 'can:be-admin']) // Use the Gate we discussed
     ->name('admin.approvals');
 
-    Route::get('/xauusd-price', function (TradingService $service) {
+Route::get('/xauusd-price', function (TradingService $service) {
     $data = $service->getXauUsdData();
     return response()->json([
-        'price' => $data['5. Exchange Rate'] ?? 0
+        'price' => $data['price'] ?? 0,
+        'timestamp' => $data['timestamp'] ?? null,
+        'error' => $data['error'] ?? null,
     ]);
 });
 

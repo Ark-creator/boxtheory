@@ -73,7 +73,12 @@
                         $sub = auth()->user()->strategies->where('id', $strategy->id)->first();
                     @endphp
 
-                    @if(!$sub)
+                    @if(auth()->user()->isAdmin())
+                        <a href="{{ route('signals.show', $strategy->slug) }}" 
+                           class="w-full border-2 border-green-500/50 text-green-400 text-center font-black py-4 rounded-2xl uppercase text-xs tracking-[0.2em] hover:bg-green-500 hover:text-white transition">
+                            View Live Signals
+                        </a>
+                    @elseif(!$sub)
                         <button @click="selectedStrategy = {{ $strategy->id }}; selectedName = '{{ $strategy->name }}'; showUpload = true" 
                                 class="w-full gold-gradient text-black font-black py-4 rounded-2xl uppercase text-xs tracking-[0.2em] shadow-lg shadow-amber-500/10 hover:scale-[1.02] transition transform">
                             Unlock Strategy

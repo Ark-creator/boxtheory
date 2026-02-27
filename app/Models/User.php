@@ -66,7 +66,7 @@ class User extends Authenticatable
 public function strategies()
 {
     return $this->belongsToMany(Strategy::class)
-                ->withPivot('receipt_path', 'status')
+                ->withPivot('receipt_path', 'status', 'expires_at')
                 ->withTimestamps();
 }
 
@@ -81,6 +81,10 @@ public function strategies()
 
 public function hasAccessTo($strategyId)
 {
+    if ($this->isAdmin()) {
+        return true;
+    }
+
     return $this->strategies()
         ->where('strategy_id', $strategyId)
         ->wherePivot('status', 'active')
