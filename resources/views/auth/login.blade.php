@@ -1,47 +1,67 @@
-<x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In | GoldLogic</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0B1120; }
+        .gold-gradient { background: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C); }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+    </style>
+</head>
+<body class="text-white min-h-screen flex items-center justify-center p-6">
+    <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+        <div class="absolute top-0 -left-20 w-96 h-96 bg-amber-500/10 rounded-full blur-[120px]"></div>
+        <div class="absolute bottom-0 -right-20 w-96 h-96 bg-blue-500/10 rounded-full blur-[120px]"></div>
+    </div>
 
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
-
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+    <div class="w-full max-w-md relative z-10">
+        <div class="text-center mb-10">
+            <a href="/" class="inline-block mb-6">
+                <div class="w-12 h-12 gold-gradient rounded-xl flex items-center justify-center mx-auto shadow-lg shadow-amber-500/20">
+                    <svg class="w-7 h-7 text-[#0B1120]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                </div>
+            </a>
+            <h1 class="text-3xl font-black italic tracking-tighter">WELCOME <span class="text-amber-400">BACK</span></h1>
+            <p class="text-gray-400 text-sm mt-2">Enter your credentials to access live signals.</p>
         </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+        <div class="glass p-8 rounded-[2rem] shadow-2xl">
+            <form method="POST" action="{{ route('login') }}">
+                @csrf
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">Email Address</label>
+                        <input type="email" name="email" value="{{ old('email') }}" required autofocus class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500 transition">
+                        @if($errors->has('email')) <p class="text-red-400 text-xs mt-1">{{ $errors->first('email') }}</p> @endif
+                    </div>
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">Password</label>
+                        <input type="password" name="password" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500 transition">
+                    </div>
 
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+                    <div class="flex items-center justify-between">
+                        <label class="flex items-center text-xs text-gray-400 cursor-pointer">
+                            <input type="checkbox" name="remember" class="mr-2 rounded border-white/10 bg-white/5 text-amber-500 focus:ring-amber-500"> Remember me
+                        </label>
+                        <a href="{{ route('password.request') }}" class="text-xs text-amber-500 hover:underline">Forgot?</a>
+                    </div>
+
+                    <button type="submit" class="w-full gold-gradient text-black font-black py-4 rounded-xl uppercase tracking-widest hover:scale-[1.02] transition transform">
+                        Sign In
+                    </button>
+                </div>
+            </form>
         </div>
-
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-indigo-600 shadow-sm focus:ring-indigo-500 dark:focus:ring-indigo-600 dark:focus:ring-offset-gray-800" name="remember">
-                <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">{{ __('Remember me') }}</span>
-            </label>
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
-
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+        
+        <p class="text-center mt-8 text-sm text-gray-500">
+            Don't have an account? <a href="{{ route('register') }}" class="text-white font-bold hover:text-amber-400 transition">Register Now</a>
+        </p>
+    </div>
+</body>
+</html>q

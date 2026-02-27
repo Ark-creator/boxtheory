@@ -17,6 +17,10 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+              $table->string('role')->default('customer'); // customer or admin
+        $table->boolean('is_approved')->default(false);
+        $table->string('registration_receipt')->nullable(); // For the first strategy
+        // -------------------------
             $table->rememberToken();
             $table->timestamps();
         });
