@@ -66,7 +66,7 @@
                     
                     <div class="mb-8 flex items-end gap-1">
                         <span class="text-4xl font-black">${{ number_format($strategy->price, 0) }}</span>
-                        <span class="text-gray-600 text-[10px] font-bold uppercase pb-1 tracking-widest">One-time payment</span>
+                        <span class="text-gray-600 text-[10px] font-bold uppercase pb-1 tracking-widest">Per 30 days</span>
                     </div>
 
                     @php

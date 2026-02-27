@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Strategy;
 use App\Models\User;
+use App\Services\SignalAlertService;
 use App\Services\TradingService;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
@@ -99,6 +101,29 @@ class AdminController extends Controller
         ]);
     }
 
+    public function sendSignalsNow(SignalAlertService $service): RedirectResponse
+    {
+        $result = $service->dispatch(force: true);
+
+        $message = sprintf(
+            'Manual signal email run complete. strategies=%d sent=%d skipped=%d recipients=%d',
+            $result['strategies'],
+            $result['sent'],
+            $result['skipped'],
+            $result['recipients']
+        );
+
+        $redirect = back()->with('success', $message);
+
+        if (!empty($result['errors'])) {
+            $preview = array_slice($result['errors'], 0, 2);
+            $suffix = count($result['errors']) > 2 ? ' (plus more errors)' : '';
+            $redirect = $redirect->with('error', implode(' | ', $preview) . $suffix);
+        }
+
+        return $redirect;
+    }
+
     public function subscribers(Request $request): View
     {
         $status = $request->query('status');
@@ -140,4 +165,3 @@ class AdminController extends Controller
         ]);
     }
 }
-

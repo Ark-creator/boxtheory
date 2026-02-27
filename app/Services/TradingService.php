@@ -109,6 +109,26 @@ class TradingService
             return $this->evaluateBoxTheory($this->getXauUsdData(), $this->getDailyLevels());
         }
 
+        if (in_array($slug, ['conservative-v2', 'conservative-v2-final', 'conservative'], true)) {
+            $ltf = $this->getXauUsdCandles('5min', 500);
+            $htf = $this->getXauUsdCandles('60min', 300);
+
+            if ($ltf['error'] !== null) {
+                return $this->makeNoDataSignal($slug, $ltf['error'], $currentPosition);
+            }
+
+            if ($htf['error'] !== null) {
+                return $this->makeNoDataSignal($slug, $htf['error'], $currentPosition);
+            }
+
+            return $this->evaluateConservativeV2(
+                $ltf['candles'],
+                $htf['candles'],
+                $currentPosition,
+                $ltf['source'] ?? null
+            );
+        }
+
         if (
             in_array($slug, ['rsi-moving-average', 'rsi-moving-averages', 'rsi-ma', 'rsi-ma-method', 'rsi-scalper', 'rsi-gold-scalper'], true) ||
             str_contains($slug, 'rsi')
@@ -281,6 +301,270 @@ class TradingService
                 'data_source' => $currentPriceData['source'] ?? ($dailyLevels['source'] ?? null),
             ],
             'error' => null,
+        ];
+    }
+
+    private function evaluateConservativeV2(
+        array $ltfCandles,
+        array $htfCandles,
+        ?string $currentPosition = null,
+        ?string $dataSource = null
+    ): array {
+        $settings = [
+            'fast_ema_period' => 50,
+            'slow_ema_period' => 200,
+            'rsi_period' => 14,
+            'rsi_oversold' => 30,
+            'rsi_overbought' => 70,
+            'adx_period' => 14,
+            'adx_threshold' => 20.0,
+            'bb_period' => 20,
+            'bb_deviations' => 2.0,
+            'atr_period' => 14,
+            'atr_multiplier' => 3.0,
+            'rr' => 4.0,
+            'atr_vs_htf_multiplier' => 0.8,
+            'divergence_lookback' => 50,
+            'hard_stop_pips' => 30,
+            'swing_lookback' => 30,
+            'swing_buffer_pips' => 5,
+            'break_even_activate_pips' => 40,
+            'break_even_extra_pips' => 2,
+            'trailing_activate_pips' => 80,
+            'trailing_stop_pips' => 40,
+            'stop_mode' => 'atr',
+        ];
+
+        $minNeeded = max($settings['slow_ema_period'] + 5, 220);
+        if (count($ltfCandles) < $minNeeded || count($htfCandles) < $minNeeded) {
+            return $this->makeNoDataSignal('conservative_v2', 'Not enough candle data for Conservative V2 filters.', $currentPosition);
+        }
+
+        $ltfCloses = array_column($ltfCandles, 'close');
+        $htfCloses = array_column($htfCandles, 'close');
+        $latest = end($ltfCandles);
+        $entryPrice = (float) ($latest['close'] ?? 0);
+
+        $fastEma = $this->ema($ltfCloses, $settings['fast_ema_period']);
+        $slowEma = $this->ema($ltfCloses, $settings['slow_ema_period']);
+        $htfFastEma = $this->ema($htfCloses, $settings['fast_ema_period']);
+        $htfSlowEma = $this->ema($htfCloses, $settings['slow_ema_period']);
+        $rsiSeries = $this->rsiSeries($ltfCloses, $settings['rsi_period']);
+        $rsiNow = $rsiSeries[count($rsiSeries) - 1] ?? null;
+        $adxNow = $this->adx($ltfCandles, $settings['adx_period']);
+        $atrLtf = $this->atr($ltfCandles, $settings['atr_period']);
+        $atrHtf = $this->atr($htfCandles, $settings['atr_period']);
+        $atrUse = max((float) ($atrLtf ?? 0), (float) ($atrHtf ?? 0));
+
+        if (
+            $fastEma === null ||
+            $slowEma === null ||
+            $htfFastEma === null ||
+            $htfSlowEma === null ||
+            $rsiNow === null ||
+            $adxNow === null ||
+            $atrUse <= 0
+        ) {
+            return $this->makeNoDataSignal('conservative_v2', 'Failed to compute one or more Conservative V2 indicators.', $currentPosition);
+        }
+
+        $ltfUp = $fastEma > $slowEma;
+        $ltfDown = $fastEma < $slowEma;
+        $htfDiff = $htfFastEma - $htfSlowEma;
+        $htfThreshold = max($htfFastEma * 0.0001, 0.0);
+        $trendUp = $ltfUp && $htfFastEma > $htfSlowEma && $htfDiff > $htfThreshold;
+        $trendDown = $ltfDown && $htfFastEma < $htfSlowEma && $htfDiff < -$htfThreshold;
+
+        $bollinger = $this->bollingerBands($ltfCloses, $settings['bb_period'], $settings['bb_deviations']);
+        $n = count($ltfCloses);
+        $prevClose = $ltfCloses[$n - 2] ?? null;
+        $currClose = $ltfCloses[$n - 1] ?? null;
+        $prevUpper = $bollinger['upper'][$n - 2] ?? null;
+        $currUpper = $bollinger['upper'][$n - 1] ?? null;
+        $prevLower = $bollinger['lower'][$n - 2] ?? null;
+        $currLower = $bollinger['lower'][$n - 1] ?? null;
+
+        $bbBuyOk = $prevClose !== null && $currClose !== null && $prevLower !== null && $currLower !== null
+            ? ($prevClose < $prevLower && $currClose > $currLower)
+            : false;
+        $bbSellOk = $prevClose !== null && $currClose !== null && $prevUpper !== null && $currUpper !== null
+            ? ($prevClose > $prevUpper && $currClose < $currUpper)
+            : false;
+
+        $bullishDiv = $this->detectBullishDivergence(
+            $ltfCloses,
+            $rsiSeries,
+            $settings['divergence_lookback'],
+            $settings['rsi_overbought']
+        );
+        $bearishDiv = $this->detectBearishDivergence(
+            $ltfCloses,
+            $rsiSeries,
+            $settings['divergence_lookback'],
+            $settings['rsi_oversold']
+        );
+
+        $adxPass = $adxNow >= $settings['adx_threshold'];
+        $volatilityPass = $atrHtf !== null ? ($atrUse >= ($settings['atr_vs_htf_multiplier'] * $atrHtf)) : true;
+
+        $buySignal = $trendUp && $bullishDiv && $bbBuyOk && $adxPass && $volatilityPass;
+        $sellSignal = $trendDown && $bearishDiv && $bbSellOk && $adxPass && $volatilityPass;
+
+        $normalizedPosition = $this->normalizePosition($currentPosition);
+        $action = 'HOLD';
+        $message = 'No entry yet: waiting for trend + divergence + Bollinger confirmation.';
+
+        if ($normalizedPosition === 'long' && $sellSignal) {
+            $action = 'CLOSE';
+            $message = 'Close long: bearish Conservative V2 setup detected.';
+        } elseif ($normalizedPosition === 'short' && $buySignal) {
+            $action = 'CLOSE';
+            $message = 'Close short: bullish Conservative V2 setup detected.';
+        } elseif ($buySignal) {
+            $action = 'BUY';
+            $message = 'Conservative V2 buy setup confirmed (trend, divergence, BB re-entry, ADX, ATR filters).';
+        } elseif ($sellSignal) {
+            $action = 'SELL';
+            $message = 'Conservative V2 sell setup confirmed (trend, divergence, BB re-entry, ADX, ATR filters).';
+        }
+
+        $tradePlan = $this->buildConservativeTradePlan(
+            $action,
+            $entryPrice,
+            $ltfCandles,
+            $atrUse,
+            $settings,
+            $normalizedPosition
+        );
+
+        return [
+            'strategy' => 'conservative_v2',
+            'action' => $action,
+            'price' => round($entryPrice, 4),
+            'timestamp' => $latest['timestamp'] ?? null,
+            'trend' => $trendUp ? 'bullish' : ($trendDown ? 'bearish' : 'flat'),
+            'position' => $normalizedPosition ?? 'flat',
+            'message' => $message,
+            'trade_plan' => $tradePlan,
+            'indicators' => [
+                'ema_fast' => round($fastEma, 4),
+                'ema_slow' => round($slowEma, 4),
+                'htf_ema_fast' => round($htfFastEma, 4),
+                'htf_ema_slow' => round($htfSlowEma, 4),
+                'rsi' => round($rsiNow, 2),
+                'adx' => round($adxNow, 2),
+                'atr_ltf' => round((float) $atrLtf, 4),
+                'atr_htf' => round((float) $atrHtf, 4),
+                'atr_used' => round($atrUse, 4),
+                'bb_buy_ok' => $bbBuyOk,
+                'bb_sell_ok' => $bbSellOk,
+                'bullish_divergence' => $bullishDiv,
+                'bearish_divergence' => $bearishDiv,
+                'adx_pass' => $adxPass,
+                'volatility_pass' => $volatilityPass,
+                'data_source' => $dataSource,
+            ],
+            'error' => null,
+        ];
+    }
+
+    private function buildConservativeTradePlan(
+        string $action,
+        float $entryPrice,
+        array $candles,
+        float $atrUse,
+        array $settings,
+        ?string $normalizedPosition
+    ): array {
+        $pip = $this->inferPipSize($entryPrice);
+        $hardStopDistance = max(0.0, (float) $settings['hard_stop_pips'] * $pip);
+        $rr = (float) $settings['rr'];
+        $tp1Rr = 2.0;
+
+        if (in_array($action, ['BUY', 'SELL'], true)) {
+            $riskDistance = $atrUse * (float) $settings['atr_multiplier'];
+
+            if (($settings['stop_mode'] ?? 'atr') === 'swing') {
+                $lookback = max(5, (int) $settings['swing_lookback']);
+                $slice = array_slice($candles, -$lookback);
+                $recentLow = (float) min(array_column($slice, 'low'));
+                $recentHigh = (float) max(array_column($slice, 'high'));
+                $swingBuffer = (float) $settings['swing_buffer_pips'] * $pip;
+
+                if ($action === 'BUY') {
+                    $riskDistance = max($entryPrice - ($recentLow - $swingBuffer), $pip);
+                } else {
+                    $riskDistance = max(($recentHigh + $swingBuffer) - $entryPrice, $pip);
+                }
+            }
+
+            if ($hardStopDistance > 0) {
+                $riskDistance = min($riskDistance, $hardStopDistance);
+            }
+
+            $riskDistance = max($riskDistance, $pip);
+
+            $isBuy = $action === 'BUY';
+            $stopLoss = $isBuy ? ($entryPrice - $riskDistance) : ($entryPrice + $riskDistance);
+            $tp1 = $isBuy ? ($entryPrice + ($riskDistance * $tp1Rr)) : ($entryPrice - ($riskDistance * $tp1Rr));
+            $tp2 = $isBuy ? ($entryPrice + ($riskDistance * $rr)) : ($entryPrice - ($riskDistance * $rr));
+            $beActivatePrice = $isBuy
+                ? ($entryPrice + ((float) $settings['break_even_activate_pips'] * $pip))
+                : ($entryPrice - ((float) $settings['break_even_activate_pips'] * $pip));
+            $beMoveTo = $isBuy
+                ? ($entryPrice + ((float) $settings['break_even_extra_pips'] * $pip))
+                : ($entryPrice - ((float) $settings['break_even_extra_pips'] * $pip));
+            $trailActivatePrice = $isBuy
+                ? ($entryPrice + ((float) $settings['trailing_activate_pips'] * $pip))
+                : ($entryPrice - ((float) $settings['trailing_activate_pips'] * $pip));
+
+            return [
+                'side' => $isBuy ? 'buy' : 'sell',
+                'entry_price' => round($entryPrice, 4),
+                'stop_loss' => round($stopLoss, 4),
+                'take_profit_1' => round($tp1, 4),
+                'take_profit_2' => round($tp2, 4),
+                'risk_per_unit' => round($riskDistance, 4),
+                'rr_tp1' => $tp1Rr,
+                'rr_tp2' => round($rr, 2),
+                'break_even_activate_price' => round($beActivatePrice, 4),
+                'break_even_move_to' => round($beMoveTo, 4),
+                'trailing_activate_price' => round($trailActivatePrice, 4),
+                'trailing_distance' => round((float) $settings['trailing_stop_pips'] * $pip, 4),
+                'notes' => 'SL/TP mirrors Conservative V2 EA profile (ATR-based risk + hard-stop cap + BE/trailing levels).',
+            ];
+        }
+
+        if ($action === 'CLOSE') {
+            return [
+                'side' => $normalizedPosition === 'short' ? 'close_short' : 'close_long',
+                'entry_price' => round($entryPrice, 4),
+                'stop_loss' => null,
+                'take_profit_1' => null,
+                'take_profit_2' => null,
+                'risk_per_unit' => null,
+                'rr_tp1' => null,
+                'rr_tp2' => null,
+                'notes' => 'Close current position at market.',
+            ];
+        }
+
+        $slice = array_slice($candles, -20);
+        $recentLow = (float) min(array_column($slice, 'low'));
+        $recentHigh = (float) max(array_column($slice, 'high'));
+
+        return [
+            'side' => 'wait',
+            'entry_price' => null,
+            'stop_loss' => null,
+            'take_profit_1' => null,
+            'take_profit_2' => null,
+            'risk_per_unit' => null,
+            'rr_tp1' => null,
+            'rr_tp2' => null,
+            'buy_trigger_above' => round($recentHigh, 4),
+            'sell_trigger_below' => round($recentLow, 4),
+            'notes' => 'Wait for divergence + BB re-entry + trend confirmation.',
         ];
     }
 
@@ -803,6 +1087,255 @@ class TradingService
         }
 
         return ['data' => $data, 'error' => null];
+    }
+
+    private function ema(array $values, int $period): ?float
+    {
+        $series = $this->emaSeries($values, $period);
+        if ($series === []) {
+            return null;
+        }
+
+        return $series[count($series) - 1];
+    }
+
+    private function emaSeries(array $values, int $period): array
+    {
+        $count = count($values);
+        if ($period <= 0 || $count < $period) {
+            return [];
+        }
+
+        $series = array_fill(0, $count, null);
+        $seed = array_sum(array_slice($values, 0, $period)) / $period;
+        $series[$period - 1] = $seed;
+        $multiplier = 2 / ($period + 1);
+
+        for ($i = $period; $i < $count; $i++) {
+            $series[$i] = (($values[$i] - $series[$i - 1]) * $multiplier) + $series[$i - 1];
+        }
+
+        return $series;
+    }
+
+    private function rsiSeries(array $closes, int $period): array
+    {
+        $count = count($closes);
+        if ($period <= 0 || $count < ($period + 1)) {
+            return [];
+        }
+
+        $series = array_fill(0, $count, null);
+
+        for ($i = $period; $i < $count; $i++) {
+            $window = array_slice($closes, $i - $period, $period + 1);
+            $gains = 0.0;
+            $losses = 0.0;
+
+            for ($j = 1, $len = count($window); $j < $len; $j++) {
+                $delta = $window[$j] - $window[$j - 1];
+                if ($delta >= 0) {
+                    $gains += $delta;
+                } else {
+                    $losses += abs($delta);
+                }
+            }
+
+            $avgGain = $gains / $period;
+            $avgLoss = $losses / $period;
+            $series[$i] = $avgLoss == 0.0 ? 100.0 : (100 - (100 / (1 + ($avgGain / $avgLoss))));
+        }
+
+        return $series;
+    }
+
+    private function bollingerBands(array $values, int $period, float $deviations): array
+    {
+        $count = count($values);
+        $upper = array_fill(0, $count, null);
+        $middle = array_fill(0, $count, null);
+        $lower = array_fill(0, $count, null);
+
+        if ($period <= 1 || $count < $period) {
+            return ['upper' => $upper, 'middle' => $middle, 'lower' => $lower];
+        }
+
+        for ($i = $period - 1; $i < $count; $i++) {
+            $window = array_slice($values, $i - $period + 1, $period);
+            $mean = array_sum($window) / $period;
+            $std = $this->stddev($window, $mean);
+
+            $middle[$i] = $mean;
+            $upper[$i] = $mean + ($deviations * $std);
+            $lower[$i] = $mean - ($deviations * $std);
+        }
+
+        return ['upper' => $upper, 'middle' => $middle, 'lower' => $lower];
+    }
+
+    private function stddev(array $values, float $mean): float
+    {
+        $count = count($values);
+        if ($count === 0) {
+            return 0.0;
+        }
+
+        $sum = 0.0;
+        foreach ($values as $value) {
+            $sum += (($value - $mean) ** 2);
+        }
+
+        return sqrt($sum / $count);
+    }
+
+    private function adx(array $candles, int $period): ?float
+    {
+        $count = count($candles);
+        if ($period <= 0 || $count < (($period * 2) + 1)) {
+            return null;
+        }
+
+        $trs = [];
+        $plusDms = [];
+        $minusDms = [];
+
+        for ($i = 1; $i < $count; $i++) {
+            $curr = $candles[$i];
+            $prev = $candles[$i - 1];
+
+            $highDiff = (float) $curr['high'] - (float) $prev['high'];
+            $lowDiff = (float) $prev['low'] - (float) $curr['low'];
+            $plusDm = ($highDiff > $lowDiff && $highDiff > 0) ? $highDiff : 0.0;
+            $minusDm = ($lowDiff > $highDiff && $lowDiff > 0) ? $lowDiff : 0.0;
+
+            $tr = max(
+                (float) $curr['high'] - (float) $curr['low'],
+                abs((float) $curr['high'] - (float) $prev['close']),
+                abs((float) $curr['low'] - (float) $prev['close'])
+            );
+
+            $trs[] = $tr;
+            $plusDms[] = $plusDm;
+            $minusDms[] = $minusDm;
+        }
+
+        if (count($trs) < ($period * 2)) {
+            return null;
+        }
+
+        $trSmooth = array_sum(array_slice($trs, 0, $period));
+        $plusSmooth = array_sum(array_slice($plusDms, 0, $period));
+        $minusSmooth = array_sum(array_slice($minusDms, 0, $period));
+
+        $dxs = [];
+        for ($i = $period; $i < count($trs); $i++) {
+            $trSmooth = $trSmooth - ($trSmooth / $period) + $trs[$i];
+            $plusSmooth = $plusSmooth - ($plusSmooth / $period) + $plusDms[$i];
+            $minusSmooth = $minusSmooth - ($minusSmooth / $period) + $minusDms[$i];
+
+            if ($trSmooth <= 0) {
+                continue;
+            }
+
+            $plusDi = 100 * ($plusSmooth / $trSmooth);
+            $minusDi = 100 * ($minusSmooth / $trSmooth);
+            $sumDi = $plusDi + $minusDi;
+            $dx = $sumDi == 0.0 ? 0.0 : (100 * abs($plusDi - $minusDi) / $sumDi);
+            $dxs[] = $dx;
+        }
+
+        if (count($dxs) < $period) {
+            return null;
+        }
+
+        $adx = array_sum(array_slice($dxs, 0, $period)) / $period;
+        for ($i = $period; $i < count($dxs); $i++) {
+            $adx = (($adx * ($period - 1)) + $dxs[$i]) / $period;
+        }
+
+        return $adx;
+    }
+
+    private function detectBullishDivergence(array $closes, array $rsiSeries, int $lookback, int $rsiOverbought): bool
+    {
+        [$recentIdx, $olderIdx] = $this->findTwoSwingIndices($closes, $lookback, true);
+        if ($recentIdx === null || $olderIdx === null) {
+            return false;
+        }
+
+        $priceRecent = $closes[$recentIdx] ?? null;
+        $priceOlder = $closes[$olderIdx] ?? null;
+        $rsiRecent = $rsiSeries[$recentIdx] ?? null;
+        $rsiOlder = $rsiSeries[$olderIdx] ?? null;
+
+        if ($priceRecent === null || $priceOlder === null || $rsiRecent === null || $rsiOlder === null) {
+            return false;
+        }
+
+        return ($priceOlder < $priceRecent) && ($rsiOlder > $rsiRecent) && ($rsiOlder < $rsiOverbought);
+    }
+
+    private function detectBearishDivergence(array $closes, array $rsiSeries, int $lookback, int $rsiOversold): bool
+    {
+        [$recentIdx, $olderIdx] = $this->findTwoSwingIndices($closes, $lookback, false);
+        if ($recentIdx === null || $olderIdx === null) {
+            return false;
+        }
+
+        $priceRecent = $closes[$recentIdx] ?? null;
+        $priceOlder = $closes[$olderIdx] ?? null;
+        $rsiRecent = $rsiSeries[$recentIdx] ?? null;
+        $rsiOlder = $rsiSeries[$olderIdx] ?? null;
+
+        if ($priceRecent === null || $priceOlder === null || $rsiRecent === null || $rsiOlder === null) {
+            return false;
+        }
+
+        return ($priceOlder > $priceRecent) && ($rsiOlder < $rsiRecent) && ($rsiOlder > $rsiOversold);
+    }
+
+    private function findTwoSwingIndices(array $closes, int $lookback, bool $forLows): array
+    {
+        $count = count($closes);
+        if ($count < 5) {
+            return [null, null];
+        }
+
+        $maxShift = min($lookback, $count - 3);
+        $found = [];
+
+        for ($shift = 2; $shift <= $maxShift; $shift++) {
+            $index = ($count - 1) - $shift;
+            if ($index <= 0 || $index >= ($count - 1)) {
+                continue;
+            }
+
+            $p0 = $closes[$index];
+            $pOlder = $closes[$index - 1];
+            $pNewer = $closes[$index + 1];
+
+            $isSwing = $forLows
+                ? ($p0 < $pOlder && $p0 < $pNewer)
+                : ($p0 > $pOlder && $p0 > $pNewer);
+
+            if ($isSwing) {
+                $found[] = $index;
+                if (count($found) === 2) {
+                    return [$found[0], $found[1]];
+                }
+            }
+        }
+
+        return [null, null];
+    }
+
+    private function inferPipSize(float $price): float
+    {
+        if ($price >= 100.0) {
+            return 0.1;
+        }
+
+        return 0.0001;
     }
 
     private function atr(array $candles, int $period = 14): ?float

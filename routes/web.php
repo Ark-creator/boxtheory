@@ -59,6 +59,7 @@ Route::middleware(['auth', 'can:admin-access'])->prefix('admin')->group(function
     Route::get('/', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::get('/strategies', [AdminController::class, 'strategies'])->name('admin.strategies');
     Route::get('/signals', [AdminController::class, 'signals'])->name('admin.signals');
+    Route::post('/signals/send-now', [AdminController::class, 'sendSignalsNow'])->name('admin.signals.send-now');
     Route::get('/subscribers', [AdminController::class, 'subscribers'])->name('admin.subscribers');
     Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
 

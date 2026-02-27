@@ -1,18 +1,27 @@
 <x-admin-layout title="Signals">
     <div class="rounded-2xl border border-white/10 bg-white/5 p-5 mb-6">
-        <form method="GET" action="{{ route('admin.signals') }}" class="flex flex-col sm:flex-row gap-3 sm:items-end">
-            <div class="w-full sm:w-72">
-                <label for="position" class="block text-xs uppercase tracking-[0.12em] text-slate-400 mb-2">Open Position Context</label>
-                <select id="position" name="position" class="w-full bg-slate-900 border border-white/15 rounded-xl px-3 py-2 text-sm">
-                    <option value="" @selected(($position ?? '') === '')>No open position</option>
-                    <option value="long" @selected(($position ?? '') === 'long')>Long / Buy</option>
-                    <option value="short" @selected(($position ?? '') === 'short')>Short / Sell</option>
-                </select>
-            </div>
-            <button type="submit" class="px-4 py-2.5 rounded-xl bg-amber-400 text-slate-950 text-xs font-bold uppercase tracking-[0.14em]">
-                Refresh
-            </button>
-        </form>
+        <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
+            <form method="GET" action="{{ route('admin.signals') }}" class="flex flex-col sm:flex-row gap-3 sm:items-end">
+                <div class="w-full sm:w-72">
+                    <label for="position" class="block text-xs uppercase tracking-[0.12em] text-slate-400 mb-2">Open Position Context</label>
+                    <select id="position" name="position" class="w-full bg-slate-900 border border-white/15 rounded-xl px-3 py-2 text-sm">
+                        <option value="" @selected(($position ?? '') === '')>No open position</option>
+                        <option value="long" @selected(($position ?? '') === 'long')>Long / Buy</option>
+                        <option value="short" @selected(($position ?? '') === 'short')>Short / Sell</option>
+                    </select>
+                </div>
+                <button type="submit" class="px-4 py-2.5 rounded-xl bg-amber-400 text-slate-950 text-xs font-bold uppercase tracking-[0.14em]">
+                    Refresh
+                </button>
+            </form>
+
+            <form method="POST" action="{{ route('admin.signals.send-now') }}">
+                @csrf
+                <button type="submit" class="px-4 py-2.5 rounded-xl bg-emerald-500 text-white text-xs font-bold uppercase tracking-[0.14em]">
+                    Send Signals Now
+                </button>
+            </form>
+        </div>
     </div>
 
     <div class="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
