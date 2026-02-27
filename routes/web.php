@@ -50,6 +50,7 @@ Route::get('/xauusd-price', function (TradingService $service) {
     return response()->json([
         'price' => $data['price'] ?? 0,
         'timestamp' => $data['timestamp'] ?? null,
+        'source' => $data['source'] ?? null,
         'error' => $data['error'] ?? null,
     ]);
 })->name('xauusd.price');

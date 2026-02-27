@@ -23,6 +23,7 @@
         };
 
         $positionValue = request('position', $position ?? '');
+        $plan = $signal['trade_plan'] ?? [];
     @endphp
 
     <div class="max-w-5xl mx-auto px-6 py-10">
@@ -67,6 +68,29 @@
                 </form>
                 <p class="text-xs text-slate-500 mt-4">Set this so the engine can emit accurate `CLOSE` signals.</p>
             </div>
+        </div>
+
+        <div class="rounded-2xl border border-white/10 bg-white/5 p-6 mb-6">
+            <p class="text-xs uppercase tracking-[0.2em] text-slate-400 font-bold mb-4">Trade Plan</p>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                <div class="rounded-xl bg-slate-950/60 border border-white/10 p-3">
+                    <p class="text-[10px] uppercase tracking-[0.12em] text-slate-500 font-bold">Entry</p>
+                    <p class="text-sm font-semibold mt-1">{{ isset($plan['entry_price']) && $plan['entry_price'] !== null ? '$'.number_format((float)$plan['entry_price'], 4) : 'N/A' }}</p>
+                </div>
+                <div class="rounded-xl bg-slate-950/60 border border-white/10 p-3">
+                    <p class="text-[10px] uppercase tracking-[0.12em] text-slate-500 font-bold">Stop Loss</p>
+                    <p class="text-sm font-semibold mt-1">{{ isset($plan['stop_loss']) && $plan['stop_loss'] !== null ? '$'.number_format((float)$plan['stop_loss'], 4) : 'N/A' }}</p>
+                </div>
+                <div class="rounded-xl bg-slate-950/60 border border-white/10 p-3">
+                    <p class="text-[10px] uppercase tracking-[0.12em] text-slate-500 font-bold">Take Profit 1</p>
+                    <p class="text-sm font-semibold mt-1">{{ isset($plan['take_profit_1']) && $plan['take_profit_1'] !== null ? '$'.number_format((float)$plan['take_profit_1'], 4) : 'N/A' }}</p>
+                </div>
+                <div class="rounded-xl bg-slate-950/60 border border-white/10 p-3">
+                    <p class="text-[10px] uppercase tracking-[0.12em] text-slate-500 font-bold">Take Profit 2</p>
+                    <p class="text-sm font-semibold mt-1">{{ isset($plan['take_profit_2']) && $plan['take_profit_2'] !== null ? '$'.number_format((float)$plan['take_profit_2'], 4) : 'N/A' }}</p>
+                </div>
+            </div>
+            <p class="text-xs text-slate-500 mt-4">{{ $plan['notes'] ?? 'No plan notes available.' }}</p>
         </div>
 
         <div class="rounded-2xl border border-white/10 bg-white/5 p-6 mb-6">

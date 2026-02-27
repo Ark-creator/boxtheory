@@ -36,7 +36,12 @@ return [
     ],
 
     'alphavantage' => [
-    'key' => env('ALPHA_VANTAGE_KEY'),
-],
+        'key' => env('ALPHA_VANTAGE_KEY'),
+    ],
+
+    'twelvedata' => [
+        'key' => env('TWELVEDATA_API_KEY'),
+        'cache_seconds' => env('TRADING_INTRADAY_CACHE_SECONDS', 120),
+    ],
 
 ];

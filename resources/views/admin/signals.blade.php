@@ -23,6 +23,10 @@
                         <th class="px-5 py-3">Strategy</th>
                         <th class="px-5 py-3">Action</th>
                         <th class="px-5 py-3">Price</th>
+                        <th class="px-5 py-3">Entry</th>
+                        <th class="px-5 py-3">SL</th>
+                        <th class="px-5 py-3">TP1</th>
+                        <th class="px-5 py-3">TP2</th>
                         <th class="px-5 py-3">Timestamp</th>
                         <th class="px-5 py-3">Message</th>
                         <th class="px-5 py-3">Links</th>
@@ -33,6 +37,7 @@
                         @php
                             $signal = $signals[$strategy->id] ?? null;
                             $action = strtoupper($signal['action'] ?? 'NO_DATA');
+                            $plan = $signal['trade_plan'] ?? [];
                             $actionClass = match ($action) {
                                 'BUY' => 'bg-emerald-500/20 text-emerald-200',
                                 'SELL' => 'bg-rose-500/20 text-rose-200',
@@ -52,6 +57,18 @@
                             <td class="px-5 py-3">
                                 ${{ number_format((float) ($signal['price'] ?? 0), 4) }}
                             </td>
+                            <td class="px-5 py-3 text-slate-300">
+                                {{ isset($plan['entry_price']) && $plan['entry_price'] !== null ? '$'.number_format((float)$plan['entry_price'], 4) : 'N/A' }}
+                            </td>
+                            <td class="px-5 py-3 text-slate-300">
+                                {{ isset($plan['stop_loss']) && $plan['stop_loss'] !== null ? '$'.number_format((float)$plan['stop_loss'], 4) : 'N/A' }}
+                            </td>
+                            <td class="px-5 py-3 text-slate-300">
+                                {{ isset($plan['take_profit_1']) && $plan['take_profit_1'] !== null ? '$'.number_format((float)$plan['take_profit_1'], 4) : 'N/A' }}
+                            </td>
+                            <td class="px-5 py-3 text-slate-300">
+                                {{ isset($plan['take_profit_2']) && $plan['take_profit_2'] !== null ? '$'.number_format((float)$plan['take_profit_2'], 4) : 'N/A' }}
+                            </td>
                             <td class="px-5 py-3 text-slate-300">{{ $signal['timestamp'] ?? 'N/A' }}</td>
                             <td class="px-5 py-3 text-slate-300 max-w-sm">{{ $signal['message'] ?? 'N/A' }}</td>
                             <td class="px-5 py-3">
@@ -65,7 +82,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-5 py-6 text-center text-slate-400">No strategies found.</td>
+                            <td colspan="10" class="px-5 py-6 text-center text-slate-400">No strategies found.</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -73,4 +90,3 @@
         </div>
     </div>
 </x-admin-layout>
-
