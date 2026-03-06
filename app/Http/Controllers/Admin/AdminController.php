@@ -9,6 +9,7 @@ use App\Services\SignalAlertService;
 use App\Services\TradingService;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
@@ -87,17 +88,111 @@ class AdminController extends Controller
     public function signals(Request $request, TradingService $service): View
     {
         $position = $request->query('position');
+        $pair = $service->normalizePairCode($request->query('pair'));
         $strategies = Strategy::query()->orderBy('name')->get();
 
         $signals = [];
         foreach ($strategies as $strategy) {
-            $signals[$strategy->id] = $service->getSignalForStrategy($strategy->slug, $position);
+            $signals[$strategy->id] = $service->getSignalForStrategy($strategy->slug, $position, $pair);
         }
 
         return view('admin.signals', [
             'strategies' => $strategies,
             'signals' => $signals,
             'position' => $position,
+            'pair' => $pair,
+            'pairs' => $service->getAvailablePairs(),
+        ]);
+    }
+
+    public function signalsAllPairs(Request $request, TradingService $service): View
+    {
+        $position = $request->query('position');
+        $strategies = Strategy::query()->orderBy('name')->get();
+        $allPairs = $service->getAvailablePairs();
+        $matrixPairCodes = $service->getMatrixPairCodes();
+        $pairs = array_intersect_key($allPairs, array_flip($matrixPairCodes));
+        $pairRefreshBudget = max(0, (int) config('trading.matrix.refresh_pairs_per_request', 2));
+        $matrixCacheSeconds = max(60, (int) config('trading.matrix.cache_seconds', 900));
+        $positionKey = $position === null || trim((string) $position) === '' ? 'flat' : strtolower(trim((string) $position));
+
+        $matrix = [];
+        $refreshedPairs = 0;
+        $pendingPairs = 0;
+
+        foreach ($pairs as $pairCode => $pairMeta) {
+            $hasColdCells = false;
+
+            foreach ($strategies as $strategy) {
+                $cacheKey = sprintf(
+                    'signals_matrix:%s:%d:%s',
+                    strtolower((string) $pairCode),
+                    (int) $strategy->id,
+                    $positionKey
+                );
+
+                $cachedSignal = Cache::get($cacheKey);
+                if (is_array($cachedSignal)) {
+                    $matrix[$pairCode][$strategy->id] = $cachedSignal;
+                    continue;
+                }
+
+                $hasColdCells = true;
+            }
+
+            if ($hasColdCells && $refreshedPairs < $pairRefreshBudget) {
+                foreach ($strategies as $strategy) {
+                    $signal = $service->getSignalForStrategy($strategy->slug, $position, $pairCode);
+                    $matrix[$pairCode][$strategy->id] = $signal;
+
+                    $cacheKey = sprintf(
+                        'signals_matrix:%s:%d:%s',
+                        strtolower((string) $pairCode),
+                        (int) $strategy->id,
+                        $positionKey
+                    );
+                    Cache::put($cacheKey, $signal, $matrixCacheSeconds);
+                }
+
+                $refreshedPairs++;
+                continue;
+            }
+
+            if ($hasColdCells) {
+                $pendingPairs++;
+            }
+
+            foreach ($strategies as $strategy) {
+                if (!isset($matrix[$pairCode][$strategy->id])) {
+                    $matrix[$pairCode][$strategy->id] = [
+                        'action' => 'NO_DATA',
+                        'price' => 0.0,
+                        'timestamp' => null,
+                        'trend' => 'unknown',
+                        'message' => 'Pending matrix warm-up for this pair to stay under API minute quota.',
+                        'symbol' => $pairMeta['display'] ?? $pairCode,
+                        'symbol_code' => $pairCode,
+                        'pair_name' => $pairMeta['name'] ?? $pairCode,
+                        'trade_plan' => [],
+                        'indicators' => [],
+                        'error' => 'matrix_cache_pending',
+                    ];
+                }
+            }
+        }
+
+        return view('admin.signals-all-pairs', [
+            'strategies' => $strategies,
+            'pairs' => $pairs,
+            'matrix' => $matrix,
+            'position' => $position,
+            'generatedAt' => now(),
+            'allPairCount' => count($allPairs),
+            'matrixPairCount' => count($pairs),
+            'refreshedPairs' => $refreshedPairs,
+            'pendingPairs' => $pendingPairs,
+            'pairRefreshBudget' => $pairRefreshBudget,
+            'matrixCacheSeconds' => $matrixCacheSeconds,
         ]);
     }
 

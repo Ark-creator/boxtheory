@@ -24,18 +24,42 @@
 
         $positionValue = request('position', $position ?? '');
         $plan = $signal['trade_plan'] ?? [];
+        $indicators = $signal['indicators'] ?? [];
+        $trendValue = strtoupper((string) ($signal['trend'] ?? 'unknown'));
+        $dataSource = (string) ($indicators['data_source'] ?? 'n/a');
+        $pairs = is_array($pairs ?? null) ? $pairs : [];
+        $selectedPairCode = $pair ?? ($signal['symbol_code'] ?? 'XAUUSD');
+        $selectedPair = $pairs[$selectedPairCode] ?? null;
+        $selectedPairDisplay = $signal['symbol'] ?? ($selectedPair['display'] ?? 'XAU/USD');
+        $selectedPairName = $selectedPair['name'] ?? ($signal['pair_name'] ?? 'Market Pair');
     @endphp
 
     <div class="max-w-5xl mx-auto px-6 py-10">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-10">
             <div>
-                <p class="text-xs uppercase tracking-[0.25em] text-amber-400 font-bold">XAU/USD Strategy Maker</p>
+                <p class="text-xs uppercase tracking-[0.25em] text-amber-400 font-bold">{{ $selectedPairDisplay }} Strategy Maker</p>
                 <h1 class="text-3xl md:text-4xl font-black mt-2">{{ $strategy->name }}</h1>
-                <p class="text-sm text-slate-400 mt-2">Page refreshes every 60 seconds using live API data.</p>
+                <p class="text-sm text-slate-400 mt-2">Live market: {{ $selectedPairName }}. Page refreshes every 60 seconds.</p>
             </div>
-            <a href="{{ route('strategies.index') }}" class="inline-flex items-center justify-center px-5 py-3 rounded-xl border border-white/15 text-xs uppercase tracking-[0.2em] font-bold hover:bg-white/5">
-                Back to Strategies
-            </a>
+            <div class="flex flex-col sm:flex-row gap-2">
+                <form method="GET" action="{{ route('signals.show', $strategy->slug) }}" class="flex items-center gap-2">
+                    <input type="hidden" name="position" value="{{ $positionValue }}">
+                    <select id="pair" name="pair" class="bg-slate-900 border border-white/15 rounded-xl px-3 py-2 text-sm min-w-44">
+                        @foreach($pairs as $code => $pairItem)
+                            <option value="{{ $code }}" @selected($selectedPairCode === $code)>{{ $pairItem['display'] }}</option>
+                        @endforeach
+                    </select>
+                    <button type="submit" class="px-4 py-2 rounded-xl bg-amber-400 text-slate-950 text-xs font-black uppercase tracking-[0.14em]">
+                        Switch Pair
+                    </button>
+                </form>
+                <a href="{{ route('watchlist.index', ['position' => $positionValue]) }}" class="inline-flex items-center justify-center px-5 py-3 rounded-xl border border-white/15 text-xs uppercase tracking-[0.2em] font-bold hover:bg-white/5">
+                    My Watchlist
+                </a>
+                <a href="{{ route('strategies.index', ['pair' => $selectedPairCode]) }}" class="inline-flex items-center justify-center px-5 py-3 rounded-xl border border-white/15 text-xs uppercase tracking-[0.2em] font-bold hover:bg-white/5">
+                    Back to Strategies
+                </a>
+            </div>
         </div>
 
         <div class="grid lg:grid-cols-3 gap-6 mb-6">
@@ -45,10 +69,21 @@
                     <span class="px-4 py-2 rounded-full text-xs font-black tracking-[0.2em] uppercase {{ $badgeClass }}">{{ $action }}</span>
                 </div>
 
-                <p class="text-4xl font-black mb-2">${{ number_format((float) ($signal['price'] ?? 0), 4) }}</p>
-                <p class="text-xs uppercase tracking-[0.15em] text-slate-500 font-bold mb-5">
-                    Candle Timestamp: {{ $signal['timestamp'] ?? 'N/A' }}
-                </p>
+                <div class="grid sm:grid-cols-3 gap-3 mb-5">
+                    <div class="rounded-xl bg-slate-950/60 border border-white/10 p-3">
+                        <p class="text-[10px] uppercase tracking-[0.12em] text-slate-500 font-bold">Price</p>
+                        <p class="text-2xl font-black mt-1">${{ number_format((float) ($signal['price'] ?? 0), 4) }}</p>
+                    </div>
+                    <div class="rounded-xl bg-slate-950/60 border border-white/10 p-3">
+                        <p class="text-[10px] uppercase tracking-[0.12em] text-slate-500 font-bold">Candle Timestamp</p>
+                        <p class="text-sm font-semibold mt-1">{{ $signal['timestamp'] ?? 'N/A' }}</p>
+                    </div>
+                    <div class="rounded-xl bg-slate-950/60 border border-white/10 p-3">
+                        <p class="text-[10px] uppercase tracking-[0.12em] text-slate-500 font-bold">Trend / Source</p>
+                        <p class="text-sm font-semibold mt-1">{{ $trendValue }}</p>
+                        <p class="text-xs text-slate-400 mt-1">{{ $dataSource }}</p>
+                    </div>
+                </div>
 
                 <p class="text-sm text-slate-200 leading-relaxed">{{ $signal['message'] ?? 'No message available.' }}</p>
             </div>
@@ -56,6 +91,7 @@
             <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
                 <p class="text-xs uppercase tracking-[0.2em] text-slate-400 font-bold mb-4">Position Context</p>
                 <form method="GET" action="{{ route('signals.show', $strategy->slug) }}" class="space-y-4">
+                    <input type="hidden" name="pair" value="{{ $selectedPairCode }}">
                     <label class="text-xs uppercase tracking-[0.12em] text-slate-400 font-bold block">Current Open Position</label>
                     <select id="position" name="position" class="w-full bg-slate-900 border border-white/15 rounded-xl px-3 py-2 text-sm">
                         <option value="" @selected($positionValue === '')>No open position</option>
@@ -96,9 +132,9 @@
         <div class="rounded-2xl border border-white/10 bg-white/5 p-6 mb-6">
             <p class="text-xs uppercase tracking-[0.2em] text-slate-400 font-bold mb-4">Indicators</p>
 
-            @if(!empty($signal['indicators']))
+            @if(!empty($indicators))
                 <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                    @foreach($signal['indicators'] as $label => $value)
+                    @foreach($indicators as $label => $value)
                         <div class="rounded-xl bg-slate-950/60 border border-white/10 p-3">
                             <p class="text-[10px] uppercase tracking-[0.12em] text-slate-500 font-bold">{{ str_replace('_', ' ', $label) }}</p>
                             <p class="text-sm font-semibold mt-1">
@@ -125,7 +161,7 @@
 
         <div class="mt-8 text-xs text-slate-500">
             JSON endpoint:
-            <code class="text-slate-300">{{ route('signals.latest', $strategy->slug) }}</code>
+            <code class="text-slate-300">{{ route('signals.latest', ['strategy' => $strategy->slug, 'pair' => $selectedPairCode]) }}</code>
         </div>
     </div>
 </body>

@@ -36,6 +36,9 @@
                 <a href="{{ route('admin.signals') }}" class="block px-4 py-3 rounded-xl text-sm font-semibold mb-2 {{ request()->routeIs('admin.signals') ? 'bg-amber-400 text-slate-950' : 'text-slate-300 hover:bg-white/5' }}">
                     Signals
                 </a>
+                <a href="{{ route('admin.signals.all-pairs') }}" class="block px-4 py-3 rounded-xl text-sm font-semibold mb-2 {{ request()->routeIs('admin.signals.all-pairs') ? 'bg-amber-400 text-slate-950' : 'text-slate-300 hover:bg-white/5' }}">
+                    Signals Matrix
+                </a>
                 <a href="{{ route('admin.approvals') }}" class="block px-4 py-3 rounded-xl text-sm font-semibold mb-2 {{ request()->routeIs('admin.approvals') ? 'bg-amber-400 text-slate-950' : 'text-slate-300 hover:bg-white/5' }}">
                     Approvals
                 </a>
@@ -89,4 +92,3 @@
     </div>
 </body>
 </html>
-

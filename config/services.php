@@ -44,6 +44,14 @@ return [
         'cache_seconds' => env('TRADING_INTRADAY_CACHE_SECONDS', 120),
     ],
 
+    'paymongo' => [
+        'public_key' => env('PAYMONGO_PUBLIC_KEY'),
+        'secret_key' => env('PAYMONGO_SECRET_KEY'),
+        'webhook_secret' => env('PAYMONGO_WEBHOOK_SECRET'),
+        // Example: gcash,paymaya,dob,qrph
+        'payment_method_types' => env('PAYMONGO_PAYMENT_METHODS', 'gcash,paymaya,dob,qrph'),
+    ],
+
     'signal_alerts' => [
         // Optional comma-separated list. If empty, all admin user emails are used.
         'admin_emails' => env('ADMIN_SIGNAL_EMAILS', ''),

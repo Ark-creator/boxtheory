@@ -31,6 +31,9 @@
                 <span class="text-lg font-extrabold tracking-tighter uppercase">GOLD<span class="text-amber-400">LOGIC</span></span>
             </a>
             <div class="flex items-center gap-4">
+                <a href="{{ route('watchlist.index') }}" class="px-3 py-2 rounded-lg border border-white/15 text-[10px] sm:text-xs font-black uppercase tracking-[0.12em] text-slate-300 hover:bg-white/5">
+                    Watchlist
+                </a>
                 <span class="text-xs text-gray-400 font-bold uppercase tracking-widest">{{ auth()->user()->name }}</span>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
@@ -40,13 +43,49 @@
         </div>
     </nav>
 
+    @php
+        $pair = $pair ?? 'XAUUSD';
+        $pairs = is_array($pairs ?? null) ? $pairs : [];
+        $selectedPair = $pairs[$pair] ?? null;
+        $selectedPairDisplay = $selectedPair['display'] ?? 'XAU/USD';
+        $selectedPairName = $selectedPair['name'] ?? 'Gold Spot';
+    @endphp
+
     <main class="relative z-10 py-16" x-data="{ showUpload: false, selectedStrategy: null, selectedName: '' }">
         <div class="max-w-7xl mx-auto px-6">
-            
+             
             <header class="mb-12">
                 <h2 class="text-4xl md:text-5xl font-black italic mb-4 gold-text">SELECT YOUR STRATEGY</h2>
-                <p class="text-gray-400 max-w-2xl">Unlock precision signals. Choose a strategy below and upload your proof of payment for immediate administrative review.</p>
+                <p class="text-gray-400 max-w-2xl">Unlock precision signals. Pay online via GCash/Maya/Bank transfer checkout, or upload proof for manual review.</p>
             </header>
+
+            <section class="glass rounded-3xl p-6 md:p-7 mb-8">
+                <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
+                    <div>
+                        <p class="text-[10px] font-black text-amber-500 uppercase tracking-[0.22em]">Market Pair</p>
+                        <h3 class="text-2xl font-extrabold mt-2">{{ $selectedPairDisplay }}</h3>
+                        <p class="text-sm text-gray-400 mt-2">All strategy signals on this page will run against {{ $selectedPairName }}.</p>
+                    </div>
+                    <form method="GET" action="{{ route('strategies.index') }}" class="w-full lg:w-auto flex gap-2">
+                        <select name="pair" class="w-full lg:w-64 bg-slate-950 border border-white/15 rounded-xl px-3 py-2 text-sm">
+                            @foreach($pairs as $code => $pairItem)
+                                <option value="{{ $code }}" @selected($pair === $code)>{{ $pairItem['display'] }} - {{ $pairItem['name'] }}</option>
+                            @endforeach
+                        </select>
+                        <button type="submit" class="px-4 py-2 rounded-xl bg-amber-400 text-slate-950 text-xs font-black uppercase tracking-[0.14em]">
+                            Apply
+                        </button>
+                    </form>
+                </div>
+                <div class="mt-4 flex flex-wrap gap-2">
+                    @foreach($pairs as $code => $pairItem)
+                        <a href="{{ route('strategies.index', ['pair' => $code]) }}"
+                           class="px-3 py-1.5 rounded-full text-[10px] uppercase tracking-[0.16em] font-bold border {{ $pair === $code ? 'border-amber-400 bg-amber-400/10 text-amber-200' : 'border-white/15 text-slate-300 hover:border-white/30' }}">
+                            {{ $pairItem['display'] }}
+                        </a>
+                    @endforeach
+                </div>
+            </section>
 
             @if(session('success'))
                 <div class="mb-8 p-4 bg-green-500/10 border border-green-500/20 text-green-400 rounded-2xl text-sm font-bold">
@@ -54,11 +93,18 @@
                 </div>
             @endif
 
+            @if(session('error'))
+                <div class="mb-8 p-4 bg-rose-500/10 border border-rose-500/20 text-rose-300 rounded-2xl text-sm font-bold">
+                    {{ session('error') }}
+                </div>
+            @endif
+
             <div class="grid md:grid-cols-3 gap-8">
                 @foreach($strategies as $strategy)
                 <div class="glass p-8 rounded-[2.5rem] flex flex-col hover:border-amber-500/30 transition-all duration-300">
                     <h3 class="text-2xl font-black mb-2 uppercase">{{ $strategy->name }}</h3>
-                    <div class="text-[10px] font-black text-amber-500 uppercase tracking-[0.2em] mb-6">XAU/USD Market</div>
+                    <div class="text-[10px] font-black text-amber-500 uppercase tracking-[0.2em] mb-1">{{ $selectedPairDisplay }} Market</div>
+                    <div class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.16em] mb-6">{{ $selectedPairName }}</div>
                     
                     <p class="text-gray-400 text-sm mb-8 flex-grow leading-relaxed">
                         {{ $strategy->description }}
@@ -74,21 +120,32 @@
                     @endphp
 
                     @if(auth()->user()->isAdmin())
-                        <a href="{{ route('signals.show', $strategy->slug) }}" 
+                        <a href="{{ route('signals.show', ['strategy' => $strategy->slug, 'pair' => $pair]) }}" 
                            class="w-full border-2 border-green-500/50 text-green-400 text-center font-black py-4 rounded-2xl uppercase text-xs tracking-[0.2em] hover:bg-green-500 hover:text-white transition">
                             View Live Signals
                         </a>
                     @elseif(!$sub)
-                        <button @click="selectedStrategy = {{ $strategy->id }}; selectedName = '{{ $strategy->name }}'; showUpload = true" 
-                                class="w-full gold-gradient text-black font-black py-4 rounded-2xl uppercase text-xs tracking-[0.2em] shadow-lg shadow-amber-500/10 hover:scale-[1.02] transition transform">
-                            Unlock Strategy
-                        </button>
+                        <div class="space-y-3">
+                            <form method="POST" action="{{ route('payments.checkout') }}">
+                                @csrf
+                                <input type="hidden" name="strategy_id" value="{{ $strategy->id }}">
+                                <button type="submit"
+                                        class="w-full gold-gradient text-black font-black py-4 rounded-2xl uppercase text-xs tracking-[0.2em] shadow-lg shadow-amber-500/10 hover:scale-[1.02] transition transform">
+                                    Pay with GCash / Maya
+                                </button>
+                            </form>
+
+                            <button @click="selectedStrategy = {{ $strategy->id }}; selectedName = '{{ $strategy->name }}'; showUpload = true" 
+                                    class="w-full bg-white/5 border border-white/10 text-gray-200 font-black py-4 rounded-2xl uppercase text-xs tracking-[0.2em] hover:bg-white/10 transition">
+                                Upload Receipt Manually
+                            </button>
+                        </div>
                     @elseif($sub->pivot->status === 'pending')
                         <button disabled class="w-full bg-white/5 border border-white/10 text-gray-500 font-black py-4 rounded-2xl uppercase text-xs tracking-[0.2em]">
                             Verification Pending
                         </button>
                     @else
-                        <a href="{{ route('signals.show', $strategy->slug) }}" 
+                        <a href="{{ route('signals.show', ['strategy' => $strategy->slug, 'pair' => $pair]) }}" 
                            class="w-full border-2 border-green-500/50 text-green-400 text-center font-black py-4 rounded-2xl uppercase text-xs tracking-[0.2em] hover:bg-green-500 hover:text-white transition">
                             View Live Signals
                         </a>
