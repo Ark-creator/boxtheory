@@ -20,6 +20,7 @@ class User extends Authenticatable
         'password',
         'role',          // customer or admin
         'is_approved',   // global approval status
+        'watchlist_pairs',
     ];
 
     /**
@@ -39,6 +40,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_approved' => 'boolean',
+            'watchlist_pairs' => 'array',
         ];
     }
 
@@ -68,6 +70,11 @@ public function strategies()
     return $this->belongsToMany(Strategy::class)
                 ->withPivot('receipt_path', 'status', 'expires_at')
                 ->withTimestamps();
+}
+
+public function strategyPayments()
+{
+    return $this->hasMany(StrategyPayment::class);
 }
 
 // Helper to check if a specific strategy is active

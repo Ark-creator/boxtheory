@@ -10,17 +10,30 @@
                         <option value="short" @selected(($position ?? '') === 'short')>Short / Sell</option>
                     </select>
                 </div>
+                <div class="w-full sm:w-72">
+                    <label for="pair" class="block text-xs uppercase tracking-[0.12em] text-slate-400 mb-2">Market Pair</label>
+                    <select id="pair" name="pair" class="w-full bg-slate-900 border border-white/15 rounded-xl px-3 py-2 text-sm">
+                        @foreach(($pairs ?? []) as $code => $pairItem)
+                            <option value="{{ $code }}" @selected(($pair ?? '') === $code)>{{ $pairItem['display'] }} - {{ $pairItem['name'] }}</option>
+                        @endforeach
+                    </select>
+                </div>
                 <button type="submit" class="px-4 py-2.5 rounded-xl bg-amber-400 text-slate-950 text-xs font-bold uppercase tracking-[0.14em]">
                     Refresh
                 </button>
             </form>
 
-            <form method="POST" action="{{ route('admin.signals.send-now') }}">
-                @csrf
-                <button type="submit" class="px-4 py-2.5 rounded-xl bg-emerald-500 text-white text-xs font-bold uppercase tracking-[0.14em]">
-                    Send Signals Now
-                </button>
-            </form>
+            <div class="flex items-center gap-2">
+                <a href="{{ route('admin.signals.all-pairs', ['position' => ($position ?? null)]) }}" class="px-4 py-2.5 rounded-xl border border-white/20 text-slate-200 text-xs font-bold uppercase tracking-[0.14em] hover:bg-white/5">
+                    All-Pairs Board
+                </a>
+                <form method="POST" action="{{ route('admin.signals.send-now') }}">
+                    @csrf
+                    <button type="submit" class="px-4 py-2.5 rounded-xl bg-emerald-500 text-white text-xs font-bold uppercase tracking-[0.14em]">
+                        Send Signals Now
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -59,6 +72,7 @@
                             <td class="px-5 py-3">
                                 <p class="font-semibold">{{ $strategy->name }}</p>
                                 <p class="text-xs text-slate-400">{{ $strategy->slug }}</p>
+                                <p class="text-xs text-amber-300 mt-1">{{ $signal['symbol'] ?? (($pairs[$pair]['display'] ?? null) ?? 'XAU/USD') }}</p>
                             </td>
                             <td class="px-5 py-3">
                                 <span class="px-2 py-1 rounded-lg text-[11px] uppercase font-semibold {{ $actionClass }}">{{ $action }}</span>
@@ -81,10 +95,10 @@
                             <td class="px-5 py-3 text-slate-300">{{ $signal['timestamp'] ?? 'N/A' }}</td>
                             <td class="px-5 py-3 text-slate-300 max-w-sm">{{ $signal['message'] ?? 'N/A' }}</td>
                             <td class="px-5 py-3">
-                                <a href="{{ route('signals.show', $strategy->slug) }}" class="text-xs text-amber-300 hover:text-amber-200 uppercase tracking-[0.12em] font-semibold mr-3">
+                                <a href="{{ route('signals.show', ['strategy' => $strategy->slug, 'pair' => ($pair ?? 'XAUUSD')]) }}" class="text-xs text-amber-300 hover:text-amber-200 uppercase tracking-[0.12em] font-semibold mr-3">
                                     Open
                                 </a>
-                                <a href="{{ route('signals.latest', $strategy->slug) }}?position={{ $position }}" class="text-xs text-slate-300 hover:text-white uppercase tracking-[0.12em] font-semibold">
+                                <a href="{{ route('signals.latest', ['strategy' => $strategy->slug, 'pair' => ($pair ?? 'XAUUSD'), 'position' => ($position ?? null)]) }}" class="text-xs text-slate-300 hover:text-white uppercase tracking-[0.12em] font-semibold">
                                     JSON
                                 </a>
                             </td>

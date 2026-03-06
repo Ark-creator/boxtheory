@@ -28,4 +28,9 @@ class Strategy extends Model
                     ->withPivot('receipt_path', 'status', 'expires_at')
                     ->withTimestamps();
     }
+
+    public function payments()
+    {
+        return $this->hasMany(StrategyPayment::class);
+    }
 }

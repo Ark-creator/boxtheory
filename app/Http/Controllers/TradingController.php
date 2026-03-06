@@ -19,12 +19,15 @@ class TradingController extends Controller
         }
 
         $position = $request->query('position');
-        $signal = $service->getSignalForStrategy($strategy->slug, $position);
+        $pair = $service->normalizePairCode($request->query('pair'));
+        $signal = $service->getSignalForStrategy($strategy->slug, $position, $pair);
 
         return view('signals.show', [
             'strategy' => $strategy,
             'signal' => $signal,
             'position' => $position,
+            'pair' => $pair,
+            'pairs' => $service->getAvailablePairs(),
         ]);
     }
 
@@ -38,7 +41,8 @@ class TradingController extends Controller
             ], 403);
         }
 
-        $signal = $service->getSignalForStrategy($strategy->slug, $request->query('position'));
+        $pair = $service->normalizePairCode($request->query('pair'));
+        $signal = $service->getSignalForStrategy($strategy->slug, $request->query('position'), $pair);
 
         return response()->json($signal);
     }
