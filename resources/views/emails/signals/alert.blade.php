@@ -37,7 +37,11 @@
                                 <tr>
                                     <td colspan="2" style="padding-top:12px;">
                                         <div style="font-size:26px; font-weight:800; line-height:1.2;">{{ $strategy->name }}</div>
-                                        <div style="margin-top:6px; font-size:13px; opacity:0.9;">{{ $strategy->slug }} | Generated {{ $generatedAt->format('Y-m-d H:i:s') }}</div>
+                                        <div style="margin-top:6px; font-size:16px; font-weight:700;">{{ $signal['symbol'] ?? $signal['symbol_code'] ?? config('trading.default_pair', 'XAUUSD') }} — {{ $action }}</div>
+                                        <div style="margin-top:6px; font-size:13px; opacity:0.9;">Generated {{ $generatedAt->format('Y-m-d H:i:s T') }}</div>
+                                        @if(!empty($signal['expires_at']))
+                                            <div style="margin-top:6px; font-size:13px;">Entry valid until {{ $signal['expires_at'] }}. Recheck the signal after this time.</div>
+                                        @endif
                                     </td>
                                 </tr>
                             </table>
@@ -147,4 +151,3 @@
     </table>
 </body>
 </html>
-

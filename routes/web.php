@@ -80,6 +80,9 @@ Route::middleware(['auth', 'can:admin-access'])->prefix('admin')->group(function
     Route::get('/signals', [AdminController::class, 'signals'])->name('admin.signals');
     Route::get('/signals/all-pairs', [AdminController::class, 'signalsAllPairs'])->name('admin.signals.all-pairs');
     Route::post('/signals/send-now', [AdminController::class, 'sendSignalsNow'])->name('admin.signals.send-now');
+    Route::get('/auto-trader', [AdminController::class, 'autoTrader'])->name('admin.auto-trader');
+    Route::put('/auto-trader', [AdminController::class, 'updateAutoTrader'])->name('admin.auto-trader.update');
+    Route::post('/auto-trader/run-now', [AdminController::class, 'runAutoTraderNow'])->name('admin.auto-trader.run-now');
     Route::get('/subscribers', [AdminController::class, 'subscribers'])->name('admin.subscribers');
     Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
 

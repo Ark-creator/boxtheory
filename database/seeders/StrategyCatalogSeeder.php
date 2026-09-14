@@ -14,6 +14,12 @@ class StrategyCatalogSeeder extends Seeder
     {
         $strategies = [
             [
+                'name' => 'Gold Risk Breakout (Research)',
+                'slug' => 'gold-risk-breakout',
+                'description' => 'XAUUSD H1 trend, closed M15 breakout, structural/ATR stop and 2R target. Signals support MT5 or Twelve Data candles. Research candidate; profitability is unverified.',
+                'price' => 0.00,
+            ],
+            [
                 'name' => 'Box Theory Pro',
                 'slug' => 'box-theory',
                 'description' => 'Previous-day high/low box boundaries for reversal and breakout zones on XAUUSD.',
@@ -45,4 +51,3 @@ class StrategyCatalogSeeder extends Seeder
         }
     }
 }
-

@@ -25,6 +25,7 @@ class StrategySignalAlertMail extends Mailable
     public function envelope(): Envelope
     {
         $action = strtoupper((string) ($this->signal['action'] ?? 'SIGNAL'));
+        $symbol = (string) ($this->signal['symbol'] ?? $this->signal['symbol_code'] ?? config('trading.default_pair', 'XAUUSD'));
         $fromAddress = (string) config('mail.from.address', 'hello@example.com');
         $fromName = (string) config('mail.from.name', config('app.name', 'GoldLogic'));
 
@@ -34,7 +35,7 @@ class StrategySignalAlertMail extends Mailable
 
         return new Envelope(
             from: new Address($fromAddress, $fromName),
-            subject: sprintf('[%s] %s Signal: %s', config('app.name', 'GoldLogic'), $this->strategy->name, $action)
+            subject: sprintf('[%s] %s %s | %s', config('app.name', 'GoldLogic'), $action, $symbol, $this->strategy->name)
         );
     }
 

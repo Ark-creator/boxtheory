@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Mail\StrategySignalAlertMail;
 use App\Models\Strategy;
 use App\Models\User;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 
@@ -25,11 +26,11 @@ class SignalAlertService
      *   errors:array<int,string>
      * }
      */
-    public function dispatch(bool $force = false): array
+    public function dispatch(bool $force = false, ?string $recipient = null): array
     {
         $this->ensureValidMailerFrom();
 
-        $recipients = $this->resolveRecipients();
+        $recipients = $recipient === null ? $this->resolveRecipients() : $this->filterValidEmails([trim($recipient)]);
         $strategies = Strategy::query()->orderBy('id')->get();
         $allowedActions = $this->resolveAllowedActions();
 
@@ -47,8 +48,23 @@ class SignalAlertService
         }
 
         foreach ($strategies as $strategy) {
-            $signal = $this->tradingService->getSignalForStrategy($strategy->slug);
+            try {
+                $signal = $this->tradingService->getSignalForStrategy($strategy->slug);
+                if (!empty($signal['expires_at']) && Carbon::parse($signal['expires_at'])->lte(now())) {
+                    $result['skipped']++;
+                    continue;
+                }
+            } catch (\Throwable $exception) {
+                $result['errors'][] = sprintf('Failed to evaluate %s: %s', $strategy->name, $exception->getMessage());
+                continue;
+            }
             $action = strtoupper((string) ($signal['action'] ?? 'NO_DATA'));
+
+            if ($action === 'NO_DATA') {
+                $result['errors'][] = sprintf('No signal data for %s: %s', $strategy->name, $signal['error'] ?? $signal['message'] ?? 'Market data unavailable.');
+                $result['skipped']++;
+                continue;
+            }
 
             if (!in_array($action, $allowedActions, true)) {
                 $result['skipped']++;
@@ -56,30 +72,42 @@ class SignalAlertService
             }
 
             $signature = $this->buildSignature($signal);
-            $cacheKey = $this->cacheKey($strategy->id);
-            $previous = Cache::get($cacheKey);
+            $sent = false;
+            $attempted = false;
 
-            if (!$force && $previous === $signature) {
-                $result['skipped']++;
-                continue;
-            }
+            foreach ($recipients as $email) {
+                $cacheKey = $this->cacheKey($strategy->id, $signal, $email);
+                try {
+                    Cache::lock($cacheKey . ':lock', 120)->get(function () use ($cacheKey, $signature, $force, $email, $strategy, $signal, &$attempted, &$sent) {
+                        if (!$force && Cache::get($cacheKey) === $signature) {
+                            return;
+                        }
+                        if (!empty($signal['expires_at']) && Carbon::parse($signal['expires_at'])->lte(now())) {
+                            return;
+                        }
 
-            try {
-                foreach ($recipients as $email) {
-                    Mail::to($email)->send(
-                        new StrategySignalAlertMail($strategy, $signal, now())
+                        $attempted = true;
+                        Mail::to($email)->send(
+                            new StrategySignalAlertMail($strategy, $signal, now())
+                        );
+                        Cache::forever($cacheKey, $signature);
+                        $sent = true;
+                    });
+                } catch (\Throwable $exception) {
+                    $result['errors'][] = sprintf(
+                        'Failed to send signal for %s (%s) to %s: %s',
+                        $strategy->name,
+                        $strategy->slug,
+                        $email,
+                        $exception->getMessage()
                     );
                 }
+            }
 
-                Cache::forever($cacheKey, $signature);
+            if ($sent) {
                 $result['sent']++;
-            } catch (\Throwable $exception) {
-                $result['errors'][] = sprintf(
-                    'Failed to send signal for %s (%s): %s',
-                    $strategy->name,
-                    $strategy->slug,
-                    $exception->getMessage()
-                );
+            } elseif (!$attempted) {
+                $result['skipped']++;
             }
         }
 
@@ -116,14 +144,14 @@ class SignalAlertService
      */
     private function resolveAllowedActions(): array
     {
-        $configured = (string) config('services.signal_alerts.actions', 'BUY,SELL,CLOSE,HOLD');
+        $configured = (string) config('services.signal_alerts.actions', 'BUY,SELL');
         $actions = array_values(array_filter(array_map(
             static fn (string $value): string => strtoupper(trim($value)),
             explode(',', $configured)
         )));
 
         if ($actions === []) {
-            return ['BUY', 'SELL', 'CLOSE', 'HOLD'];
+            return ['BUY', 'SELL'];
         }
 
         return array_values(array_unique($actions));
@@ -142,9 +170,11 @@ class SignalAlertService
         return hash('sha256', json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }
 
-    private function cacheKey(int $strategyId): string
+    private function cacheKey(int $strategyId, array $signal, string $email): string
     {
-        return 'signal_alert:last_signature:' . $strategyId;
+        $pair = (string) ($signal['symbol_code'] ?? config('trading.default_pair', 'XAUUSD'));
+
+        return 'signal_alert:last_signature:' . $strategyId . ':' . $pair . ':' . hash('sha256', strtolower($email));
     }
 
     /**
