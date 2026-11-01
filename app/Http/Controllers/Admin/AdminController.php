@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Strategy;
 use App\Models\User;
+use App\Services\AutoTraderService;
 use App\Services\SignalAlertService;
 use App\Services\TradingService;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class AdminController extends Controller
@@ -217,6 +219,64 @@ class AdminController extends Controller
         }
 
         return $redirect;
+    }
+
+    public function autoTrader(AutoTraderService $service, TradingService $tradingService): View
+    {
+        $data = $service->dashboard();
+
+        return view('admin.auto-trader', array_merge($data, [
+            'strategies' => Strategy::query()->orderBy('name')->get(),
+            'pairs' => $tradingService->getAvailablePairs(),
+            'symbols' => [
+                'cent' => $service->symbolForAccountType('cent'),
+                'dollar' => $service->symbolForAccountType('dollar'),
+            ],
+        ]));
+    }
+
+    public function updateAutoTrader(Request $request, AutoTraderService $service): RedirectResponse
+    {
+        $validated = $request->validate([
+            'execution_mode' => ['required', Rule::in(['dry_run', 'bridge'])],
+            'account_type' => ['required', Rule::in(['cent', 'dollar'])],
+            'pair_code' => ['required', 'string', 'max:20'],
+            'mt5_symbol' => ['required', 'string', 'max:40'],
+            'strategy_slug' => ['required', 'exists:strategies,slug'],
+            'lot_size' => ['required', 'numeric', 'min:0.01', 'max:100'],
+            'risk_percent_per_trade' => ['required', 'numeric', 'min:0.01', 'max:0.5'],
+            'max_trades_per_day' => ['required', 'integer', 'min:1', 'max:100'],
+            'max_open_trades' => ['required', 'integer', 'min:1', 'max:10'],
+            'cooldown_minutes' => ['required', 'integer', 'min:0', 'max:1440'],
+            'max_daily_loss' => ['nullable', 'numeric', 'min:0'],
+            'bridge_url' => ['nullable', 'url', 'max:500'],
+            'bridge_token' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $validated['enabled'] = $request->boolean('enabled');
+        $validated['allow_buy'] = $request->boolean('allow_buy');
+        $validated['allow_sell'] = $request->boolean('allow_sell');
+        $validated['news_filter_enabled'] = $request->boolean('news_filter_enabled');
+
+        $service->updateSettings($validated);
+
+        return redirect()
+            ->route('admin.auto-trader')
+            ->with('success', 'Auto trader settings saved.');
+    }
+
+    public function runAutoTraderNow(AutoTraderService $service): RedirectResponse
+    {
+        $result = $service->tick(manual: true);
+        $message = sprintf('Auto trader run: %s. %s', $result['status'], $result['message']);
+
+        $redirect = redirect()->route('admin.auto-trader');
+
+        if (in_array($result['status'], ['failed', 'rejected'], true)) {
+            return $redirect->with('error', $message);
+        }
+
+        return $redirect->with('success', $message);
     }
 
     public function subscribers(Request $request): View

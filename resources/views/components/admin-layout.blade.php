@@ -39,6 +39,12 @@
                 <a href="{{ route('admin.signals.all-pairs') }}" class="block px-4 py-3 rounded-xl text-sm font-semibold mb-2 {{ request()->routeIs('admin.signals.all-pairs') ? 'bg-amber-400 text-slate-950' : 'text-slate-300 hover:bg-white/5' }}">
                     Signals Matrix
                 </a>
+                <a href="{{ route('admin.signals.history') }}" class="block px-4 py-3 rounded-xl text-sm font-semibold mb-2 {{ request()->routeIs('admin.signals.history*') ? 'bg-amber-400 text-slate-950' : 'text-slate-300 hover:bg-white/5' }}">
+                    Signal History
+                </a>
+                <a href="{{ route('admin.auto-trader') }}" class="block px-4 py-3 rounded-xl text-sm font-semibold mb-2 {{ request()->routeIs('admin.auto-trader*') ? 'bg-amber-400 text-slate-950' : 'text-slate-300 hover:bg-white/5' }}">
+                    Auto Trader
+                </a>
                 <a href="{{ route('admin.approvals') }}" class="block px-4 py-3 rounded-xl text-sm font-semibold mb-2 {{ request()->routeIs('admin.approvals') ? 'bg-amber-400 text-slate-950' : 'text-slate-300 hover:bg-white/5' }}">
                     Approvals
                 </a>

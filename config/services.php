@@ -55,8 +55,8 @@ return [
     'signal_alerts' => [
         // Optional comma-separated list. If empty, all admin user emails are used.
         'admin_emails' => env('ADMIN_SIGNAL_EMAILS', ''),
-        // Comma-separated actions to email, e.g. BUY,SELL,CLOSE,HOLD
-        'actions' => env('SIGNAL_ALERT_ACTIONS', 'BUY,SELL,CLOSE,HOLD'),
+        // Entry alerts by default. Add CLOSE or HOLD here if those updates are wanted.
+        'actions' => env('SIGNAL_ALERT_ACTIONS', 'BUY,SELL'),
     ],
 
 ];

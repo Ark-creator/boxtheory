@@ -333,4 +333,23 @@ return [
         // Snapshot TTL for user watchlist cards.
         'cache_seconds' => env('TRADING_WATCHLIST_CACHE_SECONDS', 180),
     ],
+
+    'auto_trader' => [
+        'execution_mode' => env('AUTOTRADER_EXECUTION_MODE', 'dry_run'),
+        'default_account_type' => env('AUTOTRADER_ACCOUNT_TYPE', 'cent'),
+        'strategy_slug' => env('AUTOTRADER_STRATEGY_SLUG', 'gold-risk-breakout'),
+        'lot_size' => env('AUTOTRADER_LOT_SIZE', 0.01),
+        'risk_percent_per_trade' => env('AUTOTRADER_RISK_PERCENT_PER_TRADE', 0.25),
+        'max_trades_per_day' => env('AUTOTRADER_MAX_TRADES_PER_DAY', 3),
+        'max_open_trades' => env('AUTOTRADER_MAX_OPEN_TRADES', 1),
+        'cooldown_minutes' => env('AUTOTRADER_COOLDOWN_MINUTES', 30),
+        'max_daily_loss' => env('AUTOTRADER_MAX_DAILY_LOSS'),
+        'bridge_url' => env('AUTOTRADER_BRIDGE_URL'),
+        'bridge_token' => env('AUTOTRADER_BRIDGE_TOKEN'),
+        'magic' => env('AUTOTRADER_MAGIC', 240523),
+        'symbols' => [
+            'cent' => env('AUTOTRADER_MT5_SYMBOL_CENT', 'XAUUSD'),
+            'dollar' => env('AUTOTRADER_MT5_SYMBOL_DOLLAR', 'XAUUSD'),
+        ],
+    ],
 ];

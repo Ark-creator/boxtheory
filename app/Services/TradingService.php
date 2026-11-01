@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
@@ -139,6 +140,35 @@ class TradingService
     {
         $slug = strtolower(trim($strategySlug));
         $pair = $this->resolvePair($pairCode);
+
+        if ($slug === GoldBreakoutStrategy::SLUG) {
+            try {
+                if ($pair['code'] !== 'XAUUSD') {
+                    throw new \RuntimeException('Gold Risk Breakout supports XAUUSD only.');
+                }
+                $source = strtolower(trim((string) config('gold_breakout.signal_source', 'mt5')));
+                if ($source === 'twelvedata') {
+                    $m15 = $this->getGoldApiCandles($pair, '15min', 15);
+                    $h1 = $this->getGoldApiCandles($pair, '60min', 60);
+                    $signal = app(GoldBreakoutStrategy::class)->evaluate(
+                        $m15, $h1, now()->utc(), $currentPosition, 'Twelve Data XAU/USD'
+                    );
+
+                    return $this->attachPairContext($signal, $pair);
+                }
+                if ($source !== 'mt5') {
+                    throw new \RuntimeException('GOLD_SIGNAL_SOURCE must be mt5 or twelvedata.');
+                }
+                $snapshot = app(Mt5BridgeClient::class)->snapshot();
+                $signal = app(GoldBreakoutStrategy::class)->evaluate(
+                    $snapshot['m15'], $snapshot['h1'], now()->utc(), $currentPosition
+                );
+                $signal['broker'] = ['account_key' => $snapshot['account_key'], 'symbol' => $snapshot['symbol']];
+                return $this->attachPairContext($signal, $pair);
+            } catch (\Throwable $e) {
+                return $this->attachPairContext($this->makeNoDataSignal($slug, $e->getMessage(), $currentPosition), $pair);
+            }
+        }
 
         if (in_array($slug, ['box-theory', 'box'], true)) {
             return $this->attachPairContext(
@@ -822,9 +852,48 @@ class TradingService
     }
 
     /**
+     * Cache completed spot-gold bars until the next close. Never substitute futures
+     * or combine different providers for the two timeframes used by this strategy.
+     */
+    private function getGoldApiCandles(array $pair, string $interval, int $minutes): array
+    {
+        $cacheKey = sprintf('gold_breakout:twelvedata:%s:%s:closed:v1', $pair['code'], $interval);
+        $cached = Cache::get($cacheKey);
+        if (is_array($cached)) {
+            return $cached;
+        }
+
+        $data = $this->getTwelveDataIntradayCandles($pair, $interval, 300, strict: true);
+        if ($data['error'] !== null) {
+            throw new \RuntimeException($data['error']);
+        }
+
+        $now = now()->utc();
+        $candles = [];
+        foreach ($data['candles'] as $bar) {
+            $openedAt = Carbon::parse($bar['timestamp'], 'UTC')->utc();
+            if ($openedAt->copy()->addMinutes($minutes)->lte($now)) {
+                $bar['timestamp'] = $openedAt->toIso8601String();
+                $candles[] = $bar;
+            }
+        }
+
+        $expectedClose = $now->copy()->startOfHour()->addMinutes(intdiv($now->minute, $minutes) * $minutes);
+        $last = $candles[array_key_last($candles)] ?? null;
+        $latestClose = $last === null ? null : Carbon::parse($last['timestamp'])->addMinutes($minutes);
+        // Retry shortly if the provider has not published the newly closed bar yet.
+        $expiresAt = $latestClose?->gte($expectedClose)
+            ? $expectedClose->copy()->addMinutes($minutes)
+            : $now->copy()->addSeconds(30);
+        Cache::put($cacheKey, $candles, $expiresAt);
+
+        return $candles;
+    }
+
+    /**
      * @param array<string,mixed> $pair
      */
-    private function getTwelveDataIntradayCandles(array $pair, string $interval, int $limit): array
+    private function getTwelveDataIntradayCandles(array $pair, string $interval, int $limit, bool $strict = false): array
     {
         $mappedInterval = match ($interval) {
             '1min' => '1min',
@@ -858,6 +927,16 @@ class TradingService
 
         $candles = [];
         foreach ($values as $row) {
+            if ($strict) {
+                if (!is_string($row['datetime'] ?? null) || trim($row['datetime']) === '') {
+                    return ['candles' => [], 'source' => null, 'error' => 'Twelve Data returned a candle without a timestamp.'];
+                }
+                foreach (['open', 'high', 'low', 'close'] as $field) {
+                    if (!isset($row[$field]) || !is_numeric($row[$field]) || !is_finite((float) $row[$field]) || (float) $row[$field] <= 0) {
+                        return ['candles' => [], 'source' => null, 'error' => 'Twelve Data returned incomplete or invalid OHLC candles.'];
+                    }
+                }
+            }
             $close = isset($row['close']) ? (float) $row['close'] : null;
             if ($close === null) {
                 continue;

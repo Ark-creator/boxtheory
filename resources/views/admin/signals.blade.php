@@ -24,6 +24,9 @@
             </form>
 
             <div class="flex items-center gap-2">
+                <a href="{{ route('admin.signals.history') }}" class="px-4 py-2.5 rounded-xl border border-white/20 text-slate-200 text-xs font-bold uppercase tracking-[0.14em] hover:bg-white/5">
+                    Signal History
+                </a>
                 <a href="{{ route('admin.signals.all-pairs', ['position' => ($position ?? null)]) }}" class="px-4 py-2.5 rounded-xl border border-white/20 text-slate-200 text-xs font-bold uppercase tracking-[0.14em] hover:bg-white/5">
                     All-Pairs Board
                 </a>
