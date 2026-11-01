@@ -25,7 +25,11 @@ Omitting `--to` uses `ADMIN_SIGNAL_EMAILS`, or admin users when that setting is 
 - PHP: `C:\xampp\php\php.exe`
 - Latest run output: `storage/logs/admin-signals-last-run.log`
 
-The task runs hidden while the Windows user is signed in. The computer must be awake, connected to the internet, and the XAMPP MySQL database must be running. Start MySQL in XAMPP after restarting the computer. This task runs `signals:email-admin` directly; it does not invoke the auto trader.
+The task runs hidden while the Windows user is signed in. Its action uses `wscript.exe //B //Nologo` with the local `storage/app/windows/admin-signals-hidden.js` launcher. The launcher starts the original PowerShell command with window style `0`, waits for completion, and returns its exit code. This prevents the brief console flash that occurred when Task Scheduler launched PowerShell directly with `-WindowStyle Hidden`. The command, recipient, output log, schedule, and Windows account are preserved.
+
+The launcher is workstation-specific and lives in ignored storage. The original task XML is backed up alongside it as `admin-signals-task-before-hidden-<timestamp>.xml`. Keep the launcher when maintaining this workstation's storage; a fresh checkout does not include it.
+
+The computer must be awake, connected to the internet, and the XAMPP MySQL database must be running. Start MySQL in XAMPP after restarting the computer. This task runs `signals:email-admin` directly; it does not invoke the auto trader.
 
 Check Windows task status:
 
