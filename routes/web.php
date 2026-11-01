@@ -9,6 +9,7 @@ use App\Http\Controllers\WatchlistController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\SignalHistoryController;
 use App\Http\Controllers\SubscriptionController;
 
 Route::get('/', function () {
@@ -79,6 +80,8 @@ Route::middleware(['auth', 'can:admin-access'])->prefix('admin')->group(function
     Route::get('/strategies', [AdminController::class, 'strategies'])->name('admin.strategies');
     Route::get('/signals', [AdminController::class, 'signals'])->name('admin.signals');
     Route::get('/signals/all-pairs', [AdminController::class, 'signalsAllPairs'])->name('admin.signals.all-pairs');
+    Route::get('/signals/history', [SignalHistoryController::class, 'index'])->name('admin.signals.history');
+    Route::get('/signals/history/export', [SignalHistoryController::class, 'export'])->name('admin.signals.history.export');
     Route::post('/signals/send-now', [AdminController::class, 'sendSignalsNow'])->name('admin.signals.send-now');
     Route::get('/auto-trader', [AdminController::class, 'autoTrader'])->name('admin.auto-trader');
     Route::put('/auto-trader', [AdminController::class, 'updateAutoTrader'])->name('admin.auto-trader.update');

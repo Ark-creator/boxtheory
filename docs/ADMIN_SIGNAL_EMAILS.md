@@ -4,7 +4,25 @@ Admin alerts check every strategy in the database for the configured default mar
 
 Each email identifies the strategy, market and direction and includes entry, stop loss and take-profit prices. Signals with an explicit expiry show that deadline and are skipped after expiry, including when using `--force`.
 
-Successful deliveries are remembered separately for each strategy, market and recipient. Unchanged snapshots are suppressed; a failure for one recipient does not stop the others. A later run retries a failed delivery if that signal is still current. Overlapping sends to the same recipient are locked. Errors produce a nonzero command exit code.
+The latest successful signal signature is cached separately for each strategy, market and recipient to suppress unchanged snapshots. This cache is separate from the permanent delivery history described below. Sent history records also prevent unchanged signals from being resent after the cache is cleared. A failure for one recipient does not stop the others. A later run retries a failed delivery if that signal is still current. Overlapping sends to the same recipient are locked. Errors produce a nonzero command exit code.
+
+## Signal delivery history
+
+Open **Signal History** in the admin sidebar, or visit `/admin/signals/history`. After the `signal_deliveries` migration is applied, the email service automatically saves a record before each actual delivery attempt. This includes scheduled checks, manual sends and `--force` sends. VS Code does not need to be open: the Windows task starts PHP independently and writes to the same database.
+
+Each record belongs to one recipient and one attempt. A retry or forced resend creates another record. The saved snapshot includes the strategy, market, direction, signal time, recipient, full signal payload and trade plan, including entry, stop loss and targets when available. Changing a strategy or generating a later signal does not replace the earlier snapshot.
+
+Delivery states mean:
+
+- **Pending:** the attempt was recorded and its final outcome has not been confirmed. An interrupted process can leave this state; the message may already have reached the mail server.
+- **Sent:** the configured mailer accepted the message without an error. With SMTP this means mail-server acceptance, not confirmation that it reached the inbox or was read. A development `log` mailer writes an email locally instead of delivering it.
+- **Failed:** the mailer reported an error. A later eligible retry has its own record.
+
+Unchanged snapshots, expired signals, excluded actions, `NO_DATA` and other checks that do not attempt email delivery do not create history records. The dashboard's current signal and the latest-run summary are not delivery-history entries.
+
+The history page lists the newest attempts first, with 25 records per page. Filter by strategy, market, action, status, recipient or an inclusive date range in Asia/Taipei time. Expand a record to inspect its original message, timestamps, expiry, complete signal JSON, mailer, error and forced-send flag. **Export CSV** downloads all records matching the current filters, including records beyond the displayed page. The export includes the full payload and entry, stop loss and target fields.
+
+History starts when this feature is installed. Older messages from inboxes or the limited historical email copies in `storage/logs/laravel.log` are not imported automatically. The service stores records in the MySQL `signal_deliveries` table; include this table in database backups to preserve the history. Clearing the signature cache or replacing the latest-run log does not clear these records.
 
 ## Commands
 
@@ -23,7 +41,7 @@ Omitting `--to` uses `ADMIN_SIGNAL_EMAILS`, or admin users when that setting is 
 - Recipient override: `romark7bayan@gmail.com`
 - Working directory: `C:\BOX THEORY\BoxTheory`
 - PHP: `C:\xampp\php\php.exe`
-- Latest run output: `storage/logs/admin-signals-last-run.log`
+- Latest run output: `storage/logs/admin-signals-last-run.log` (overwritten each run; use Signal History for retained delivery records)
 
 The task runs hidden while the Windows user is signed in. Its action uses `wscript.exe //B //Nologo` with the local `storage/app/windows/admin-signals-hidden.js` launcher. The launcher starts the original PowerShell command with window style `0`, waits for completion, and returns its exit code. This prevents the brief console flash that occurred when Task Scheduler launched PowerShell directly with `-WindowStyle Hidden`. The command, recipient, output log, schedule, and Windows account are preserved.
 

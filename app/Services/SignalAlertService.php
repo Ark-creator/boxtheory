@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Mail\StrategySignalAlertMail;
+use App\Models\SignalDelivery;
 use App\Models\Strategy;
 use App\Models\User;
 use Illuminate\Support\Carbon;
@@ -79,23 +80,72 @@ class SignalAlertService
                 $cacheKey = $this->cacheKey($strategy->id, $signal, $email);
                 try {
                     Cache::lock($cacheKey . ':lock', 120)->get(function () use ($cacheKey, $signature, $force, $email, $strategy, $signal, &$attempted, &$sent) {
-                        if (!$force && Cache::get($cacheKey) === $signature) {
-                            return;
+                        if (!$force) {
+                            if (Cache::get($cacheKey) === $signature) {
+                                return;
+                            }
+
+                            // The history also preserves duplicate protection if the cache is cleared.
+                            if (SignalDelivery::query()
+                                ->where('strategy_id', $strategy->id)
+                                ->where('pair_code', $signal['symbol_code'] ?? config('trading.default_pair', 'XAUUSD'))
+                                ->where('recipient', $email)
+                                ->where('signature', $signature)
+                                ->where('status', 'sent')
+                                ->exists()) {
+                                Cache::forever($cacheKey, $signature);
+
+                                return;
+                            }
                         }
                         if (!empty($signal['expires_at']) && Carbon::parse($signal['expires_at'])->lte(now())) {
                             return;
                         }
 
                         $attempted = true;
-                        Mail::to($email)->send(
-                            new StrategySignalAlertMail($strategy, $signal, now())
-                        );
-                        Cache::forever($cacheKey, $signature);
+                        $attemptedAt = now()->utc();
+                        // Persist the original snapshot before sending, so an interrupted run
+                        // leaves an unconfirmed attempt rather than losing the signal entirely.
+                        $delivery = SignalDelivery::create([
+                            'strategy_id' => $strategy->id,
+                            'strategy_name' => $strategy->name,
+                            'strategy_slug' => $strategy->slug,
+                            'pair_code' => $signal['symbol_code'] ?? config('trading.default_pair', 'XAUUSD'),
+                            'action' => strtoupper((string) $signal['action']),
+                            'recipient' => $email,
+                            'signature' => $signature,
+                            'signal_payload' => $signal,
+                            'status' => 'pending',
+                            'mailer' => config('mail.default'),
+                            'forced' => $force,
+                            'attempted_at' => $attemptedAt,
+                        ]);
+
+                        try {
+                            Mail::to($email)->send(
+                                new StrategySignalAlertMail($strategy, $signal, $attemptedAt)
+                            );
+                        } catch (\Throwable $exception) {
+                            $delivery->update([
+                                'status' => 'failed',
+                                'error_message' => $exception->getMessage(),
+                            ]);
+
+                            throw $exception;
+                        }
+
                         $sent = true;
+                        try {
+                            $delivery->update(['status' => 'sent', 'sent_at' => now()->utc()]);
+                        } finally {
+                            // An audit update failure must not cause the next poll to resend
+                            // a message already accepted by the mailer.
+                            Cache::forever($cacheKey, $signature);
+                        }
                     });
                 } catch (\Throwable $exception) {
                     $result['errors'][] = sprintf(
-                        'Failed to send signal for %s (%s) to %s: %s',
+                        'Failed to process signal email for %s (%s) to %s: %s',
                         $strategy->name,
                         $strategy->slug,
                         $email,
