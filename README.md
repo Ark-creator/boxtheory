@@ -3,6 +3,15 @@
 - [XAUUSD strategy research](docs/XAUUSD_RESEARCH.md)
 - [VT Markets MT5 and VPS deployment](docs/MT5_DEPLOYMENT.md)
 - [Admin entry signal emails](docs/ADMIN_SIGNAL_EMAILS.md)
+- [Sunday/stale signal fix and update for the email machine](docs/SIGNAL_FRESHNESS_UPDATE.md)
+- [V2 paper strategy and current-signal update for the email machine](docs/GOLD_RETEST_V2_UPDATE.md)
+- [V2 consistency repair and historical cost comparison](docs/research/retest-v2-2026-11-02/README.md)
+- [V2 backtest rerun and trade-by-trade ledger](docs/research/retest-v2-backtest-2026-11-02/REPORT.md)
+- [Existing RSI Gold Scalper backtest and trade ledgers](docs/research/rsi-scalper-backtest-2026-11-02/REPORT.md)
+- [Updated RSI Gold Scalper V2 and email-PC pull procedure](docs/RSI_SCALPER_UPDATE.md)
+- [Scalper upgrade: primary-source research and validation](docs/research/scalper-upgrade-2026-11-02/RESEARCH.md)
+- [Four-strategy signal audit and Gold Trend Retest research](docs/research/signal-audit-2026-11-01/REPORT.md)
+- [M1 signal replay, timezone scenarios, and candidate results](docs/research/signal-replay-2026-11-01/REPORT.md)
 
 Gold Risk Breakout is an unvalidated strategy candidate with preserved signal emails, dry-run intent logging, and guarded MT5 demo execution. No live trading is enabled by default.
 

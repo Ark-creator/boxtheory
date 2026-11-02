@@ -7,13 +7,22 @@ use App\Services\AutoTraderService;
 use App\Services\Mt5BridgeClient;
 use App\Services\SignalAlertService;
 use App\Services\TradingService;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
+
+beforeEach(function () {
+    $this->travelTo(Carbon::parse('2026-11-02T14:00:00Z'));
+});
 
 function readyGoldSignal(): array
 {
     return ['action' => 'BUY', 'timestamp' => now()->toIso8601String(), 'expires_at' => now()->addMinutes(3)->toIso8601String(),
-        'message' => 'Test breakout', 'price' => 2000, 'trade_plan' => ['entry_price' => 2000, 'stop_loss' => 1995, 'take_profit_1' => 2010, 'risk_per_unit' => 5, 'entry_limit_price' => 2000.25],
+        'message' => 'Test breakout', 'price' => 2000, 'symbol_code' => 'XAUUSD',
+        'freshness' => ['verified' => true, 'source' => 'mt5', 'interval_seconds' => 900,
+            'data_as_of' => now()->toIso8601String(), 'observed_at' => now()->toIso8601String(),
+            'generated_at' => now()->toIso8601String(), 'market_open' => true],
+        'trade_plan' => ['entry_price' => 2000, 'stop_loss' => 1995, 'take_profit_1' => 2010, 'risk_per_unit' => 5, 'entry_limit_price' => 2000.25],
         'broker' => ['account_key' => 'test-account', 'symbol' => 'XAUUSD']];
 }
 

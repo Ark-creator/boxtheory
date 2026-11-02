@@ -82,6 +82,7 @@ def bars(timeframe, count):
 
 def snapshot():
     account, _ = initialize_mt5()
+    tick = require_result(mt5.symbol_info_tick(SYMBOL), "current tick")
     positions = require_result(mt5.positions_get(), "positions")
     orders = require_result(mt5.orders_get(), "pending orders")
     risk_block = None
@@ -92,7 +93,9 @@ def snapshot():
         risk_block = str(exc)
     return {
         "status": "ok", "source": "mt5", "observed_at": now_utc().isoformat(),
-        "capabilities": ["entry_extension_limit"],
+        "capabilities": ["entry_extension_limit", "quote_timestamp"],
+        "quote": {"bid": float(tick.bid), "ask": float(tick.ask),
+                  "timestamp": datetime.fromtimestamp(int(tick.time), timezone.utc).isoformat()},
         "account_key": account_key(account), "symbol": SYMBOL, "risk_block": risk_block,
         "account": {"equity": account.equity, "balance": account.balance, "currency": account.currency,
                     "demo": account.trade_mode == mt5.ACCOUNT_TRADE_MODE_DEMO},

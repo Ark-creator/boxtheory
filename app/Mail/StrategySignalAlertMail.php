@@ -19,12 +19,12 @@ class StrategySignalAlertMail extends Mailable
         public readonly Strategy $strategy,
         public readonly array $signal,
         public readonly Carbon $generatedAt
-    ) {
-    }
+    ) {}
 
     public function envelope(): Envelope
     {
         $action = strtoupper((string) ($this->signal['action'] ?? 'SIGNAL'));
+        $researchPrefix = ($this->signal['research_only'] ?? false) === true ? 'PAPER ' : '';
         $symbol = (string) ($this->signal['symbol'] ?? $this->signal['symbol_code'] ?? config('trading.default_pair', 'XAUUSD'));
         $fromAddress = (string) config('mail.from.address', 'hello@example.com');
         $fromName = (string) config('mail.from.name', config('app.name', 'GoldLogic'));
@@ -35,7 +35,7 @@ class StrategySignalAlertMail extends Mailable
 
         return new Envelope(
             from: new Address($fromAddress, $fromName),
-            subject: sprintf('[%s] %s %s | %s', config('app.name', 'GoldLogic'), $action, $symbol, $this->strategy->name)
+            subject: sprintf('[%s] %s%s %s | %s', config('app.name', 'GoldLogic'), $researchPrefix, $action, $symbol, $this->strategy->name)
         );
     }
 

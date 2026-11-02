@@ -1,0 +1,1692 @@
+{
+  "analysis_date": "2026-11-01",
+  "input_type": "User-supplied historical signal registers; no results or continuous market prices",
+  "methodology": {
+    "uniqueness": "Retain register rows exactly; registers already removed same strategy/direction/timestamp/entry/SL/TP duplicates.",
+    "source_quality": "The registers state that prices were transcribed from rendered source PDFs with broken text encoding. This audit uses the supplied register values and does not independently verify the original email pages.",
+    "outcome_rule": "Unknown unless execution and exit net P/L or an explicitly specified, complete price-path simulation establishes an outcome.",
+    "trade_count_limitation": "Unique alerts are not necessarily independent or executed trades.",
+    "geometry_rule": "SL lies on adverse side of entry; TP1 on favorable side; optional TP2 at least as far as TP1.",
+    "ratio_units": "Absolute quote-price difference per unit; no lot-size, account-currency or PHP profit inference.",
+    "time_arithmetic": "Calendar fields parsed as an arithmetic coordinate only; no timezone conversion or implicit UTC assignment for unspecified timestamps.",
+    "cross_strategy_timestamp_conflicts": "Not assessed: only Gold Risk Breakout supplies an explicit timezone; no other strategies can be reliably aligned.",
+    "repeated_price_plan_rule": "Same side and entry/SL/TP1/TP2 across different printed timestamps; a review flag, not proof of a duplicate."
+  },
+  "totals": {
+    "source_entries": 431,
+    "duplicates_already_removed": 44,
+    "unique_alerts": 387,
+    "buy": 258,
+    "sell": 129,
+    "winning": null,
+    "losing": null,
+    "breakeven": null,
+    "unknown": 387,
+    "win_rate": null,
+    "confirmed_winning_records": 0,
+    "confirmed_losing_records": 0,
+    "valid_plan_geometry": 387,
+    "invalid_plan_geometry": 0
+  },
+  "strategies": [
+    {
+      "strategy": "Conservative V2 Final",
+      "id_prefix": "CON",
+      "supplied_pdf": "Conservative_V2_Final_Signal_History.pdf",
+      "unique_signals": 1,
+      "source_entries": 1,
+      "source_duplicates_removed": 0,
+      "source_duplicate_signal_groups": 0,
+      "buy": 0,
+      "sell": 1,
+      "actual_results": {
+        "winning": null,
+        "losing": null,
+        "breakeven": null,
+        "unknown": 1,
+        "confirmed_winning_records": 0,
+        "confirmed_losing_records": 0,
+        "win_rate": null
+      },
+      "first_timestamp_printed": "2026-09-15 16:25:00",
+      "last_timestamp_printed": "2026-09-15 16:25:00",
+      "timezone": "unspecified in supplied register",
+      "distinct_printed_dates": 1,
+      "plan_geometry": {
+        "valid": 1,
+        "invalid": 0
+      },
+      "risk_per_unit": {
+        "count": 1,
+        "min": 3,
+        "median": 3,
+        "max": 3
+      },
+      "risk_percent_of_entry": {
+        "count": 1,
+        "min": 0.06984051,
+        "median": 0.06984051,
+        "max": 0.06984051
+      },
+      "rr_tp1": {
+        "count": 1,
+        "min": 2,
+        "median": 2,
+        "max": 2
+      },
+      "rr_tp2": {
+        "count": 1,
+        "min": 4,
+        "median": 4,
+        "max": 4
+      },
+      "weekend_printed_date_alerts": 0,
+      "weekend_alert_ids": [],
+      "consecutive_same_side_alert_pairs_within_five_minutes": 0,
+      "short_gap_pairs": [],
+      "longest_same_side_chain_with_gaps_at_most_five_minutes": {
+        "alert_count": 0,
+        "ids": []
+      },
+      "repeated_identical_price_plan_groups": 0,
+      "alerts_in_repeated_price_plans": 0,
+      "repeated_price_plan_groups": [],
+      "same_strategy_simultaneous_opposing_alert_groups": [],
+      "daily_counts_printed_dates": [
+        {
+          "date_printed": "2026-09-15",
+          "total": 1,
+          "buy": 0,
+          "sell": 1
+        }
+      ]
+    },
+    {
+      "strategy": "Gold Risk Breakout (Research)",
+      "id_prefix": "GRB",
+      "supplied_pdf": "Gold_Risk_Breakout_Research_Signal_History.pdf",
+      "unique_signals": 3,
+      "source_entries": 3,
+      "source_duplicates_removed": 0,
+      "source_duplicate_signal_groups": 0,
+      "buy": 0,
+      "sell": 3,
+      "actual_results": {
+        "winning": null,
+        "losing": null,
+        "breakeven": null,
+        "unknown": 3,
+        "confirmed_winning_records": 0,
+        "confirmed_losing_records": 0,
+        "win_rate": null
+      },
+      "first_timestamp_printed": "2026-09-14 13:00:00",
+      "last_timestamp_printed": "2026-09-24 09:45:00",
+      "timezone": "UTC (+00:00), stated in register",
+      "distinct_printed_dates": 3,
+      "plan_geometry": {
+        "valid": 3,
+        "invalid": 0
+      },
+      "risk_per_unit": {
+        "count": 3,
+        "min": 13.1016,
+        "median": 22.3637,
+        "max": 27.6142
+      },
+      "risk_percent_of_entry": {
+        "count": 3,
+        "min": 0.30587673,
+        "median": 0.5258881,
+        "max": 0.64645347
+      },
+      "rr_tp1": {
+        "count": 3,
+        "min": 2.00000362,
+        "median": 2.00000447,
+        "max": 2.00000763
+      },
+      "rr_tp2": {
+        "count": 0,
+        "min": null,
+        "median": null,
+        "max": null
+      },
+      "weekend_printed_date_alerts": 0,
+      "weekend_alert_ids": [],
+      "consecutive_same_side_alert_pairs_within_five_minutes": 0,
+      "short_gap_pairs": [],
+      "longest_same_side_chain_with_gaps_at_most_five_minutes": {
+        "alert_count": 0,
+        "ids": []
+      },
+      "repeated_identical_price_plan_groups": 0,
+      "alerts_in_repeated_price_plans": 0,
+      "repeated_price_plan_groups": [],
+      "same_strategy_simultaneous_opposing_alert_groups": [],
+      "daily_counts_printed_dates": [
+        {
+          "date_printed": "2026-09-14",
+          "total": 1,
+          "buy": 0,
+          "sell": 1
+        },
+        {
+          "date_printed": "2026-09-15",
+          "total": 1,
+          "buy": 0,
+          "sell": 1
+        },
+        {
+          "date_printed": "2026-09-24",
+          "total": 1,
+          "buy": 0,
+          "sell": 1
+        }
+      ]
+    },
+    {
+      "strategy": "Box Theory Pro",
+      "id_prefix": "BOX",
+      "supplied_pdf": "Box_Theory_Pro_Signal_History.pdf",
+      "unique_signals": 279,
+      "source_entries": 281,
+      "source_duplicates_removed": 2,
+      "source_duplicate_signal_groups": 2,
+      "buy": 214,
+      "sell": 65,
+      "actual_results": {
+        "winning": null,
+        "losing": null,
+        "breakeven": null,
+        "unknown": 279,
+        "confirmed_winning_records": 0,
+        "confirmed_losing_records": 0,
+        "win_rate": null
+      },
+      "first_timestamp_printed": "2026-09-14 09:25:00",
+      "last_timestamp_printed": "2026-10-12 19:10:00",
+      "timezone": "unspecified in supplied register",
+      "distinct_printed_dates": 7,
+      "plan_geometry": {
+        "valid": 279,
+        "invalid": 0
+      },
+      "risk_per_unit": {
+        "count": 279,
+        "min": 2.1867,
+        "median": 2.2637,
+        "max": 43.2698
+      },
+      "risk_percent_of_entry": {
+        "count": 279,
+        "min": 0.05249791,
+        "median": 0.0525015,
+        "max": 0.98782339
+      },
+      "rr_tp1": {
+        "count": 279,
+        "min": 1.49990887,
+        "median": 1.5,
+        "max": 1.50008905
+      },
+      "rr_tp2": {
+        "count": 279,
+        "min": 2.4998633,
+        "median": 2.5,
+        "max": 2.50013357
+      },
+      "weekend_printed_date_alerts": 4,
+      "weekend_alert_ids": [
+        "BOX-230",
+        "BOX-231",
+        "BOX-232",
+        "BOX-233"
+      ],
+      "consecutive_same_side_alert_pairs_within_five_minutes": 222,
+      "short_gap_pairs": [
+        {
+          "previous": "BOX-001",
+          "current": "BOX-002",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-003",
+          "current": "BOX-004",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-004",
+          "current": "BOX-005",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-005",
+          "current": "BOX-006",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-007",
+          "current": "BOX-008",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-008",
+          "current": "BOX-009",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-009",
+          "current": "BOX-010",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-010",
+          "current": "BOX-011",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-011",
+          "current": "BOX-012",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-012",
+          "current": "BOX-013",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-013",
+          "current": "BOX-014",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-014",
+          "current": "BOX-015",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-015",
+          "current": "BOX-016",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-017",
+          "current": "BOX-018",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-018",
+          "current": "BOX-019",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-019",
+          "current": "BOX-020",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-020",
+          "current": "BOX-021",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-022",
+          "current": "BOX-023",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-023",
+          "current": "BOX-024",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-024",
+          "current": "BOX-025",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-025",
+          "current": "BOX-026",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-026",
+          "current": "BOX-027",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-027",
+          "current": "BOX-028",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-028",
+          "current": "BOX-029",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-029",
+          "current": "BOX-030",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-030",
+          "current": "BOX-031",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-031",
+          "current": "BOX-032",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-033",
+          "current": "BOX-034",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-034",
+          "current": "BOX-035",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-035",
+          "current": "BOX-036",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-036",
+          "current": "BOX-037",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-038",
+          "current": "BOX-039",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-039",
+          "current": "BOX-040",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-040",
+          "current": "BOX-041",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-042",
+          "current": "BOX-043",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-043",
+          "current": "BOX-044",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-044",
+          "current": "BOX-045",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-045",
+          "current": "BOX-046",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-047",
+          "current": "BOX-048",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-048",
+          "current": "BOX-049",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-049",
+          "current": "BOX-050",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-050",
+          "current": "BOX-051",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-051",
+          "current": "BOX-052",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-053",
+          "current": "BOX-054",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-054",
+          "current": "BOX-055",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-055",
+          "current": "BOX-056",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-056",
+          "current": "BOX-057",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-057",
+          "current": "BOX-058",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-059",
+          "current": "BOX-060",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-060",
+          "current": "BOX-061",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-061",
+          "current": "BOX-062",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-062",
+          "current": "BOX-063",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-063",
+          "current": "BOX-064",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-064",
+          "current": "BOX-065",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-066",
+          "current": "BOX-067",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-067",
+          "current": "BOX-068",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-068",
+          "current": "BOX-069",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-069",
+          "current": "BOX-070",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-070",
+          "current": "BOX-071",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-071",
+          "current": "BOX-072",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-072",
+          "current": "BOX-073",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-074",
+          "current": "BOX-075",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-075",
+          "current": "BOX-076",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-076",
+          "current": "BOX-077",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-077",
+          "current": "BOX-078",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-078",
+          "current": "BOX-079",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-080",
+          "current": "BOX-081",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-081",
+          "current": "BOX-082",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-082",
+          "current": "BOX-083",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-083",
+          "current": "BOX-084",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-084",
+          "current": "BOX-085",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-085",
+          "current": "BOX-086",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-086",
+          "current": "BOX-087",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-087",
+          "current": "BOX-088",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-088",
+          "current": "BOX-089",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-089",
+          "current": "BOX-090",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-091",
+          "current": "BOX-092",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-092",
+          "current": "BOX-093",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-093",
+          "current": "BOX-094",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-094",
+          "current": "BOX-095",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-095",
+          "current": "BOX-096",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-097",
+          "current": "BOX-098",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-098",
+          "current": "BOX-099",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-099",
+          "current": "BOX-100",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-101",
+          "current": "BOX-102",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-102",
+          "current": "BOX-103",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-103",
+          "current": "BOX-104",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-105",
+          "current": "BOX-106",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-106",
+          "current": "BOX-107",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-107",
+          "current": "BOX-108",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-108",
+          "current": "BOX-109",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-109",
+          "current": "BOX-110",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-111",
+          "current": "BOX-112",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-112",
+          "current": "BOX-113",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-115",
+          "current": "BOX-116",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-117",
+          "current": "BOX-118",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-118",
+          "current": "BOX-119",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-119",
+          "current": "BOX-120",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-120",
+          "current": "BOX-121",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-121",
+          "current": "BOX-122",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-122",
+          "current": "BOX-123",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-124",
+          "current": "BOX-125",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-125",
+          "current": "BOX-126",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-126",
+          "current": "BOX-127",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-127",
+          "current": "BOX-128",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-129",
+          "current": "BOX-130",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-130",
+          "current": "BOX-131",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-131",
+          "current": "BOX-132",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-134",
+          "current": "BOX-135",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-135",
+          "current": "BOX-136",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-136",
+          "current": "BOX-137",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-139",
+          "current": "BOX-140",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-140",
+          "current": "BOX-141",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-141",
+          "current": "BOX-142",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-142",
+          "current": "BOX-143",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-144",
+          "current": "BOX-145",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-145",
+          "current": "BOX-146",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-146",
+          "current": "BOX-147",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-147",
+          "current": "BOX-148",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-148",
+          "current": "BOX-149",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-149",
+          "current": "BOX-150",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-150",
+          "current": "BOX-151",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-151",
+          "current": "BOX-152",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-152",
+          "current": "BOX-153",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-153",
+          "current": "BOX-154",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-154",
+          "current": "BOX-155",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-155",
+          "current": "BOX-156",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-156",
+          "current": "BOX-157",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-158",
+          "current": "BOX-159",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-159",
+          "current": "BOX-160",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-160",
+          "current": "BOX-161",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-161",
+          "current": "BOX-162",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-163",
+          "current": "BOX-164",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-164",
+          "current": "BOX-165",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-165",
+          "current": "BOX-166",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-166",
+          "current": "BOX-167",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-167",
+          "current": "BOX-168",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-168",
+          "current": "BOX-169",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-169",
+          "current": "BOX-170",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-172",
+          "current": "BOX-173",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-173",
+          "current": "BOX-174",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-174",
+          "current": "BOX-175",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-177",
+          "current": "BOX-178",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-178",
+          "current": "BOX-179",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-179",
+          "current": "BOX-180",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-180",
+          "current": "BOX-181",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-181",
+          "current": "BOX-182",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-183",
+          "current": "BOX-184",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-184",
+          "current": "BOX-185",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-185",
+          "current": "BOX-186",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-186",
+          "current": "BOX-187",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-187",
+          "current": "BOX-188",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-188",
+          "current": "BOX-189",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-190",
+          "current": "BOX-191",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-191",
+          "current": "BOX-192",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-192",
+          "current": "BOX-193",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-193",
+          "current": "BOX-194",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-194",
+          "current": "BOX-195",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-195",
+          "current": "BOX-196",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-196",
+          "current": "BOX-197",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-198",
+          "current": "BOX-199",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-199",
+          "current": "BOX-200",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-200",
+          "current": "BOX-201",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-201",
+          "current": "BOX-202",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-203",
+          "current": "BOX-204",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-204",
+          "current": "BOX-205",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-206",
+          "current": "BOX-207",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-207",
+          "current": "BOX-208",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-209",
+          "current": "BOX-210",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-211",
+          "current": "BOX-212",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-212",
+          "current": "BOX-213",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-213",
+          "current": "BOX-214",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-215",
+          "current": "BOX-216",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-216",
+          "current": "BOX-217",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-217",
+          "current": "BOX-218",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-218",
+          "current": "BOX-219",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-219",
+          "current": "BOX-220",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-221",
+          "current": "BOX-222",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-222",
+          "current": "BOX-223",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-223",
+          "current": "BOX-224",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-224",
+          "current": "BOX-225",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-225",
+          "current": "BOX-226",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-226",
+          "current": "BOX-227",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-228",
+          "current": "BOX-229",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-231",
+          "current": "BOX-232",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-232",
+          "current": "BOX-233",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-234",
+          "current": "BOX-235",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-235",
+          "current": "BOX-236",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-236",
+          "current": "BOX-237",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-238",
+          "current": "BOX-239",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-239",
+          "current": "BOX-240",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-240",
+          "current": "BOX-241",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-241",
+          "current": "BOX-242",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-242",
+          "current": "BOX-243",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-244",
+          "current": "BOX-245",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-245",
+          "current": "BOX-246",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-247",
+          "current": "BOX-248",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-248",
+          "current": "BOX-249",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-249",
+          "current": "BOX-250",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-251",
+          "current": "BOX-252",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-252",
+          "current": "BOX-253",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-253",
+          "current": "BOX-254",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-254",
+          "current": "BOX-255",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-256",
+          "current": "BOX-257",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-257",
+          "current": "BOX-258",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-258",
+          "current": "BOX-259",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-259",
+          "current": "BOX-260",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-260",
+          "current": "BOX-261",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-262",
+          "current": "BOX-263",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-263",
+          "current": "BOX-264",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-264",
+          "current": "BOX-265",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-265",
+          "current": "BOX-266",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-266",
+          "current": "BOX-267",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-268",
+          "current": "BOX-269",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-269",
+          "current": "BOX-270",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-270",
+          "current": "BOX-271",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-272",
+          "current": "BOX-273",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-273",
+          "current": "BOX-274",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-274",
+          "current": "BOX-275",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-275",
+          "current": "BOX-276",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-277",
+          "current": "BOX-278",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "BOX-278",
+          "current": "BOX-279",
+          "gap_minutes_printed": 5
+        }
+      ],
+      "longest_same_side_chain_with_gaps_at_most_five_minutes": {
+        "alert_count": 14,
+        "ids": [
+          "BOX-144",
+          "BOX-145",
+          "BOX-146",
+          "BOX-147",
+          "BOX-148",
+          "BOX-149",
+          "BOX-150",
+          "BOX-151",
+          "BOX-152",
+          "BOX-153",
+          "BOX-154",
+          "BOX-155",
+          "BOX-156",
+          "BOX-157"
+        ]
+      },
+      "repeated_identical_price_plan_groups": 0,
+      "alerts_in_repeated_price_plans": 0,
+      "repeated_price_plan_groups": [],
+      "same_strategy_simultaneous_opposing_alert_groups": [],
+      "daily_counts_printed_dates": [
+        {
+          "date_printed": "2026-09-14",
+          "total": 100,
+          "buy": 100,
+          "sell": 0
+        },
+        {
+          "date_printed": "2026-09-15",
+          "total": 10,
+          "buy": 10,
+          "sell": 0
+        },
+        {
+          "date_printed": "2026-09-16",
+          "total": 4,
+          "buy": 0,
+          "sell": 4
+        },
+        {
+          "date_printed": "2026-09-18",
+          "total": 61,
+          "buy": 0,
+          "sell": 61
+        },
+        {
+          "date_printed": "2026-09-24",
+          "total": 54,
+          "buy": 54,
+          "sell": 0
+        },
+        {
+          "date_printed": "2026-10-11",
+          "total": 4,
+          "buy": 4,
+          "sell": 0
+        },
+        {
+          "date_printed": "2026-10-12",
+          "total": 46,
+          "buy": 46,
+          "sell": 0
+        }
+      ]
+    },
+    {
+      "strategy": "RSI Gold Scalper",
+      "id_prefix": "RSI",
+      "supplied_pdf": "RSI_Gold_Scalper_Signal_History.pdf",
+      "unique_signals": 104,
+      "source_entries": 146,
+      "source_duplicates_removed": 42,
+      "source_duplicate_signal_groups": 38,
+      "buy": 44,
+      "sell": 60,
+      "actual_results": {
+        "winning": null,
+        "losing": null,
+        "breakeven": null,
+        "unknown": 104,
+        "confirmed_winning_records": 0,
+        "confirmed_losing_records": 0,
+        "win_rate": null
+      },
+      "first_timestamp_printed": "2026-09-14 10:45:00",
+      "last_timestamp_printed": "2026-11-01 13:30:00",
+      "timezone": "unspecified in supplied register",
+      "distinct_printed_dates": 9,
+      "plan_geometry": {
+        "valid": 104,
+        "invalid": 0
+      },
+      "risk_per_unit": {
+        "count": 104,
+        "min": 0.2133,
+        "median": 0.28385,
+        "max": 23.6729
+      },
+      "risk_percent_of_entry": {
+        "count": 104,
+        "min": 0.0055039,
+        "median": 0.006520535,
+        "max": 0.55337197
+      },
+      "rr_tp1": {
+        "count": 104,
+        "min": 1.49941429,
+        "median": 1.5,
+        "max": 1.50065076
+      },
+      "rr_tp2": {
+        "count": 104,
+        "min": 2.49904907,
+        "median": 2.5,
+        "max": 2.50087443
+      },
+      "weekend_printed_date_alerts": 84,
+      "weekend_alert_ids": [
+        "RSI-020",
+        "RSI-021",
+        "RSI-022",
+        "RSI-023",
+        "RSI-024",
+        "RSI-025",
+        "RSI-026",
+        "RSI-027",
+        "RSI-028",
+        "RSI-029",
+        "RSI-030",
+        "RSI-031",
+        "RSI-032",
+        "RSI-033",
+        "RSI-034",
+        "RSI-035",
+        "RSI-036",
+        "RSI-037",
+        "RSI-038",
+        "RSI-039",
+        "RSI-040",
+        "RSI-041",
+        "RSI-042",
+        "RSI-043",
+        "RSI-044",
+        "RSI-045",
+        "RSI-046",
+        "RSI-047",
+        "RSI-048",
+        "RSI-049",
+        "RSI-050",
+        "RSI-051",
+        "RSI-052",
+        "RSI-053",
+        "RSI-054",
+        "RSI-055",
+        "RSI-056",
+        "RSI-057",
+        "RSI-058",
+        "RSI-059",
+        "RSI-060",
+        "RSI-061",
+        "RSI-062",
+        "RSI-063",
+        "RSI-064",
+        "RSI-065",
+        "RSI-066",
+        "RSI-067",
+        "RSI-068",
+        "RSI-069",
+        "RSI-070",
+        "RSI-071",
+        "RSI-072",
+        "RSI-073",
+        "RSI-074",
+        "RSI-075",
+        "RSI-076",
+        "RSI-077",
+        "RSI-078",
+        "RSI-079",
+        "RSI-080",
+        "RSI-081",
+        "RSI-082",
+        "RSI-083",
+        "RSI-084",
+        "RSI-085",
+        "RSI-086",
+        "RSI-087",
+        "RSI-088",
+        "RSI-089",
+        "RSI-090",
+        "RSI-091",
+        "RSI-092",
+        "RSI-093",
+        "RSI-094",
+        "RSI-095",
+        "RSI-096",
+        "RSI-097",
+        "RSI-098",
+        "RSI-099",
+        "RSI-100",
+        "RSI-102",
+        "RSI-103",
+        "RSI-104"
+      ],
+      "consecutive_same_side_alert_pairs_within_five_minutes": 7,
+      "short_gap_pairs": [
+        {
+          "previous": "RSI-012",
+          "current": "RSI-013",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "RSI-050",
+          "current": "RSI-051",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "RSI-052",
+          "current": "RSI-053",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "RSI-068",
+          "current": "RSI-069",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "RSI-074",
+          "current": "RSI-075",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "RSI-090",
+          "current": "RSI-091",
+          "gap_minutes_printed": 5
+        },
+        {
+          "previous": "RSI-094",
+          "current": "RSI-095",
+          "gap_minutes_printed": 5
+        }
+      ],
+      "longest_same_side_chain_with_gaps_at_most_five_minutes": {
+        "alert_count": 2,
+        "ids": [
+          "RSI-012",
+          "RSI-013"
+        ]
+      },
+      "repeated_identical_price_plan_groups": 1,
+      "alerts_in_repeated_price_plans": 2,
+      "repeated_price_plan_groups": [
+        {
+          "side": "BUY",
+          "entry": 4380.1392,
+          "stop_loss": 4379.8518,
+          "tp1": 4380.5704,
+          "tp2": 4380.8579,
+          "alerts": [
+            {
+              "id": "RSI-062",
+              "timestamp_printed": "2026-09-20 06:20:00",
+              "page": 5
+            },
+            {
+              "id": "RSI-074",
+              "timestamp_printed": "2026-09-20 12:15:00",
+              "page": 5
+            }
+          ]
+        }
+      ],
+      "same_strategy_simultaneous_opposing_alert_groups": [],
+      "daily_counts_printed_dates": [
+        {
+          "date_printed": "2026-09-14",
+          "total": 5,
+          "buy": 3,
+          "sell": 2
+        },
+        {
+          "date_printed": "2026-09-15",
+          "total": 6,
+          "buy": 4,
+          "sell": 2
+        },
+        {
+          "date_printed": "2026-09-17",
+          "total": 2,
+          "buy": 2,
+          "sell": 0
+        },
+        {
+          "date_printed": "2026-09-18",
+          "total": 6,
+          "buy": 3,
+          "sell": 3
+        },
+        {
+          "date_printed": "2026-09-19",
+          "total": 35,
+          "buy": 15,
+          "sell": 20
+        },
+        {
+          "date_printed": "2026-09-20",
+          "total": 37,
+          "buy": 16,
+          "sell": 21
+        },
+        {
+          "date_printed": "2026-10-11",
+          "total": 9,
+          "buy": 0,
+          "sell": 9
+        },
+        {
+          "date_printed": "2026-10-12",
+          "total": 1,
+          "buy": 0,
+          "sell": 1
+        },
+        {
+          "date_printed": "2026-11-01",
+          "total": 3,
+          "buy": 1,
+          "sell": 2
+        }
+      ]
+    }
+  ]
+}

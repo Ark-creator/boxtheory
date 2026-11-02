@@ -6,11 +6,13 @@ use App\Services\SignalAlertService;
 use App\Services\TradingService;
 use Database\Seeders\StrategyCatalogSeeder;
 use Illuminate\Mail\PendingMail;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 
 beforeEach(function () {
+    $this->travelTo(Carbon::parse('2026-11-02T14:00:00Z'));
     Http::preventStrayRequests();
     Mail::fake();
     Cache::flush();
@@ -31,6 +33,11 @@ function adminEntrySignal(string $action = 'BUY'): array
         'expires_at' => now()->addMinutes(3)->toIso8601String(),
         'price' => 2000,
         'message' => 'Confirmed entry setup',
+        'freshness' => [
+            'verified' => true, 'source' => 'twelvedata', 'interval_seconds' => 300,
+            'data_as_of' => now()->toIso8601String(), 'observed_at' => now()->toIso8601String(),
+            'generated_at' => now()->toIso8601String(), 'market_open' => true,
+        ],
         'trade_plan' => ['entry_price' => 2000, 'stop_loss' => 1995, 'take_profit_1' => 2010],
     ];
 }
@@ -52,8 +59,7 @@ test('every catalog strategy emails BUY and SELL setups to the configured admin'
     expect($result['sent'])->toBe(4)->and($result['errors'])->toBe([]);
     Mail::assertSent(StrategySignalAlertMail::class, 4);
     foreach (Strategy::all() as $strategy) {
-        Mail::assertSent(StrategySignalAlertMail::class, fn ($mail) =>
-            $mail->hasTo('romark7bayan@gmail.com') && $mail->strategy->id === $strategy->id && $mail->signal['action'] === $action);
+        Mail::assertSent(StrategySignalAlertMail::class, fn ($mail) => $mail->hasTo('romark7bayan@gmail.com') && $mail->strategy->id === $strategy->id && $mail->signal['action'] === $action);
     }
 })->with(['BUY', 'SELL']);
 
@@ -142,7 +148,7 @@ test('entry emails identify the market and include entry stop target and expiry'
     $mail->assertSeeInHtml('2,000.0000');
     $mail->assertSeeInHtml('1,995.0000');
     $mail->assertSeeInHtml('2,010.0000');
-    $mail->assertSeeInHtml($signal['expires_at']);
+    $mail->assertSeeInHtml('2026-11-02 22:03:00 PHT (UTC+8)');
 });
 
 test('the email command reports delivery failures with a failing exit code', function () {
@@ -164,7 +170,7 @@ test('a recipient override delivers only to the requested admin', function () {
 
     $this->artisan('signals:email-admin', ['--to' => 'romark7bayan@gmail.com'])->assertExitCode(0);
     Mail::assertSent(StrategySignalAlertMail::class, 1);
-    Mail::assertSent(StrategySignalAlertMail::class, fn ($mail) => $mail->hasTo('romark7bayan@gmail.com') && !$mail->hasTo('someone-else@example.com'));
+    Mail::assertSent(StrategySignalAlertMail::class, fn ($mail) => $mail->hasTo('romark7bayan@gmail.com') && ! $mail->hasTo('someone-else@example.com'));
 });
 
 test('an invalid recipient override never falls back to other recipients', function () {

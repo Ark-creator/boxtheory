@@ -610,6 +610,7 @@
                                                 </span>
                                                 <div class="min-w-0">
                                                     <h3 class="truncate text-sm font-bold text-white">{{ $strategy->name }}</h3>
+                                                    <x-research-signal-note :signal="$signal" class="mt-1" />
                                                     <p class="truncate text-[11px] uppercase tracking-[0.18em] text-slate-400">{{ $strategy->slug }}</p>
                                                 </div>
                                             </div>

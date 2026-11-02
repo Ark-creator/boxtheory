@@ -170,6 +170,7 @@
                                         </div>
 
                                         <p class="text-2xl font-black text-slate-100">${{ number_format((float) ($signal['price'] ?? 0), 4) }}</p>
+                                        <x-research-signal-note :signal="$signal" class="mt-2" />
                                         <p class="text-[11px] text-slate-500 mt-1">{{ $signal['timestamp'] ?? 'N/A' }}</p>
 
                                         <p class="text-xs text-slate-300 mt-3 leading-relaxed">

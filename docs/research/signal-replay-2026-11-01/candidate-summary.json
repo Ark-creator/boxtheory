@@ -1,0 +1,1397 @@
+{
+  "source": {
+    "file": "XAUUSD-STD_M1_202609010100_202610302356.csv",
+    "bytes": 3749252,
+    "sha256": "c67ea70ca5715726daa93df84bc073632aed03643fc28f58550195df1d54f6ab",
+    "timestamp_semantics": "Printed broker wall-clock fields. Epoch seconds are arithmetic coordinates only; broker UTC offset not established.",
+    "schema": [
+      "<DATE>",
+      "<TIME>",
+      "<OPEN>",
+      "<HIGH>",
+      "<LOW>",
+      "<CLOSE>",
+      "<TICKVOL>",
+      "<VOL>",
+      "<SPREAD>"
+    ],
+    "timeframe": "M1",
+    "rows": 60475,
+    "first_open_printed": "2026-09-01T01:00:00",
+    "last_open_printed": "2026-10-30T23:56:00",
+    "last_bar_closes_printed": "2026-10-30T23:57:00",
+    "strict_ohlc_and_ascending_timestamp_validation": "passed",
+    "distinct_printed_dates": 44,
+    "weekend_calendar_date_bars": 0,
+    "price_decimal_places_observed": {
+      "2": 241900
+    },
+    "point_size": null,
+    "point_size_note": "Printed decimal precision is not independently verified SYMBOL_POINT or tick size. SPREAD is in broker points.",
+    "spread_points": {
+      "count": 60475,
+      "min": 21,
+      "median": 21,
+      "max": 28
+    },
+    "spread_points_counts": {
+      "21": 57956,
+      "22": 8,
+      "23": 12,
+      "25": 1,
+      "26": 2474,
+      "27": 3,
+      "28": 21
+    },
+    "price_range": {
+      "lowest_low": 3870.14,
+      "highest_high": 4510.78
+    },
+    "nonconsecutive_intervals": 43,
+    "absent_minute_intervals_including_scheduled_closures": 25862,
+    "gap_note": "Intervals include scheduled broker closures as well as possible missing data. Session metadata is absent; gaps are not assumed tradable.",
+    "gaps": [
+      {
+        "previous_open_printed": "2026-09-01T23:57:00",
+        "next_open_printed": "2026-09-02T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-09-02T23:57:00",
+        "next_open_printed": "2026-09-03T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-09-03T23:57:00",
+        "next_open_printed": "2026-09-04T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-09-04T23:56:00",
+        "next_open_printed": "2026-09-07T01:00:00",
+        "elapsed_minutes": 2944,
+        "absent_minute_intervals": 2943
+      },
+      {
+        "previous_open_printed": "2026-09-07T21:29:00",
+        "next_open_printed": "2026-09-08T01:00:00",
+        "elapsed_minutes": 211,
+        "absent_minute_intervals": 210
+      },
+      {
+        "previous_open_printed": "2026-09-08T23:57:00",
+        "next_open_printed": "2026-09-09T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-09-09T23:57:00",
+        "next_open_printed": "2026-09-10T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-09-10T23:57:00",
+        "next_open_printed": "2026-09-11T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-09-11T23:56:00",
+        "next_open_printed": "2026-09-14T01:00:00",
+        "elapsed_minutes": 2944,
+        "absent_minute_intervals": 2943
+      },
+      {
+        "previous_open_printed": "2026-09-14T23:57:00",
+        "next_open_printed": "2026-09-15T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-09-15T23:57:00",
+        "next_open_printed": "2026-09-16T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-09-16T23:57:00",
+        "next_open_printed": "2026-09-17T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-09-17T23:57:00",
+        "next_open_printed": "2026-09-18T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-09-18T23:56:00",
+        "next_open_printed": "2026-09-21T01:00:00",
+        "elapsed_minutes": 2944,
+        "absent_minute_intervals": 2943
+      },
+      {
+        "previous_open_printed": "2026-09-21T23:57:00",
+        "next_open_printed": "2026-09-22T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-09-22T23:57:00",
+        "next_open_printed": "2026-09-23T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-09-23T23:57:00",
+        "next_open_printed": "2026-09-24T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-09-24T23:57:00",
+        "next_open_printed": "2026-09-25T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-09-25T23:56:00",
+        "next_open_printed": "2026-09-28T01:00:00",
+        "elapsed_minutes": 2944,
+        "absent_minute_intervals": 2943
+      },
+      {
+        "previous_open_printed": "2026-09-28T23:57:00",
+        "next_open_printed": "2026-09-29T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-09-29T23:57:00",
+        "next_open_printed": "2026-09-30T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-09-30T23:57:00",
+        "next_open_printed": "2026-10-01T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-10-01T23:57:00",
+        "next_open_printed": "2026-10-02T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-10-02T23:56:00",
+        "next_open_printed": "2026-10-05T01:00:00",
+        "elapsed_minutes": 2944,
+        "absent_minute_intervals": 2943
+      },
+      {
+        "previous_open_printed": "2026-10-05T23:57:00",
+        "next_open_printed": "2026-10-06T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-10-06T23:57:00",
+        "next_open_printed": "2026-10-07T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-10-07T23:57:00",
+        "next_open_printed": "2026-10-08T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-10-08T23:57:00",
+        "next_open_printed": "2026-10-09T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-10-09T23:56:00",
+        "next_open_printed": "2026-10-12T01:00:00",
+        "elapsed_minutes": 2944,
+        "absent_minute_intervals": 2943
+      },
+      {
+        "previous_open_printed": "2026-10-12T23:57:00",
+        "next_open_printed": "2026-10-13T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-10-13T23:57:00",
+        "next_open_printed": "2026-10-14T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-10-14T23:57:00",
+        "next_open_printed": "2026-10-15T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-10-15T23:57:00",
+        "next_open_printed": "2026-10-16T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-10-16T23:56:00",
+        "next_open_printed": "2026-10-19T01:00:00",
+        "elapsed_minutes": 2944,
+        "absent_minute_intervals": 2943
+      },
+      {
+        "previous_open_printed": "2026-10-19T23:57:00",
+        "next_open_printed": "2026-10-20T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-10-20T23:57:00",
+        "next_open_printed": "2026-10-21T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-10-21T23:57:00",
+        "next_open_printed": "2026-10-22T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-10-22T23:57:00",
+        "next_open_printed": "2026-10-23T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-10-23T23:56:00",
+        "next_open_printed": "2026-10-26T01:00:00",
+        "elapsed_minutes": 2944,
+        "absent_minute_intervals": 2943
+      },
+      {
+        "previous_open_printed": "2026-10-26T23:57:00",
+        "next_open_printed": "2026-10-27T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-10-27T23:57:00",
+        "next_open_printed": "2026-10-28T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-10-28T23:57:00",
+        "next_open_printed": "2026-10-29T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-10-29T23:57:00",
+        "next_open_printed": "2026-10-30T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      }
+    ],
+    "daily_counts_printed_dates": [
+      {
+        "date": "2026-09-01",
+        "rows": 1378
+      },
+      {
+        "date": "2026-09-02",
+        "rows": 1378
+      },
+      {
+        "date": "2026-09-03",
+        "rows": 1378
+      },
+      {
+        "date": "2026-09-04",
+        "rows": 1377
+      },
+      {
+        "date": "2026-09-07",
+        "rows": 1230
+      },
+      {
+        "date": "2026-09-08",
+        "rows": 1378
+      },
+      {
+        "date": "2026-09-09",
+        "rows": 1378
+      },
+      {
+        "date": "2026-09-10",
+        "rows": 1378
+      },
+      {
+        "date": "2026-09-11",
+        "rows": 1377
+      },
+      {
+        "date": "2026-09-14",
+        "rows": 1378
+      },
+      {
+        "date": "2026-09-15",
+        "rows": 1378
+      },
+      {
+        "date": "2026-09-16",
+        "rows": 1378
+      },
+      {
+        "date": "2026-09-17",
+        "rows": 1378
+      },
+      {
+        "date": "2026-09-18",
+        "rows": 1377
+      },
+      {
+        "date": "2026-09-21",
+        "rows": 1378
+      },
+      {
+        "date": "2026-09-22",
+        "rows": 1378
+      },
+      {
+        "date": "2026-09-23",
+        "rows": 1378
+      },
+      {
+        "date": "2026-09-24",
+        "rows": 1378
+      },
+      {
+        "date": "2026-09-25",
+        "rows": 1377
+      },
+      {
+        "date": "2026-09-28",
+        "rows": 1378
+      },
+      {
+        "date": "2026-09-29",
+        "rows": 1378
+      },
+      {
+        "date": "2026-09-30",
+        "rows": 1378
+      },
+      {
+        "date": "2026-10-01",
+        "rows": 1378
+      },
+      {
+        "date": "2026-10-02",
+        "rows": 1377
+      },
+      {
+        "date": "2026-10-05",
+        "rows": 1378
+      },
+      {
+        "date": "2026-10-06",
+        "rows": 1378
+      },
+      {
+        "date": "2026-10-07",
+        "rows": 1378
+      },
+      {
+        "date": "2026-10-08",
+        "rows": 1378
+      },
+      {
+        "date": "2026-10-09",
+        "rows": 1377
+      },
+      {
+        "date": "2026-10-12",
+        "rows": 1378
+      },
+      {
+        "date": "2026-10-13",
+        "rows": 1378
+      },
+      {
+        "date": "2026-10-14",
+        "rows": 1378
+      },
+      {
+        "date": "2026-10-15",
+        "rows": 1378
+      },
+      {
+        "date": "2026-10-16",
+        "rows": 1377
+      },
+      {
+        "date": "2026-10-19",
+        "rows": 1378
+      },
+      {
+        "date": "2026-10-20",
+        "rows": 1378
+      },
+      {
+        "date": "2026-10-21",
+        "rows": 1378
+      },
+      {
+        "date": "2026-10-22",
+        "rows": 1378
+      },
+      {
+        "date": "2026-10-23",
+        "rows": 1377
+      },
+      {
+        "date": "2026-10-26",
+        "rows": 1378
+      },
+      {
+        "date": "2026-10-27",
+        "rows": 1378
+      },
+      {
+        "date": "2026-10-28",
+        "rows": 1378
+      },
+      {
+        "date": "2026-10-29",
+        "rows": 1378
+      },
+      {
+        "date": "2026-10-30",
+        "rows": 1377
+      }
+    ]
+  },
+  "candidate_rules": "GoldTrendRetestStrategy unchanged from pre-CSV implementation; no parameter search",
+  "cost_warning": "0.01 point size and slippage/fees are unverified assumptions; minute SPREAD is a minimum, not a true constant quote spread.",
+  "split_warning": "70/30 split uses elapsed calendar span, includes prior warmup, resets positions/gates at segment start, and is a preliminary chronological diagnostic, not independent evidence.",
+  "scenarios": [
+    {
+      "offset_hours": 3,
+      "segment": "full",
+      "cost": "gross",
+      "file": "candidate-utcplus3-full-gross.json",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "timestamp_assumption": "Assume CSV broker wall time is UTC+3 for the whole supplied period; this is not confirmed terminal metadata.",
+      "split_utc": "2026-10-12T21:30:00+00:00",
+      "signals": 1,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 0,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 1,
+        "wins": 1,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 2.0000000000000897,
+        "expectancy_r": 2.0000000000000897,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 1,
+        "wins": 1,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 2.0000000000000897,
+        "expectancy_r": 2.0000000000000897,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "offset_hours": 3,
+      "segment": "full",
+      "cost": "proxy-cost",
+      "file": "candidate-utcplus3-full-proxy-cost.json",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "timestamp_assumption": "Assume CSV broker wall time is UTC+3 for the whole supplied period; this is not confirmed terminal metadata.",
+      "split_utc": "2026-10-12T21:30:00+00:00",
+      "signals": 1,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 0,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 1,
+        "wins": 1,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 1.9541545712769073,
+        "expectancy_r": 1.9541545712769073,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 1,
+        "wins": 1,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 1.9541545712769073,
+        "expectancy_r": 1.9541545712769073,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "offset_hours": 3,
+      "segment": "full",
+      "cost": "double-cost",
+      "file": "candidate-utcplus3-full-double-cost.json",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "timestamp_assumption": "Assume CSV broker wall time is UTC+3 for the whole supplied period; this is not confirmed terminal metadata.",
+      "split_utc": "2026-10-12T21:30:00+00:00",
+      "signals": 1,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 0,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 1,
+        "wins": 1,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 1.9091948870926887,
+        "expectancy_r": 1.9091948870926887,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 1,
+        "wins": 1,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 1.9091948870926887,
+        "expectancy_r": 1.9091948870926887,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "offset_hours": 3,
+      "segment": "first70",
+      "cost": "gross",
+      "file": "candidate-utcplus3-first70-gross.json",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "timestamp_assumption": "Assume CSV broker wall time is UTC+3 for the whole supplied period; this is not confirmed terminal metadata.",
+      "split_utc": "2026-10-12T21:30:00+00:00",
+      "signals": 1,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 0,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 1,
+        "wins": 1,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 2.0000000000000897,
+        "expectancy_r": 2.0000000000000897,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 1,
+        "wins": 1,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 2.0000000000000897,
+        "expectancy_r": 2.0000000000000897,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "offset_hours": 3,
+      "segment": "first70",
+      "cost": "proxy-cost",
+      "file": "candidate-utcplus3-first70-proxy-cost.json",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "timestamp_assumption": "Assume CSV broker wall time is UTC+3 for the whole supplied period; this is not confirmed terminal metadata.",
+      "split_utc": "2026-10-12T21:30:00+00:00",
+      "signals": 1,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 0,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 1,
+        "wins": 1,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 1.9541545712769073,
+        "expectancy_r": 1.9541545712769073,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 1,
+        "wins": 1,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 1.9541545712769073,
+        "expectancy_r": 1.9541545712769073,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "offset_hours": 3,
+      "segment": "first70",
+      "cost": "double-cost",
+      "file": "candidate-utcplus3-first70-double-cost.json",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "timestamp_assumption": "Assume CSV broker wall time is UTC+3 for the whole supplied period; this is not confirmed terminal metadata.",
+      "split_utc": "2026-10-12T21:30:00+00:00",
+      "signals": 1,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 0,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 1,
+        "wins": 1,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 1.9091948870926887,
+        "expectancy_r": 1.9091948870926887,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 1,
+        "wins": 1,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 1.9091948870926887,
+        "expectancy_r": 1.9091948870926887,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "offset_hours": 3,
+      "segment": "last30",
+      "cost": "gross",
+      "file": "candidate-utcplus3-last30-gross.json",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "timestamp_assumption": "Assume CSV broker wall time is UTC+3 for the whole supplied period; this is not confirmed terminal metadata.",
+      "split_utc": "2026-10-12T21:30:00+00:00",
+      "signals": 0,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 0,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": null,
+        "net_r": 0,
+        "expectancy_r": null,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": null,
+        "net_r": 0,
+        "expectancy_r": null,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "offset_hours": 3,
+      "segment": "last30",
+      "cost": "proxy-cost",
+      "file": "candidate-utcplus3-last30-proxy-cost.json",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "timestamp_assumption": "Assume CSV broker wall time is UTC+3 for the whole supplied period; this is not confirmed terminal metadata.",
+      "split_utc": "2026-10-12T21:30:00+00:00",
+      "signals": 0,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 0,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": null,
+        "net_r": 0,
+        "expectancy_r": null,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": null,
+        "net_r": 0,
+        "expectancy_r": null,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "offset_hours": 3,
+      "segment": "last30",
+      "cost": "double-cost",
+      "file": "candidate-utcplus3-last30-double-cost.json",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "timestamp_assumption": "Assume CSV broker wall time is UTC+3 for the whole supplied period; this is not confirmed terminal metadata.",
+      "split_utc": "2026-10-12T21:30:00+00:00",
+      "signals": 0,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 0,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": null,
+        "net_r": 0,
+        "expectancy_r": null,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": null,
+        "net_r": 0,
+        "expectancy_r": null,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "offset_hours": 0,
+      "segment": "full",
+      "cost": "gross",
+      "file": "candidate-utcplus0-full-gross.json",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "timestamp_assumption": "Assume CSV broker wall time is UTC+0 for the whole supplied period; this is not confirmed terminal metadata.",
+      "split_utc": "2026-10-13T00:30:00+00:00",
+      "signals": 3,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 1,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 2,
+        "wins": 2,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 3.994804819160361,
+        "expectancy_r": 1.9974024095801806,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 2,
+        "wins": 2,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 3.994804819160361,
+        "expectancy_r": 1.9974024095801806,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "offset_hours": 0,
+      "segment": "full",
+      "cost": "proxy-cost",
+      "file": "candidate-utcplus0-full-proxy-cost.json",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "timestamp_assumption": "Assume CSV broker wall time is UTC+0 for the whole supplied period; this is not confirmed terminal metadata.",
+      "split_utc": "2026-10-13T00:30:00+00:00",
+      "signals": 3,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 1,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 2,
+        "wins": 2,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 3.908651087189588,
+        "expectancy_r": 1.954325543594794,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 2,
+        "wins": 2,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 3.908651087189588,
+        "expectancy_r": 1.954325543594794,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "offset_hours": 0,
+      "segment": "full",
+      "cost": "double-cost",
+      "file": "candidate-utcplus0-full-double-cost.json",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "timestamp_assumption": "Assume CSV broker wall time is UTC+0 for the whole supplied period; this is not confirmed terminal metadata.",
+      "split_utc": "2026-10-13T00:30:00+00:00",
+      "signals": 3,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 1,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 2,
+        "wins": 2,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 3.824069359734855,
+        "expectancy_r": 1.9120346798674275,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 2,
+        "wins": 2,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 3.824069359734855,
+        "expectancy_r": 1.9120346798674275,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "offset_hours": 0,
+      "segment": "first70",
+      "cost": "gross",
+      "file": "candidate-utcplus0-first70-gross.json",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "timestamp_assumption": "Assume CSV broker wall time is UTC+0 for the whole supplied period; this is not confirmed terminal metadata.",
+      "split_utc": "2026-10-13T00:30:00+00:00",
+      "signals": 3,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 1,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 2,
+        "wins": 2,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 3.994804819160361,
+        "expectancy_r": 1.9974024095801806,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 2,
+        "wins": 2,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 3.994804819160361,
+        "expectancy_r": 1.9974024095801806,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "offset_hours": 0,
+      "segment": "first70",
+      "cost": "proxy-cost",
+      "file": "candidate-utcplus0-first70-proxy-cost.json",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "timestamp_assumption": "Assume CSV broker wall time is UTC+0 for the whole supplied period; this is not confirmed terminal metadata.",
+      "split_utc": "2026-10-13T00:30:00+00:00",
+      "signals": 3,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 1,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 2,
+        "wins": 2,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 3.908651087189588,
+        "expectancy_r": 1.954325543594794,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 2,
+        "wins": 2,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 3.908651087189588,
+        "expectancy_r": 1.954325543594794,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "offset_hours": 0,
+      "segment": "first70",
+      "cost": "double-cost",
+      "file": "candidate-utcplus0-first70-double-cost.json",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "timestamp_assumption": "Assume CSV broker wall time is UTC+0 for the whole supplied period; this is not confirmed terminal metadata.",
+      "split_utc": "2026-10-13T00:30:00+00:00",
+      "signals": 3,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 1,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 2,
+        "wins": 2,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 3.824069359734855,
+        "expectancy_r": 1.9120346798674275,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 2,
+        "wins": 2,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 3.824069359734855,
+        "expectancy_r": 1.9120346798674275,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "offset_hours": 0,
+      "segment": "last30",
+      "cost": "gross",
+      "file": "candidate-utcplus0-last30-gross.json",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "timestamp_assumption": "Assume CSV broker wall time is UTC+0 for the whole supplied period; this is not confirmed terminal metadata.",
+      "split_utc": "2026-10-13T00:30:00+00:00",
+      "signals": 0,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 0,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": null,
+        "net_r": 0,
+        "expectancy_r": null,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": null,
+        "net_r": 0,
+        "expectancy_r": null,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "offset_hours": 0,
+      "segment": "last30",
+      "cost": "proxy-cost",
+      "file": "candidate-utcplus0-last30-proxy-cost.json",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "timestamp_assumption": "Assume CSV broker wall time is UTC+0 for the whole supplied period; this is not confirmed terminal metadata.",
+      "split_utc": "2026-10-13T00:30:00+00:00",
+      "signals": 0,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 0,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": null,
+        "net_r": 0,
+        "expectancy_r": null,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": null,
+        "net_r": 0,
+        "expectancy_r": null,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "offset_hours": 0,
+      "segment": "last30",
+      "cost": "double-cost",
+      "file": "candidate-utcplus0-last30-double-cost.json",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "timestamp_assumption": "Assume CSV broker wall time is UTC+0 for the whole supplied period; this is not confirmed terminal metadata.",
+      "split_utc": "2026-10-13T00:30:00+00:00",
+      "signals": 0,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 0,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": null,
+        "net_r": 0,
+        "expectancy_r": null,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": null,
+        "net_r": 0,
+        "expectancy_r": null,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    }
+  ]
+}

@@ -17,6 +17,8 @@
         };
         $plan = $signal['trade_plan'] ?? [];
         $indicators = $signal['indicators'] ?? [];
+        $freshness = $signal['freshness'] ?? [];
+        $manilaTime = static fn ($value) => \Illuminate\Support\Carbon::parse($value)->setTimezone('Asia/Manila')->format('Y-m-d H:i:s').' PHT (UTC+8)';
     @endphp
 
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f2f4f8; padding:24px 12px;">
@@ -37,10 +39,13 @@
                                 <tr>
                                     <td colspan="2" style="padding-top:12px;">
                                         <div style="font-size:26px; font-weight:800; line-height:1.2;">{{ $strategy->name }}</div>
+                                        @if(($signal['research_only'] ?? false) === true)
+                                            <div style="margin-top:8px; font-size:14px; font-weight:700;">PAPER RESEARCH SETUP - profitability is not established.</div>
+                                        @endif
                                         <div style="margin-top:6px; font-size:16px; font-weight:700;">{{ $signal['symbol'] ?? $signal['symbol_code'] ?? config('trading.default_pair', 'XAUUSD') }} — {{ $action }}</div>
-                                        <div style="margin-top:6px; font-size:13px; opacity:0.9;">Generated {{ $generatedAt->format('Y-m-d H:i:s T') }}</div>
+                                        <div style="margin-top:6px; font-size:13px; opacity:0.9;">Email prepared {{ $manilaTime($generatedAt) }}</div>
                                         @if(!empty($signal['expires_at']))
-                                            <div style="margin-top:6px; font-size:13px;">Entry valid until {{ $signal['expires_at'] }}. Recheck the signal after this time.</div>
+                                            <div style="margin-top:6px; font-size:13px;">Entry expires {{ $manilaTime($signal['expires_at']) }}. Do not enter from this email after expiry.</div>
                                         @endif
                                     </td>
                                 </tr>
@@ -53,12 +58,16 @@
                             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate; border-spacing:0 10px;">
                                 <tr>
                                     <td style="width:33.33%; background:#f7f9fc; border:1px solid #e4e9f2; border-radius:10px; padding:12px;">
-                                        <div style="font-size:11px; color:#5b6778; text-transform:uppercase; letter-spacing:0.5px;">Price</div>
-                                        <div style="margin-top:4px; font-size:20px; font-weight:800;">${{ number_format((float) ($signal['price'] ?? 0), 4) }}</div>
+                                        <div style="font-size:11px; color:#5b6778; text-transform:uppercase; letter-spacing:0.5px;">Provider quote at check</div>
+                                        <div style="margin-top:4px; font-size:20px; font-weight:800;">${{ number_format((float) ($signal['quote_price'] ?? $signal['price'] ?? 0), 4) }}</div>
+                                        <div style="margin-top:3px; font-size:11px; color:#657285;">Signal price: ${{ number_format((float) ($signal['price'] ?? 0), 4) }}</div>
                                     </td>
                                     <td style="width:33.33%; background:#f7f9fc; border:1px solid #e4e9f2; border-radius:10px; padding:12px;">
-                                        <div style="font-size:11px; color:#5b6778; text-transform:uppercase; letter-spacing:0.5px;">Timestamp</div>
-                                        <div style="margin-top:4px; font-size:14px; font-weight:700;">{{ $signal['timestamp'] ?? 'N/A' }}</div>
+                                        <div style="font-size:11px; color:#5b6778; text-transform:uppercase; letter-spacing:0.5px;">Confirmed candle close</div>
+                                        <div style="margin-top:4px; font-size:14px; font-weight:700;">{{ !empty($freshness['data_as_of']) ? $manilaTime($freshness['data_as_of']) : ($signal['timestamp'] ?? 'N/A') }}</div>
+                                        @if(!empty($freshness['observed_at']))
+                                            <div style="margin-top:3px; font-size:11px; color:#657285;">Quote observed {{ $manilaTime($freshness['observed_at']) }}</div>
+                                        @endif
                                     </td>
                                     <td style="width:33.33%; background:#f7f9fc; border:1px solid #e4e9f2; border-radius:10px; padding:12px;">
                                         <div style="font-size:11px; color:#5b6778; text-transform:uppercase; letter-spacing:0.5px;">Trend / Source</div>

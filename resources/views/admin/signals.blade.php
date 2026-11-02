@@ -79,6 +79,7 @@
                             </td>
                             <td class="px-5 py-3">
                                 <span class="px-2 py-1 rounded-lg text-[11px] uppercase font-semibold {{ $actionClass }}">{{ $action }}</span>
+                                <x-research-signal-note :signal="$signal" class="mt-2" />
                             </td>
                             <td class="px-5 py-3">
                                 ${{ number_format((float) ($signal['price'] ?? 0), 4) }}

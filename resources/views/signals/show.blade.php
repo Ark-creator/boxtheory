@@ -86,6 +86,7 @@
                 </div>
 
                 <p class="text-sm text-slate-200 leading-relaxed">{{ $signal['message'] ?? 'No message available.' }}</p>
+                <x-research-signal-note :signal="$signal" class="mt-3" />
             </div>
 
             <div class="rounded-2xl border border-white/10 bg-white/5 p-6">

@@ -4,6 +4,7 @@ use App\Mail\StrategySignalAlertMail;
 use App\Models\AutoTradeOrder;
 use App\Services\AutoTraderService;
 use App\Services\GoldBreakoutStrategy;
+use App\Services\MarketDataGuard;
 use App\Services\Mt5BridgeClient;
 use App\Services\SignalAlertService;
 use App\Services\TradingService;
@@ -27,13 +28,24 @@ beforeEach(function () {
 
 function goldApiBars(string $interval, bool $sell = false): array
 {
-    $at = Carbon::parse('2026-09-14T10:00:00Z');
     $minutes = $interval === '1h' ? 60 : 15;
+    $at = Carbon::createFromTimestampUTC(intdiv(now()->timestamp, $minutes * 60) * $minutes * 60);
+    $guard = new MarketDataGuard;
+    $opens = [];
+    $cursor = $at->copy()->subMinutes($minutes);
+    while (count($opens) < 300) {
+        if ($guard->marketStatus('XAUUSD', $cursor)['open']
+            && $guard->marketStatus('XAUUSD', $cursor->copy()->addMinutes($minutes)->subSecond())['open']) {
+            $opens[] = $cursor->toIso8601String();
+        }
+        $cursor->subMinutes($minutes);
+    }
+    $opens = array_reverse($opens);
     $bars = [];
     for ($i = 0; $i < 300; $i++) {
         $close = $minutes === 60 ? 1970 + $i * 0.1 : 1999;
         $bars[] = [
-            'timestamp' => $at->copy()->subMinutes((300 - $i) * $minutes)->toIso8601String(),
+            'timestamp' => $opens[$i],
             'open' => $close - 0.1, 'high' => $close + 1, 'low' => $close - 1, 'close' => $close,
         ];
     }
@@ -51,7 +63,8 @@ function goldApiPayload(string $interval, bool $sell = false): array
 {
     return [
         'status' => 'ok',
-        'meta' => ['symbol' => 'XAU/USD', 'interval' => $interval, 'exchange_timezone' => 'UTC'],
+        // Output datetimes follow requested UTC; exchange timezone is instrument metadata.
+        'meta' => ['symbol' => 'XAU/USD', 'interval' => $interval, 'exchange_timezone' => 'Australia/Sydney'],
         'values' => array_map(fn ($bar) => [
             'datetime' => Carbon::parse($bar['timestamp'])->utc()->format('Y-m-d H:i:s'),
             'open' => (string) $bar['open'], 'high' => (string) $bar['high'], 'low' => (string) $bar['low'], 'close' => (string) $bar['close'],
@@ -59,9 +72,25 @@ function goldApiPayload(string $interval, bool $sell = false): array
     ];
 }
 
+function fakeGoldQuote(bool $sell = false): array
+{
+    return ['symbol' => 'XAU/USD', 'close' => $sell ? '1998.5' : '2001.5',
+        'last_quote_at' => now()->utc()->startOfMinute()->timestamp,
+        'timestamp' => now()->utc()->startOfDay()->timestamp, 'is_market_open' => true];
+}
+
 function fakeGoldApi(bool $sell = false): void
 {
-    Http::fake(['api.twelvedata.com/time_series*' => fn ($request) => Http::response(goldApiPayload($request['interval'], $sell))]);
+    Http::fake([
+        'api.twelvedata.com/time_series*' => fn ($request) => Http::response(goldApiPayload($request['interval'], $sell)),
+        'api.twelvedata.com/quote*' => fn () => Http::response(fakeGoldQuote($sell)),
+    ]);
+}
+
+function goldApiRequests(string $endpoint, ?string $interval = null): int
+{
+    return Http::recorded(fn ($request) => str_starts_with($request->url(), 'https://api.twelvedata.com/'.$endpoint)
+        && ($interval === null || $request['interval'] === $interval))->count();
 }
 
 test('API gold signals preserve the strategy rules and identify the actual source without MT5', function (bool $sell) {
@@ -76,9 +105,13 @@ test('API gold signals preserve the strategy rules and identify the actual sourc
         ->and($signal['timestamp'])->toBe($expected['timestamp'])
         ->and($signal['indicators']['data_source'])->toBe('Twelve Data XAU/USD')
         ->and($signal)->not->toHaveKey('broker');
-    Http::assertSentCount(2);
+    expect(goldApiRequests('time_series', '15min'))->toBe(1)
+        ->and(goldApiRequests('time_series', '1h'))->toBe(1)
+        ->and(goldApiRequests('quote'))->toBe(1)
+        ->and($signal['freshness']['observed_at'])->toBe('2026-09-14T10:00:00+00:00')
+        ->and($signal['freshness']['verified'])->toBeTrue();
     Http::assertSent(fn ($request) => $request['symbol'] === 'XAU/USD' && $request['interval'] === '15min' && $request['timezone'] === 'UTC');
-    Http::assertSent(fn ($request) => $request['symbol'] === 'XAU/USD' && $request['interval'] === '1h' && $request['outputsize'] === 300);
+    Http::assertSent(fn ($request) => $request['symbol'] === 'XAU/USD' && $request['interval'] === '1h' && $request['outputsize'] >= 300 && $request['outputsize'] <= 5000);
 })->with([false, true]);
 
 test('the new strategy sends real API-derived entry plans through admin email delivery', function () {
@@ -95,7 +128,9 @@ test('the new strategy sends real API-derived entry plans through admin email de
             && $mail->signal['action'] === 'BUY' && $mail->signal['trade_plan']['stop_loss'] < $mail->signal['trade_plan']['entry_price'];
     });
     expect(AutoTradeOrder::count())->toBe(0);
-    Http::assertSentCount(2);
+    expect(goldApiRequests('time_series', '15min'))->toBe(1)
+        ->and(goldApiRequests('time_series', '1h'))->toBe(1)
+        ->and(goldApiRequests('quote'))->toBe(1);
 });
 
 test('forming API candles do not influence the entry signal', function () {
@@ -104,7 +139,7 @@ test('forming API candles do not influence the entry signal', function () {
         $data['values'][] = ['datetime' => '2026-09-14 10:00:00', 'open' => '2000', 'high' => '9000', 'low' => '1', 'close' => '8000'];
 
         return Http::response($data);
-    }]);
+    }, 'api.twelvedata.com/quote*' => fn () => Http::response(fakeGoldQuote())]);
     $signal = app(TradingService::class)->getSignalForStrategy('gold-risk-breakout');
 
     expect($signal['action'])->toBe('BUY')->and($signal['trade_plan']['entry_price'])->toBe(2001.5)
@@ -120,7 +155,9 @@ test('cached candles do not extend the three-minute entry window', function () {
     expect($service->getSignalForStrategy('gold-risk-breakout')['action'])->toBe('NO_DATA');
     expect(app(SignalAlertService::class)->dispatch(force: true)['sent'])->toBe(0);
     Mail::assertNothingSent();
-    Http::assertSentCount(2);
+    expect(goldApiRequests('time_series', '15min'))->toBe(1)
+        ->and(goldApiRequests('time_series', '1h'))->toBe(1)
+        ->and(goldApiRequests('quote'))->toBe(1);
 });
 
 test('each API timeframe refreshes when its next candle closes', function () {
@@ -129,10 +166,14 @@ test('each API timeframe refreshes when its next candle closes', function () {
     $service->getSignalForStrategy('gold-risk-breakout');
     $this->travelTo(Carbon::parse('2026-09-14T10:15:01Z'));
     $service->getSignalForStrategy('gold-risk-breakout');
-    Http::assertSentCount(3);
+    expect(goldApiRequests('time_series', '15min'))->toBe(2)
+        ->and(goldApiRequests('time_series', '1h'))->toBe(1)
+        ->and(goldApiRequests('quote'))->toBe(2);
     $this->travelTo(Carbon::parse('2026-09-14T11:00:01Z'));
     $service->getSignalForStrategy('gold-risk-breakout');
-    Http::assertSentCount(5);
+    expect(goldApiRequests('time_series', '15min'))->toBe(3)
+        ->and(goldApiRequests('time_series', '1h'))->toBe(2)
+        ->and(goldApiRequests('quote'))->toBe(3);
 });
 
 test('a delayed API candle is retried rather than cached for the full interval', function () {
@@ -144,12 +185,14 @@ test('a delayed API candle is retried rather than cached for the full interval',
         }
 
         return Http::response($data);
-    }]);
+    }, 'api.twelvedata.com/quote*' => fn () => Http::response(fakeGoldQuote())]);
     $service = app(TradingService::class);
     expect($service->getSignalForStrategy('gold-risk-breakout')['action'])->toBe('NO_DATA');
     $this->travel(31)->seconds();
     expect($service->getSignalForStrategy('gold-risk-breakout')['action'])->toBe('BUY');
-    Http::assertSentCount(3);
+    expect(goldApiRequests('time_series', '15min'))->toBe(2)
+        ->and(goldApiRequests('time_series', '1h'))->toBe(1)
+        ->and(goldApiRequests('quote'))->toBe(1);
 });
 
 test('provider failures do not fall back to a different gold instrument or broker feed', function () {
@@ -161,6 +204,19 @@ test('provider failures do not fall back to a different gold instrument or broke
     expect($signal['action'])->toBe('NO_DATA')->and($signal['error'])->toBe('API quota exceeded');
     Http::assertSentCount(1);
 });
+
+test('a fresh quote inside drift tolerance still cannot exceed the breakout extension cap', function (bool $sell) {
+    $quote = fakeGoldQuote($sell);
+    $quote['close'] = $sell ? '1998.4' : '2001.6';
+    Http::fake(['api.twelvedata.com/time_series*' => fn ($request) => Http::response(goldApiPayload($request['interval'], $sell)),
+        'api.twelvedata.com/quote*' => Http::response($quote)]);
+
+    $signal = app(TradingService::class)->getSignalForStrategy('gold-risk-breakout');
+
+    expect($signal['action'])->toBe('NO_DATA')
+        ->and($signal['error'])->toContain('breakout extension limit');
+    Mail::assertNothingSent();
+})->with([false, true]);
 
 test('incomplete OHLC data cannot produce an entry email', function () {
     Http::fake(['api.twelvedata.com/time_series*' => function ($request) {
@@ -178,6 +234,7 @@ test('MT5 signal mode remains available and retains broker metadata', function (
     config(['gold_breakout.signal_source' => 'mt5']);
     $this->mock(Mt5BridgeClient::class)->shouldReceive('snapshot')->once()->andReturn([
         'm15' => goldApiBars('15min'), 'h1' => goldApiBars('1h'), 'account_key' => 'test-account', 'symbol' => 'XAUUSD',
+        'quote' => ['bid' => 2001.4, 'ask' => 2001.5, 'timestamp' => now()->utc()->toIso8601String()],
     ]);
 
     $signal = app(TradingService::class)->getSignalForStrategy('gold-risk-breakout');

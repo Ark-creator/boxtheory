@@ -3,14 +3,11 @@
 namespace App\Services;
 
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Http;
 
 class TradingService
 {
-    private const ALPHA_VANTAGE_URL = 'https://www.alphavantage.co/query';
-    private const TWELVEDATA_URL = 'https://api.twelvedata.com';
     private const FALLBACK_PAIR_CODE = 'XAUUSD';
+
     private const FALLBACK_PAIR = [
         'display' => 'XAU/USD',
         'name' => 'Gold Spot',
@@ -33,28 +30,24 @@ class TradingService
     public function getMarketData(?string $pairCode = null): array
     {
         $pair = $this->resolvePair($pairCode);
-        $payload = $this->getCandles($pair['code']);
-        if ($payload['error'] !== null || empty($payload['candles'])) {
+        try {
+            $quote = app(LiveMarketDataService::class)->quote($pair);
+
+            return [
+                'price' => $quote['price'], 'timestamp' => $quote['observed_at'],
+                'source' => 'twelvedata_'.strtolower($pair['code']), 'error' => null,
+                'symbol' => $pair['display'], 'symbol_code' => $pair['code'],
+            ];
+        } catch (\Throwable $e) {
             return [
                 'price' => 0.0,
                 'timestamp' => null,
                 'source' => null,
-                'error' => $payload['error'] ?? sprintf('Unable to load %s price.', $pair['display']),
+                'error' => $e->getMessage(),
                 'symbol' => $pair['display'],
                 'symbol_code' => $pair['code'],
             ];
         }
-
-        $latest = end($payload['candles']);
-
-        return [
-            'price' => $latest['close'],
-            'timestamp' => $latest['timestamp'],
-            'source' => $payload['source'] ?? null,
-            'error' => null,
-            'symbol' => $pair['display'],
-            'symbol_code' => $pair['code'],
-        ];
     }
 
     /**
@@ -63,34 +56,19 @@ class TradingService
     public function getDailyLevels(?string $pairCode = null): array
     {
         $pair = $this->resolvePair($pairCode);
-        $cacheKey = sprintf('%s_daily_levels_v5', strtolower($pair['code']));
-
-        return Cache::remember($cacheKey, 3600, function () use ($pair) {
-            $twelveData = $this->getTwelveDataDailyLevels($pair);
-            if ($twelveData['error'] === null) {
-                return $twelveData;
-            }
-
-            $alpha = $this->getAlphaVantageDailyLevels($pair);
-            if ($alpha['error'] === null) {
-                return $alpha;
-            }
-
-            $yahoo = $this->getYahooDailyLevels($pair);
-            if ($yahoo['error'] === null) {
-                return $yahoo;
-            }
-
+        try {
+            return app(LiveMarketDataService::class)->dailyLevels($pair);
+        } catch (\Throwable $e) {
             return [
                 'high' => 0.0,
                 'low' => 0.0,
                 'date' => null,
                 'source' => null,
-                'error' => $twelveData['error'] . ' | ' . $alpha['error'] . ' | ' . $yahoo['error'],
+                'error' => $e->getMessage(),
                 'symbol' => $pair['display'],
                 'symbol_code' => $pair['code'],
             ];
-        });
+        }
     }
 
     /**
@@ -104,33 +82,17 @@ class TradingService
     public function getCandles(?string $pairCode = null, string $interval = '5min', int $limit = 200): array
     {
         $pair = $this->resolvePair($pairCode);
-        $cacheKey = sprintf('%s_intraday_%s_%d_v5', strtolower($pair['code']), $interval, $limit);
-        $cacheSeconds = max(30, (int) config('services.twelvedata.cache_seconds', 120));
-
-        return Cache::remember($cacheKey, $cacheSeconds, function () use ($pair, $interval, $limit) {
-            $twelveData = $this->getTwelveDataIntradayCandles($pair, $interval, $limit);
-            if ($twelveData['error'] === null) {
-                return $twelveData;
-            }
-
-            $alpha = $this->getAlphaVantageIntradayCandles($pair, $interval, $limit);
-            if ($alpha['error'] === null) {
-                return $alpha;
-            }
-
-            $yahoo = $this->getYahooIntradayCandles($pair, $interval, $limit);
-            if ($yahoo['error'] === null) {
-                return $yahoo;
-            }
-
+        try {
+            return app(LiveMarketDataService::class)->candles($pair, $interval, $limit);
+        } catch (\Throwable $e) {
             return [
                 'candles' => [],
                 'source' => null,
-                'error' => $twelveData['error'] . ' | ' . $alpha['error'] . ' | ' . $yahoo['error'],
+                'error' => $e->getMessage(),
                 'symbol' => $pair['display'],
                 'symbol_code' => $pair['code'],
             ];
-        });
+        }
     }
 
     /**
@@ -138,43 +100,95 @@ class TradingService
      */
     public function getSignalForStrategy(string $strategySlug, ?string $currentPosition = null, ?string $pairCode = null): array
     {
+        $pair = $this->resolvePair($pairCode);
+        $status = app(MarketDataGuard::class)->marketStatus($pair['code'], now()->utc());
+        if (! $status['open']) {
+            $signal = $this->makeNoDataSignal($strategySlug, $status['reason'], $currentPosition);
+            $signal['market_status'] = 'closed';
+
+            return $this->attachPairContext($signal, $pair);
+        }
+        try {
+            return $this->getStrategySnapshot($strategySlug, $currentPosition, $pair['code']);
+        } catch (\Throwable $e) {
+            return $this->attachPairContext($this->makeNoDataSignal($strategySlug, $e->getMessage(), $currentPosition), $pair);
+        }
+    }
+
+    private function getStrategySnapshot(string $strategySlug, ?string $currentPosition = null, ?string $pairCode = null): array
+    {
         $slug = strtolower(trim($strategySlug));
         $pair = $this->resolvePair($pairCode);
 
-        if ($slug === GoldBreakoutStrategy::SLUG) {
+        $isRetestV2 = $slug === 'gold-trend-retest-v2';
+        if ($slug === GoldBreakoutStrategy::SLUG || $isRetestV2) {
             try {
                 if ($pair['code'] !== 'XAUUSD') {
-                    throw new \RuntimeException('Gold Risk Breakout supports XAUUSD only.');
+                    throw new \RuntimeException('This gold strategy supports XAUUSD only.');
                 }
-                $source = strtolower(trim((string) config('gold_breakout.signal_source', 'mt5')));
+                $engine = app($isRetestV2 ? GoldTrendRetestV2Strategy::class : GoldBreakoutStrategy::class);
+                // V2 API alerts are deliberately separate from the broker execution allowlist.
+                $source = $isRetestV2 ? 'twelvedata' : strtolower(trim((string) config('gold_breakout.signal_source', 'mt5')));
                 if ($source === 'twelvedata') {
-                    $m15 = $this->getGoldApiCandles($pair, '15min', 15);
-                    $h1 = $this->getGoldApiCandles($pair, '60min', 60);
-                    $signal = app(GoldBreakoutStrategy::class)->evaluate(
+                    $count = $isRetestV2 ? 320 : 300;
+                    $m15 = $this->getGoldApiCandles($pair, '15min', $count);
+                    $h1 = $this->getGoldApiCandles($pair, '60min', $count);
+                    $signal = $engine->evaluate(
                         $m15, $h1, now()->utc(), $currentPosition, 'Twelve Data XAU/USD'
                     );
+                    if ($isRetestV2) {
+                        $signal['research_only'] = true;
+                    }
+                    if (($signal['action'] ?? 'NO_DATA') === 'NO_DATA') {
+                        return $this->attachPairContext($signal, $pair);
+                    }
 
-                    return $this->attachPairContext($signal, $pair);
+                    return $this->finishLiveSignal($signal, $pair, $m15, 900, app(LiveMarketDataService::class)->quote($pair));
                 }
                 if ($source !== 'mt5') {
                     throw new \RuntimeException('GOLD_SIGNAL_SOURCE must be mt5 or twelvedata.');
                 }
                 $snapshot = app(Mt5BridgeClient::class)->snapshot();
-                $signal = app(GoldBreakoutStrategy::class)->evaluate(
-                    $snapshot['m15'], $snapshot['h1'], now()->utc(), $currentPosition
+                if (! preg_match('/^XAU[\/_-]?USD(?:[._#-]?[A-Za-z0-9]+)?$/i', $snapshot['symbol'] ?? '')) {
+                    throw new \RuntimeException('The MT5 snapshot is not an XAUUSD gold instrument.');
+                }
+                $guard = app(MarketDataGuard::class);
+                $m15 = $guard->validateCandles($snapshot['m15'], 900, now()->utc());
+                $h1 = $guard->validateCandles($snapshot['h1'], 3600, now()->utc());
+                $signal = $engine->evaluate(
+                    $m15, $h1, now()->utc(), $currentPosition
                 );
                 $signal['broker'] = ['account_key' => $snapshot['account_key'], 'symbol' => $snapshot['symbol']];
-                return $this->attachPairContext($signal, $pair);
+                $tick = $snapshot['quote'] ?? [];
+                foreach (['bid', 'ask'] as $field) {
+                    if (! isset($tick[$field]) || ! is_numeric($tick[$field]) || ! is_finite((float) $tick[$field]) || $tick[$field] <= 0) {
+                        throw new \RuntimeException('Update the MT5 bridge: a current, timestamped bid/ask quote is required for signals.');
+                    }
+                }
+                if ($tick['ask'] < $tick['bid'] || empty($tick['timestamp'])) {
+                    throw new \RuntimeException('MT5 quote is invalid or has no source timestamp.');
+                }
+                $quote = ['price' => (float) $tick['bid'], 'bid' => (float) $tick['bid'], 'ask' => (float) $tick['ask'],
+                    'observed_at' => $tick['timestamp'], 'market_open' => true, 'source' => 'mt5'];
+
+                return $this->finishLiveSignal($signal, $pair, $m15, 900, $quote);
             } catch (\Throwable $e) {
                 return $this->attachPairContext($this->makeNoDataSignal($slug, $e->getMessage(), $currentPosition), $pair);
             }
         }
 
         if (in_array($slug, ['box-theory', 'box'], true)) {
-            return $this->attachPairContext(
-                $this->evaluateBoxTheory($this->getMarketData($pair['code']), $this->getDailyLevels($pair['code'])),
-                $pair
-            );
+            $data = $this->getCandles($pair['code']);
+            if ($data['error'] !== null) {
+                throw new \RuntimeException($data['error']);
+            }
+            $quote = app(LiveMarketDataService::class)->quote($pair);
+            $levels = $this->getDailyLevels($pair['code']);
+            $signal = $this->evaluateBoxTheory(['price' => $quote['price'],
+                'timestamp' => $data['candles'][array_key_last($data['candles'])]['timestamp'],
+                'source' => $data['source'], 'error' => null], $levels);
+
+            return $this->finishLiveSignal($signal, $pair, $data['candles'], 300, $quote);
         }
 
         if (in_array($slug, ['conservative-v2', 'conservative-v2-final', 'conservative'], true)) {
@@ -195,20 +209,30 @@ class TradingService
                 );
             }
 
-            return $this->attachPairContext($this->evaluateConservativeV2(
+            $signal = $this->evaluateConservativeV2(
                 $ltf['candles'],
                 $htf['candles'],
                 $currentPosition,
                 $ltf['source'] ?? null,
                 isset($pair['pip_size']) ? (float) $pair['pip_size'] : null
-            ), $pair);
+            );
+
+            return $this->finishLiveSignal($signal, $pair, $ltf['candles'], 300, app(LiveMarketDataService::class)->quote($pair));
         }
 
         if (
-            in_array($slug, ['rsi-moving-average', 'rsi-moving-averages', 'rsi-ma', 'rsi-ma-method', 'rsi-scalper', 'rsi-gold-scalper'], true) ||
+            in_array($slug, ['rsi-moving-average', 'rsi-moving-averages', 'rsi-ma', 'rsi-ma-method', 'rsi-scalper', 'rsi-gold-scalper', RsiGoldScalperV2Strategy::SLUG], true) ||
             str_contains($slug, 'rsi')
         ) {
-            $payload = $this->getCandles($pair['code']);
+            $version = strtolower(trim((string) config('scalper.gold.version', 'trend-session-v2')));
+            if ($pair['code'] === 'XAUUSD' && ! in_array($version, ['legacy', 'trend-v2', 'trend-session-v2'], true)) {
+                throw new \RuntimeException('RSI_GOLD_SCALPER_VERSION must be legacy, trend-v2 or trend-session-v2.');
+            }
+            if ($slug === RsiGoldScalperV2Strategy::SLUG && $pair['code'] !== 'XAUUSD') {
+                throw new \RuntimeException('RSI Gold Scalper V2 supports XAUUSD only.');
+            }
+            $useGoldV2 = $pair['code'] === 'XAUUSD' && ($version !== 'legacy' || $slug === RsiGoldScalperV2Strategy::SLUG);
+            $payload = $this->getCandles($pair['code'], '5min', $useGoldV2 ? 250 : 200);
             if ($payload['error'] !== null) {
                 return $this->attachPairContext(
                     $this->makeNoDataSignal($slug, $payload['error'], $currentPosition),
@@ -216,10 +240,16 @@ class TradingService
                 );
             }
 
-            return $this->attachPairContext(
-                $this->evaluateRsiMovingAverage($payload['candles'], $currentPosition, [], $payload['source'] ?? null),
-                $pair
-            );
+            $signal = $useGoldV2
+                ? (new RsiGoldScalperV2Strategy($this, app(MarketDataGuard::class)))->evaluate(
+                    $payload['candles'], $currentPosition, $payload['source'] ?? null, now()->utc(), $version === 'trend-session-v2'
+                )
+                : $this->evaluateRsiMovingAverage($payload['candles'], $currentPosition, [], $payload['source'] ?? null);
+            if (($signal['action'] ?? 'NO_DATA') === 'NO_DATA') {
+                return $this->attachPairContext($signal, $pair);
+            }
+
+            return $this->finishLiveSignal($signal, $pair, $payload['candles'], 300, app(LiveMarketDataService::class)->quote($pair));
         }
 
         return $this->attachPairContext(
@@ -230,6 +260,69 @@ class TradingService
             ),
             $pair
         );
+    }
+
+    /**
+     * @return array<string,mixed>
+     */
+    private function finishLiveSignal(array $signal, array $pair, array $candles, int $seconds, array $quote): array
+    {
+        if (($signal['action'] ?? 'NO_DATA') === 'NO_DATA') {
+            return $this->attachPairContext($signal, $pair);
+        }
+        $last = $candles[array_key_last($candles)] ?? throw new \RuntimeException('No confirmed candle available.');
+        $opened = Carbon::parse($last['timestamp'], 'UTC')->utc();
+        $closed = $opened->copy()->addSeconds($seconds);
+        if (! is_string($signal['timestamp'] ?? null)
+            || ! in_array($signal['timestamp'], [$opened->toIso8601String(), $closed->toIso8601String()], true)) {
+            throw new \RuntimeException('The evaluated signal does not belong to its confirmed candle; no timestamp is relabeled.');
+        }
+        $generated = now()->utc();
+        $expiry = $closed->copy()->addSeconds(180);
+        if (! empty($signal['expires_at'])) {
+            $expiry = $expiry->min(Carbon::parse($signal['expires_at'], 'UTC')->utc());
+        }
+        $action = strtoupper((string) $signal['action']);
+        $quotePrice = $action === 'BUY' ? ($quote['ask'] ?? $quote['price']) : ($quote['bid'] ?? $quote['price']);
+        $signal['timestamp'] = $closed->toIso8601String();
+        $signal['generated_at'] = $generated->toIso8601String();
+        $signal['expires_at'] = $expiry->toIso8601String();
+        $signal['quote_price'] = (float) $quotePrice;
+        $signal['freshness'] = [
+            'verified' => true, 'source' => $quote['source'], 'interval_seconds' => $seconds,
+            'candle_opened_at' => $opened->toIso8601String(), 'data_as_of' => $closed->toIso8601String(),
+            'observed_at' => $quote['observed_at'], 'generated_at' => $generated->toIso8601String(),
+            'market_open' => $quote['market_open'], 'quote_price' => (float) $quotePrice,
+        ];
+        $signal['signal_id'] = hash('sha256', implode('|', [$signal['strategy'], $pair['code'], $quote['source'], $signal['timestamp'], $action]));
+        $signal = $this->attachPairContext($signal, $pair);
+        $reason = app(MarketDataGuard::class)->validateSignal($signal, now()->utc());
+        if ($reason !== null) {
+            throw new \RuntimeException($reason);
+        }
+        if (in_array($action, ['BUY', 'SELL'], true)) {
+            $plan = $signal['trade_plan'] ?? [];
+            foreach (['entry_price', 'stop_loss', 'take_profit_1'] as $field) {
+                if (! isset($plan[$field]) || ! is_numeric($plan[$field]) || ! is_finite((float) $plan[$field]) || $plan[$field] <= 0) {
+                    throw new \RuntimeException('Signal has no valid current entry, stop and target.');
+                }
+            }
+            $side = $action === 'BUY' ? 1 : -1;
+            $risk = ((float) $plan['entry_price'] - (float) $plan['stop_loss']) * $side;
+            if ($risk <= 0 || ($quotePrice - $plan['stop_loss']) * $side <= 0 || ($plan['take_profit_1'] - $quotePrice) * $side <= 0
+                || abs($quotePrice - $plan['entry_price']) > 0.1 * $risk) {
+                throw new \RuntimeException('Current quote has moved beyond the trade plan or more than 0.1R from entry; skip this old setup.');
+            }
+            if ((isset($plan['entry_min_price']) && $quotePrice < $plan['entry_min_price'])
+                || (isset($plan['entry_max_price']) && $quotePrice > $plan['entry_max_price'])) {
+                throw new \RuntimeException('Current quote is outside the confirmed retest entry bounds; do not chase this setup.');
+            }
+            if (isset($plan['entry_limit_price']) && ($quotePrice - $plan['entry_limit_price']) * $side > 0) {
+                throw new \RuntimeException('Current quote exceeds the breakout extension limit; do not chase this setup.');
+            }
+        }
+
+        return $signal;
     }
 
     /**
@@ -295,8 +388,7 @@ class TradingService
         ?string $currentPosition = null,
         array $settings = [],
         ?string $dataSource = null
-    ): array
-    {
+    ): array {
         $settings = array_merge([
             'short_ma_period' => 9,
             'long_ma_period' => 21,
@@ -855,494 +947,9 @@ class TradingService
      * Cache completed spot-gold bars until the next close. Never substitute futures
      * or combine different providers for the two timeframes used by this strategy.
      */
-    private function getGoldApiCandles(array $pair, string $interval, int $minutes): array
+    private function getGoldApiCandles(array $pair, string $interval, int $count = 300): array
     {
-        $cacheKey = sprintf('gold_breakout:twelvedata:%s:%s:closed:v1', $pair['code'], $interval);
-        $cached = Cache::get($cacheKey);
-        if (is_array($cached)) {
-            return $cached;
-        }
-
-        $data = $this->getTwelveDataIntradayCandles($pair, $interval, 300, strict: true);
-        if ($data['error'] !== null) {
-            throw new \RuntimeException($data['error']);
-        }
-
-        $now = now()->utc();
-        $candles = [];
-        foreach ($data['candles'] as $bar) {
-            $openedAt = Carbon::parse($bar['timestamp'], 'UTC')->utc();
-            if ($openedAt->copy()->addMinutes($minutes)->lte($now)) {
-                $bar['timestamp'] = $openedAt->toIso8601String();
-                $candles[] = $bar;
-            }
-        }
-
-        $expectedClose = $now->copy()->startOfHour()->addMinutes(intdiv($now->minute, $minutes) * $minutes);
-        $last = $candles[array_key_last($candles)] ?? null;
-        $latestClose = $last === null ? null : Carbon::parse($last['timestamp'])->addMinutes($minutes);
-        // Retry shortly if the provider has not published the newly closed bar yet.
-        $expiresAt = $latestClose?->gte($expectedClose)
-            ? $expectedClose->copy()->addMinutes($minutes)
-            : $now->copy()->addSeconds(30);
-        Cache::put($cacheKey, $candles, $expiresAt);
-
-        return $candles;
-    }
-
-    /**
-     * @param array<string,mixed> $pair
-     */
-    private function getTwelveDataIntradayCandles(array $pair, string $interval, int $limit, bool $strict = false): array
-    {
-        $mappedInterval = match ($interval) {
-            '1min' => '1min',
-            '5min' => '5min',
-            '15min' => '15min',
-            '30min' => '30min',
-            '60min' => '1h',
-            default => '5min',
-        };
-
-        $api = $this->requestTwelveData('/time_series', [
-            'symbol' => (string) ($pair['twelvedata_symbol'] ?? self::FALLBACK_PAIR['twelvedata_symbol']),
-            'interval' => $mappedInterval,
-            'outputsize' => max(40, min(5000, $limit)),
-            'timezone' => 'UTC',
-            'order' => 'ASC',
-        ]);
-
-        if ($api['error'] !== null) {
-            return ['candles' => [], 'source' => null, 'error' => $api['error']];
-        }
-
-        $values = $api['data']['values'] ?? null;
-        if (!is_array($values) || $values === []) {
-            return [
-                'candles' => [],
-                'source' => null,
-                'error' => sprintf('No intraday %s candles from TwelveData.', $pair['display']),
-            ];
-        }
-
-        $candles = [];
-        foreach ($values as $row) {
-            if ($strict) {
-                if (!is_string($row['datetime'] ?? null) || trim($row['datetime']) === '') {
-                    return ['candles' => [], 'source' => null, 'error' => 'Twelve Data returned a candle without a timestamp.'];
-                }
-                foreach (['open', 'high', 'low', 'close'] as $field) {
-                    if (!isset($row[$field]) || !is_numeric($row[$field]) || !is_finite((float) $row[$field]) || (float) $row[$field] <= 0) {
-                        return ['candles' => [], 'source' => null, 'error' => 'Twelve Data returned incomplete or invalid OHLC candles.'];
-                    }
-                }
-            }
-            $close = isset($row['close']) ? (float) $row['close'] : null;
-            if ($close === null) {
-                continue;
-            }
-
-            $candles[] = [
-                'timestamp' => (string) ($row['datetime'] ?? ''),
-                'open' => (float) ($row['open'] ?? $close),
-                'high' => (float) ($row['high'] ?? $close),
-                'low' => (float) ($row['low'] ?? $close),
-                'close' => $close,
-            ];
-        }
-
-        if ($candles === []) {
-            return [
-                'candles' => [],
-                'source' => null,
-                'error' => sprintf('TwelveData returned empty intraday values for %s.', $pair['display']),
-            ];
-        }
-
-        usort($candles, fn (array $left, array $right) => strcmp($left['timestamp'], $right['timestamp']));
-
-        if ($limit > 0 && count($candles) > $limit) {
-            $candles = array_slice($candles, -$limit);
-        }
-
-        return [
-            'candles' => $candles,
-            'source' => 'twelvedata_' . strtolower((string) $pair['code']),
-            'error' => null,
-        ];
-    }
-
-    /**
-     * @param array<string,mixed> $pair
-     */
-    private function getTwelveDataDailyLevels(array $pair): array
-    {
-        $api = $this->requestTwelveData('/time_series', [
-            'symbol' => (string) ($pair['twelvedata_symbol'] ?? self::FALLBACK_PAIR['twelvedata_symbol']),
-            'interval' => '1day',
-            'outputsize' => 5,
-            'timezone' => 'UTC',
-            'order' => 'ASC',
-        ]);
-
-        if ($api['error'] !== null) {
-            return ['high' => 0.0, 'low' => 0.0, 'date' => null, 'source' => null, 'error' => $api['error']];
-        }
-
-        $values = $api['data']['values'] ?? null;
-        if (!is_array($values) || $values === []) {
-            return [
-                'high' => 0.0,
-                'low' => 0.0,
-                'date' => null,
-                'source' => null,
-                'error' => sprintf('No daily %s levels from TwelveData.', $pair['display']),
-            ];
-        }
-
-        $target = $values[count($values) - 2] ?? end($values);
-
-        return [
-            'high' => (float) ($target['high'] ?? 0),
-            'low' => (float) ($target['low'] ?? 0),
-            'date' => (string) ($target['datetime'] ?? null),
-            'source' => 'twelvedata_' . strtolower((string) $pair['code']),
-            'error' => null,
-        ];
-    }
-
-    private function requestTwelveData(string $path, array $query): array
-    {
-        $apiKey = (string) config('services.twelvedata.key');
-        if ($apiKey === '') {
-            return ['data' => null, 'error' => 'TWELVEDATA_API_KEY is missing from your .env file.'];
-        }
-
-        $url = rtrim(self::TWELVEDATA_URL, '/') . '/' . ltrim($path, '/');
-
-        try {
-            $response = Http::timeout(15)
-                ->retry(2, 300)
-                ->get($url, array_merge($query, ['apikey' => $apiKey]));
-        } catch (\Throwable $exception) {
-            return ['data' => null, 'error' => 'TwelveData request error: ' . $exception->getMessage()];
-        }
-
-        if (!$response->successful()) {
-            return ['data' => null, 'error' => 'TwelveData request failed: HTTP ' . $response->status()];
-        }
-
-        $data = $response->json();
-        if (!is_array($data)) {
-            return ['data' => null, 'error' => 'Unexpected TwelveData response format.'];
-        }
-
-        if (($data['status'] ?? null) === 'error') {
-            return ['data' => null, 'error' => (string) ($data['message'] ?? 'Unknown TwelveData error.')];
-        }
-
-        return ['data' => $data, 'error' => null];
-    }
-
-    /**
-     * @param array<string,mixed> $pair
-     */
-    private function getAlphaVantageIntradayCandles(array $pair, string $interval, int $limit): array
-    {
-        $api = $this->requestAlphaVantage([
-            'function' => 'FX_INTRADAY',
-            'from_symbol' => (string) ($pair['alpha_from_symbol'] ?? self::FALLBACK_PAIR['alpha_from_symbol']),
-            'to_symbol' => (string) ($pair['alpha_to_symbol'] ?? self::FALLBACK_PAIR['alpha_to_symbol']),
-            'interval' => $interval,
-            'outputsize' => 'full',
-        ]);
-
-        if ($api['error'] !== null) {
-            return ['candles' => [], 'source' => null, 'error' => $api['error']];
-        }
-
-        $seriesKey = sprintf('Time Series FX (%s)', $interval);
-        $series = $api['data'][$seriesKey] ?? null;
-
-        if (!is_array($series) || $series === []) {
-            return [
-                'candles' => [],
-                'source' => null,
-                'error' => sprintf('No intraday %s candles from Alpha Vantage.', $pair['display']),
-            ];
-        }
-
-        $candles = [];
-        foreach ($series as $timestamp => $row) {
-            $candles[] = [
-                'timestamp' => (string) $timestamp,
-                'open' => (float) ($row['1. open'] ?? 0),
-                'high' => (float) ($row['2. high'] ?? 0),
-                'low' => (float) ($row['3. low'] ?? 0),
-                'close' => (float) ($row['4. close'] ?? 0),
-            ];
-        }
-
-        usort($candles, fn (array $left, array $right) => strcmp($left['timestamp'], $right['timestamp']));
-
-        if ($limit > 0 && count($candles) > $limit) {
-            $candles = array_slice($candles, -$limit);
-        }
-
-        return [
-            'candles' => $candles,
-            'source' => 'alphavantage_fx_intraday_' . strtolower((string) $pair['code']),
-            'error' => null,
-        ];
-    }
-
-    /**
-     * @param array<string,mixed> $pair
-     */
-    private function getAlphaVantageDailyLevels(array $pair): array
-    {
-        $api = $this->requestAlphaVantage([
-            'function' => 'FX_DAILY',
-            'from_symbol' => (string) ($pair['alpha_from_symbol'] ?? self::FALLBACK_PAIR['alpha_from_symbol']),
-            'to_symbol' => (string) ($pair['alpha_to_symbol'] ?? self::FALLBACK_PAIR['alpha_to_symbol']),
-            'outputsize' => 'compact',
-        ]);
-
-        if ($api['error'] !== null) {
-            return ['high' => 0.0, 'low' => 0.0, 'date' => null, 'source' => null, 'error' => $api['error']];
-        }
-
-        $series = $api['data']['Time Series FX (Daily)'] ?? null;
-        if (!is_array($series) || $series === []) {
-            return [
-                'high' => 0.0,
-                'low' => 0.0,
-                'date' => null,
-                'source' => null,
-                'error' => sprintf('No daily %s levels from Alpha Vantage.', $pair['display']),
-            ];
-        }
-
-        $dates = array_keys($series);
-        rsort($dates);
-        $targetDate = $dates[1] ?? $dates[0] ?? null;
-
-        return [
-            'high' => (float) ($series[$targetDate]['2. high'] ?? 0),
-            'low' => (float) ($series[$targetDate]['3. low'] ?? 0),
-            'date' => $targetDate,
-            'source' => 'alphavantage_fx_daily_' . strtolower((string) $pair['code']),
-            'error' => null,
-        ];
-    }
-
-    /**
-     * @param array<string,mixed> $pair
-     */
-    private function getYahooIntradayCandles(array $pair, string $interval, int $limit): array
-    {
-        $mappedInterval = match ($interval) {
-            '1min' => '1m',
-            '5min' => '5m',
-            '15min' => '15m',
-            '30min' => '30m',
-            '60min' => '60m',
-            default => '5m',
-        };
-
-        $api = $this->requestYahooChart(
-            (string) ($pair['yahoo_symbol'] ?? self::FALLBACK_PAIR['yahoo_symbol']),
-            $mappedInterval,
-            '5d'
-        );
-        if ($api['error'] !== null) {
-            return ['candles' => [], 'source' => null, 'error' => $api['error']];
-        }
-
-        $result = $api['data']['chart']['result'][0] ?? null;
-        $timestamps = $result['timestamp'] ?? [];
-        $quote = $result['indicators']['quote'][0] ?? [];
-
-        if (!is_array($timestamps) || $timestamps === [] || !is_array($quote)) {
-            return [
-                'candles' => [],
-                'source' => null,
-                'error' => sprintf('No intraday %s candles from Yahoo fallback.', $pair['display']),
-            ];
-        }
-
-        $candles = [];
-        foreach ($timestamps as $index => $epoch) {
-            $close = $quote['close'][$index] ?? null;
-            if ($close === null) {
-                continue;
-            }
-
-            $open = $quote['open'][$index] ?? $close;
-            $high = $quote['high'][$index] ?? $close;
-            $low = $quote['low'][$index] ?? $close;
-
-            $candles[] = [
-                'timestamp' => gmdate('Y-m-d H:i:s', (int) $epoch),
-                'open' => (float) $open,
-                'high' => (float) $high,
-                'low' => (float) $low,
-                'close' => (float) $close,
-            ];
-        }
-
-        if ($candles === []) {
-            return [
-                'candles' => [],
-                'source' => null,
-                'error' => sprintf('Yahoo fallback returned empty candle values for %s.', $pair['display']),
-            ];
-        }
-
-        if ($limit > 0 && count($candles) > $limit) {
-            $candles = array_slice($candles, -$limit);
-        }
-
-        return [
-            'candles' => $candles,
-            'source' => 'yahoo_fallback_' . strtolower((string) $pair['code']),
-            'error' => null,
-        ];
-    }
-
-    /**
-     * @param array<string,mixed> $pair
-     */
-    private function getYahooDailyLevels(array $pair): array
-    {
-        $api = $this->requestYahooChart(
-            (string) ($pair['yahoo_symbol'] ?? self::FALLBACK_PAIR['yahoo_symbol']),
-            '1d',
-            '1mo'
-        );
-        if ($api['error'] !== null) {
-            return ['high' => 0.0, 'low' => 0.0, 'date' => null, 'source' => null, 'error' => $api['error']];
-        }
-
-        $result = $api['data']['chart']['result'][0] ?? null;
-        $timestamps = $result['timestamp'] ?? [];
-        $quote = $result['indicators']['quote'][0] ?? [];
-
-        if (!is_array($timestamps) || count($timestamps) < 1 || !is_array($quote)) {
-            return [
-                'high' => 0.0,
-                'low' => 0.0,
-                'date' => null,
-                'source' => null,
-                'error' => sprintf('No daily %s candles from Yahoo fallback.', $pair['display']),
-            ];
-        }
-
-        $candles = [];
-        foreach ($timestamps as $index => $epoch) {
-            $high = $quote['high'][$index] ?? null;
-            $low = $quote['low'][$index] ?? null;
-            if ($high === null || $low === null) {
-                continue;
-            }
-
-            $candles[] = [
-                'date' => gmdate('Y-m-d', (int) $epoch),
-                'high' => (float) $high,
-                'low' => (float) $low,
-            ];
-        }
-
-        if ($candles === []) {
-            return [
-                'high' => 0.0,
-                'low' => 0.0,
-                'date' => null,
-                'source' => null,
-                'error' => sprintf('Yahoo fallback daily candle values are empty for %s.', $pair['display']),
-            ];
-        }
-
-        $target = $candles[count($candles) - 2] ?? end($candles);
-
-        return [
-            'high' => (float) $target['high'],
-            'low' => (float) $target['low'],
-            'date' => $target['date'],
-            'source' => 'yahoo_fallback_' . strtolower((string) $pair['code']),
-            'error' => null,
-        ];
-    }
-
-    private function requestYahooChart(string $symbol, string $interval, string $range): array
-    {
-        $url = sprintf('https://query1.finance.yahoo.com/v8/finance/chart/%s', rawurlencode($symbol));
-
-        try {
-            $response = Http::timeout(15)
-                ->retry(2, 300)
-                ->get($url, [
-                    'interval' => $interval,
-                    'range' => $range,
-                ]);
-        } catch (\Throwable $exception) {
-            return ['data' => null, 'error' => 'Yahoo request error: ' . $exception->getMessage()];
-        }
-
-        if (!$response->successful()) {
-            return ['data' => null, 'error' => 'Yahoo request failed: HTTP ' . $response->status()];
-        }
-
-        $data = $response->json();
-        if (!is_array($data)) {
-            return ['data' => null, 'error' => 'Unexpected Yahoo response format.'];
-        }
-
-        $chartError = $data['chart']['error']['description'] ?? null;
-        if (is_string($chartError) && $chartError !== '') {
-            return ['data' => null, 'error' => 'Yahoo chart error: ' . $chartError];
-        }
-
-        return ['data' => $data, 'error' => null];
-    }
-
-    private function requestAlphaVantage(array $query): array
-    {
-        $apiKey = (string) config('services.alphavantage.key');
-        if ($apiKey === '') {
-            return ['data' => null, 'error' => 'ALPHA_VANTAGE_KEY is missing from your .env file.'];
-        }
-
-        try {
-            $response = Http::timeout(15)
-                ->retry(2, 300)
-                ->get(self::ALPHA_VANTAGE_URL, array_merge($query, ['apikey' => $apiKey]));
-        } catch (\Throwable $exception) {
-            return ['data' => null, 'error' => 'Alpha Vantage request error: ' . $exception->getMessage()];
-        }
-
-        if (!$response->successful()) {
-            return ['data' => null, 'error' => 'Alpha Vantage request failed: HTTP ' . $response->status()];
-        }
-
-        $data = $response->json();
-        if (!is_array($data)) {
-            return ['data' => null, 'error' => 'Unexpected API response format.'];
-        }
-
-        if (isset($data['Error Message'])) {
-            return ['data' => null, 'error' => (string) $data['Error Message']];
-        }
-
-        if (isset($data['Information'])) {
-            return ['data' => null, 'error' => (string) $data['Information']];
-        }
-
-        if (isset($data['Note'])) {
-            return ['data' => null, 'error' => (string) $data['Note']];
-        }
-
-        return ['data' => $data, 'error' => null];
+        return app(LiveMarketDataService::class)->candles($pair, $interval, $count)['candles'];
     }
 
     private function ema(array $values, int $period): ?float
@@ -1708,13 +1315,13 @@ class TradingService
     private function pairCatalog(): array
     {
         $pairs = config('trading.pairs', []);
-        if (!is_array($pairs) || $pairs === []) {
+        if (! is_array($pairs) || $pairs === []) {
             return [self::FALLBACK_PAIR_CODE => self::FALLBACK_PAIR];
         }
 
         $normalized = [];
         foreach ($pairs as $code => $pair) {
-            if (!is_string($code) || !is_array($pair)) {
+            if (! is_string($code) || ! is_array($pair)) {
                 continue;
             }
 
@@ -1762,7 +1369,7 @@ class TradingService
     }
 
     /**
-     * @param array<string,mixed> $pair
+     * @param  array<string,mixed>  $pair
      */
     private function attachPairContext(array $signal, array $pair): array
     {

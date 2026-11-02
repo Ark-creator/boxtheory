@@ -1,0 +1,59 @@
+{
+  "strategy": "gold-trend-retest",
+  "simulation": "conditional M1 bid-bar diagnostic; minute spread minimum is a lower-bound proxy",
+  "timestamp_assumption": "Assume CSV wall time is UTC+0 throughout. Broker timezone is not independently verified.",
+  "symbol": "XAUUSD-STD",
+  "from_inclusive": "2026-10-13T00:30:00+00:00",
+  "to_exclusive": "2026-10-30T23:57:00+00:00",
+  "cost_assumptions": {
+    "point_size_unverified": 0.01,
+    "reported_minute_minimum_spread_multiplier": 2,
+    "slippage_usd_per_ounce_each_fill": 0.2,
+    "round_trip_fee_usd_per_ounce": 0.14
+  },
+  "signals": 0,
+  "entry_rejections": {
+    "duplicate_setup": 0,
+    "existing_position": 0,
+    "daily_entry_limit": 0,
+    "cooldown": 0,
+    "entry_bounds": 0,
+    "spread_or_reward_risk": 0,
+    "no_immediate_next_open": 0
+  },
+  "metrics": {
+    "closed_trades": 0,
+    "wins": 0,
+    "losses": 0,
+    "breakeven": 0,
+    "win_rate": null,
+    "net_r": 0,
+    "expectancy_r": null,
+    "profit_factor_r": null,
+    "max_closed_trade_drawdown_r": 0
+  },
+  "contiguous_path_metrics": {
+    "closed_trades": 0,
+    "wins": 0,
+    "losses": 0,
+    "breakeven": 0,
+    "win_rate": null,
+    "net_r": 0,
+    "expectancy_r": null,
+    "profit_factor_r": null,
+    "max_closed_trade_drawdown_r": 0
+  },
+  "trades_crossing_nonconsecutive_minutes": 0,
+  "nonconsecutive_intervals_in_evaluation": 14,
+  "ambiguous_minutes_stop_first": 0,
+  "open_position_at_end": null,
+  "trades": [],
+  "limitations": [
+    "Timestamp conversion and broker point size are explicit assumptions, not verified terminal metadata.",
+    "MT5 minute SPREAD is the minimum spread within a minute; treating it as constant can understate costs and distort short exits.",
+    "Both SL/TP within one minute resolve stop first; no tick order is available.",
+    "Quotes during missing intervals are unknown. All-trade metrics assume no unseen execution; contiguous-path metrics exclude trades spanning gaps.",
+    "No historical news, swaps, variable intraminute spread, volume rounding, margin, equity sizing, account loss gates or execution latency.",
+    "Chronological segments are preliminary diagnostics; this is not proof of superiority or a genuine untouched holdout."
+  ]
+}

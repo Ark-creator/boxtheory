@@ -1,0 +1,472 @@
+{
+  "description": "Independent JavaScript indicator and replay oracle compared with official PHP primary fixed-target cases.",
+  "independence": "SMA/RSI/ATR, session aggregation, fills and exits independently implemented before official PHP results were available. Only strict raw-TSV parsing is shared.",
+  "source_sha256": "c67ea70ca5715726daa93df84bc073632aed03643fc28f58550195df1d54f6ab",
+  "oracle_sha256": "5e4a5e5b9c134e04b3ca6dec8119bab9a58d141cdb033aac6f65c0905cf39f2c",
+  "broker_utc_offset_assumed": 3,
+  "assumptions": {
+    "point_size": 0.01,
+    "minute_spread_multiplier": 1,
+    "adverse_slippage_each_fill": 0.1,
+    "round_trip_fee_per_unit": 0.07,
+    "position_aware": false,
+    "rolling_m5_history": 200,
+    "warmup_closed_m5": 200
+  },
+  "numeric_tolerance": 1e-8,
+  "status": "passed",
+  "case_trade_records_compared": 331,
+  "overlap_note": "Full-period and last30 cases overlap; the case-trade count is not a count of independent unique trades.",
+  "checks": [
+    {
+      "independent_implementation": true,
+      "offset_hours_assumed": 3,
+      "source_sha256": "c67ea70ca5715726daa93df84bc073632aed03643fc28f58550195df1d54f6ab",
+      "signal_verification": {
+        "reference_file": "F:\\Projects\\boxtheory\\boxtheory\\storage\\app\\private\\signal-research\\rsi-scalper-backtest-2026-11-02\\signals-utcplus3.json",
+        "compared": 515,
+        "fields": [
+          "side",
+          "source_open",
+          "entry_price",
+          "stop_loss",
+          "take_profit_1",
+          "take_profit_2",
+          "rsi",
+          "atr",
+          "short_ma",
+          "long_ma"
+        ],
+        "mismatches": []
+      },
+      "evaluation_start": "full after warmup",
+      "source_rows": 60475,
+      "complete_session_m5": 12071,
+      "incomplete_m5_buckets": 43,
+      "closed_session_m5_removed": 0,
+      "results": [
+        {
+          "target": "tp1",
+          "signals": 515,
+          "rejection_counts": {
+            "existing_position": 373,
+            "market_closed": 0,
+            "quote_drift_or_bracket": 0,
+            "invalid_fill": 0,
+            "missing_next_minute": 0
+          },
+          "metrics": {
+            "closed_trades": 141,
+            "wins": 55,
+            "losses": 86,
+            "breakeven": 0,
+            "net_r": -7.3269308934721,
+            "expectancy_r": -0.05196404888987305,
+            "profit_factor_r": 0.9158791962354503,
+            "max_closed_trade_drawdown_r": 15.510356562464947,
+            "max_losing_streak": 10
+          },
+          "contiguous_metrics": {
+            "closed_trades": 113,
+            "wins": 40,
+            "losses": 73,
+            "breakeven": 0,
+            "net_r": -16.016071752992204,
+            "expectancy_r": -0.1417351482565682,
+            "profit_factor_r": 0.7835235042541242,
+            "max_closed_trade_drawdown_r": 19.57417688249551,
+            "max_losing_streak": 9
+          },
+          "closed_by_side": {
+            "BUY": {
+              "closed_trades": 73,
+              "wins": 23,
+              "losses": 50,
+              "breakeven": 0,
+              "net_r": -17.82293888010786,
+              "expectancy_r": -0.2441498476727104,
+              "profit_factor_r": 0.647910706524327,
+              "max_closed_trade_drawdown_r": 18.286962644527065,
+              "max_losing_streak": 11
+            },
+            "SELL": {
+              "closed_trades": 68,
+              "wins": 32,
+              "losses": 36,
+              "breakeven": 0,
+              "net_r": 10.496007986635759,
+              "expectancy_r": 0.15435305862699644,
+              "profit_factor_r": 1.2877226903528973,
+              "max_closed_trade_drawdown_r": 7.209491476850372,
+              "max_losing_streak": 6
+            }
+          },
+          "trades_crossing_nonconsecutive_minutes": 28,
+          "nonconsecutive_intervals": 43,
+          "ambiguous_minutes": 0,
+          "open_position": {
+            "side": 1,
+            "opened_at": "2026-10-30T20:15:00+00:00",
+            "signal_at": "2026-10-30T20:15:00+00:00",
+            "entry": 3882.58,
+            "original_entry": 3882.28,
+            "sl": 3869.1391,
+            "tp": 3901.9913,
+            "risk": 13.440900000000056,
+            "crossed_nonconsecutive_minutes": false
+          },
+          "accepted_quote_drift_r": {
+            "min": 0,
+            "max": 0.036938664227550565
+          },
+          "reference_file": "F:\\Projects\\boxtheory\\boxtheory\\storage\\app\\private\\signal-research\\rsi-scalper-backtest-2026-11-02\\utcplus3-full-tp1-fixed-assumed-costs.json",
+          "reference_metrics": {
+            "closed_trades": 141,
+            "wins": 55,
+            "losses": 86,
+            "breakeven": 0,
+            "win_rate": 0.3900709219858156,
+            "net_r": -7.3269308934721,
+            "expectancy_r": -0.05196404888987305,
+            "profit_factor_r": 0.9158791962354503,
+            "max_closed_trade_drawdown_r": 15.510356562464947
+          },
+          "reference_rejections": {
+            "existing_position": 373,
+            "market_closed": 0,
+            "invalid_plan": 0,
+            "quote_drift": 0,
+            "quote_bracket": 0,
+            "fill_bracket": 0,
+            "no_immediate_next_open": 0
+          },
+          "reference_trade_count": 141,
+          "reference_mismatches": []
+        },
+        {
+          "target": "tp2",
+          "signals": 515,
+          "rejection_counts": {
+            "existing_position": 398,
+            "market_closed": 0,
+            "quote_drift_or_bracket": 0,
+            "invalid_fill": 0,
+            "missing_next_minute": 0
+          },
+          "metrics": {
+            "closed_trades": 116,
+            "wins": 31,
+            "losses": 85,
+            "breakeven": 0,
+            "net_r": -10.944603961412358,
+            "expectancy_r": -0.09435003415010654,
+            "profit_factor_r": 0.872859835052553,
+            "max_closed_trade_drawdown_r": 20.267941646894005,
+            "max_losing_streak": 13
+          },
+          "contiguous_metrics": {
+            "closed_trades": 86,
+            "wins": 25,
+            "losses": 61,
+            "breakeven": 0,
+            "net_r": -1.3155600967906915,
+            "expectancy_r": -0.01529721042779874,
+            "profit_factor_r": 0.9787292724870603,
+            "max_closed_trade_drawdown_r": 13.776214794137076,
+            "max_losing_streak": 11
+          },
+          "closed_by_side": {
+            "BUY": {
+              "closed_trades": 58,
+              "wins": 11,
+              "losses": 47,
+              "breakeven": 0,
+              "net_r": -21.532898921158115,
+              "expectancy_r": -0.371256877951002,
+              "profit_factor_r": 0.5473936523437664,
+              "max_closed_trade_drawdown_r": 22.055195238942918,
+              "max_losing_streak": 14
+            },
+            "SELL": {
+              "closed_trades": 58,
+              "wins": 20,
+              "losses": 38,
+              "breakeven": 0,
+              "net_r": 10.588294959745749,
+              "expectancy_r": 0.18255680965078877,
+              "profit_factor_r": 1.2749660704566343,
+              "max_closed_trade_drawdown_r": 9.107724161790092,
+              "max_losing_streak": 9
+            }
+          },
+          "trades_crossing_nonconsecutive_minutes": 30,
+          "nonconsecutive_intervals": 43,
+          "ambiguous_minutes": 0,
+          "open_position": {
+            "side": 1,
+            "opened_at": "2026-10-30T20:15:00+00:00",
+            "signal_at": "2026-10-30T20:15:00+00:00",
+            "entry": 3882.58,
+            "original_entry": 3882.28,
+            "sl": 3869.1391,
+            "tp": 3915.1321,
+            "risk": 13.440900000000056,
+            "crossed_nonconsecutive_minutes": false
+          },
+          "accepted_quote_drift_r": {
+            "min": 0,
+            "max": 0.039742755979526416
+          },
+          "reference_file": "F:\\Projects\\boxtheory\\boxtheory\\storage\\app\\private\\signal-research\\rsi-scalper-backtest-2026-11-02\\utcplus3-full-tp2-fixed-assumed-costs.json",
+          "reference_metrics": {
+            "closed_trades": 116,
+            "wins": 31,
+            "losses": 85,
+            "breakeven": 0,
+            "win_rate": 0.2672413793103448,
+            "net_r": -10.944603961412358,
+            "expectancy_r": -0.09435003415010654,
+            "profit_factor_r": 0.872859835052553,
+            "max_closed_trade_drawdown_r": 20.267941646894005
+          },
+          "reference_rejections": {
+            "existing_position": 398,
+            "market_closed": 0,
+            "invalid_plan": 0,
+            "quote_drift": 0,
+            "quote_bracket": 0,
+            "fill_bracket": 0,
+            "no_immediate_next_open": 0
+          },
+          "reference_trade_count": 116,
+          "reference_mismatches": []
+        }
+      ]
+    },
+    {
+      "independent_implementation": true,
+      "offset_hours_assumed": 3,
+      "source_sha256": "c67ea70ca5715726daa93df84bc073632aed03643fc28f58550195df1d54f6ab",
+      "signal_verification": {
+        "reference_file": "F:\\Projects\\boxtheory\\boxtheory\\storage\\app\\private\\signal-research\\rsi-scalper-backtest-2026-11-02\\signals-utcplus3.json",
+        "compared": 188,
+        "fields": [
+          "side",
+          "source_open",
+          "entry_price",
+          "stop_loss",
+          "take_profit_1",
+          "take_profit_2",
+          "rsi",
+          "atr",
+          "short_ma",
+          "long_ma"
+        ],
+        "mismatches": []
+      },
+      "evaluation_start": "2026-10-12T21:30:00+00:00",
+      "source_rows": 60475,
+      "complete_session_m5": 12071,
+      "incomplete_m5_buckets": 43,
+      "closed_session_m5_removed": 0,
+      "results": [
+        {
+          "target": "tp1",
+          "signals": 188,
+          "rejection_counts": {
+            "existing_position": 153,
+            "market_closed": 0,
+            "quote_drift_or_bracket": 0,
+            "invalid_fill": 0,
+            "missing_next_minute": 0
+          },
+          "metrics": {
+            "closed_trades": 34,
+            "wins": 11,
+            "losses": 23,
+            "breakeven": 0,
+            "net_r": -7.398888580011536,
+            "expectancy_r": -0.21761437000033929,
+            "profit_factor_r": 0.6828047396122172,
+            "max_closed_trade_drawdown_r": 12.75998238048287,
+            "max_losing_streak": 10
+          },
+          "contiguous_metrics": {
+            "closed_trades": 28,
+            "wins": 8,
+            "losses": 20,
+            "breakeven": 0,
+            "net_r": -8.79483251389145,
+            "expectancy_r": -0.31410116121040893,
+            "profit_factor_r": 0.5665266518437231,
+            "max_closed_trade_drawdown_r": 11.201666265339874,
+            "max_losing_streak": 9
+          },
+          "closed_by_side": {
+            "BUY": {
+              "closed_trades": 21,
+              "wins": 4,
+              "losses": 17,
+              "breakeven": 0,
+              "net_r": -11.625957203996425,
+              "expectancy_r": -0.5536170097141154,
+              "profit_factor_r": 0.3254603434480531,
+              "max_closed_trade_drawdown_r": 12.089980968415631,
+              "max_losing_streak": 9
+            },
+            "SELL": {
+              "closed_trades": 13,
+              "wins": 7,
+              "losses": 6,
+              "breakeven": 0,
+              "net_r": 4.227068623984888,
+              "expectancy_r": 0.32515912492191446,
+              "profit_factor_r": 1.694033850765531,
+              "max_closed_trade_drawdown_r": 2.0344767868587663,
+              "max_losing_streak": 2
+            }
+          },
+          "trades_crossing_nonconsecutive_minutes": 6,
+          "nonconsecutive_intervals": 14,
+          "ambiguous_minutes": 0,
+          "open_position": {
+            "side": 1,
+            "opened_at": "2026-10-30T20:15:00+00:00",
+            "signal_at": "2026-10-30T20:15:00+00:00",
+            "entry": 3882.58,
+            "original_entry": 3882.28,
+            "sl": 3869.1391,
+            "tp": 3901.9913,
+            "risk": 13.440900000000056,
+            "crossed_nonconsecutive_minutes": false
+          },
+          "accepted_quote_drift_r": {
+            "min": 0,
+            "max": 0.03527228671768629
+          },
+          "reference_file": "F:\\Projects\\boxtheory\\boxtheory\\storage\\app\\private\\signal-research\\rsi-scalper-backtest-2026-11-02\\utcplus3-last30-tp1-fixed-assumed-costs.json",
+          "reference_metrics": {
+            "closed_trades": 34,
+            "wins": 11,
+            "losses": 23,
+            "breakeven": 0,
+            "win_rate": 0.3235294117647059,
+            "net_r": -7.398888580011536,
+            "expectancy_r": -0.21761437000033929,
+            "profit_factor_r": 0.6828047396122172,
+            "max_closed_trade_drawdown_r": 12.75998238048287
+          },
+          "reference_rejections": {
+            "existing_position": 153,
+            "market_closed": 0,
+            "invalid_plan": 0,
+            "quote_drift": 0,
+            "quote_bracket": 0,
+            "fill_bracket": 0,
+            "no_immediate_next_open": 0
+          },
+          "reference_trade_count": 34,
+          "reference_mismatches": []
+        },
+        {
+          "target": "tp2",
+          "signals": 188,
+          "rejection_counts": {
+            "existing_position": 147,
+            "market_closed": 0,
+            "quote_drift_or_bracket": 0,
+            "invalid_fill": 0,
+            "missing_next_minute": 0
+          },
+          "metrics": {
+            "closed_trades": 40,
+            "wins": 12,
+            "losses": 28,
+            "breakeven": 0,
+            "net_r": 0.6409143744530859,
+            "expectancy_r": 0.016022859361327146,
+            "profit_factor_r": 1.0225642247732338,
+            "max_closed_trade_drawdown_r": 12.176796733987398,
+            "max_losing_streak": 12
+          },
+          "contiguous_metrics": {
+            "closed_trades": 34,
+            "wins": 10,
+            "losses": 24,
+            "breakeven": 0,
+            "net_r": -0.2244955877660848,
+            "expectancy_r": -0.006602811404884847,
+            "profit_factor_r": 0.9907801184360335,
+            "max_closed_trade_drawdown_r": 11.814277908356033,
+            "max_losing_streak": 11
+          },
+          "closed_by_side": {
+            "BUY": {
+              "closed_trades": 23,
+              "wins": 4,
+              "losses": 19,
+              "breakeven": 0,
+              "net_r": -9.908728206081353,
+              "expectancy_r": -0.43081426982962406,
+              "profit_factor_r": 0.4858547063269864,
+              "max_closed_trade_drawdown_r": 10.85079972002567,
+              "max_losing_streak": 9
+            },
+            "SELL": {
+              "closed_trades": 17,
+              "wins": 8,
+              "losses": 9,
+              "breakeven": 0,
+              "net_r": 10.549642580534439,
+              "expectancy_r": 0.6205672106196729,
+              "profit_factor_r": 2.15526780501271,
+              "max_closed_trade_drawdown_r": 3.048085679678448,
+              "max_losing_streak": 3
+            }
+          },
+          "trades_crossing_nonconsecutive_minutes": 6,
+          "nonconsecutive_intervals": 14,
+          "ambiguous_minutes": 0,
+          "open_position": {
+            "side": 1,
+            "opened_at": "2026-10-30T20:15:00+00:00",
+            "signal_at": "2026-10-30T20:15:00+00:00",
+            "entry": 3882.58,
+            "original_entry": 3882.28,
+            "sl": 3869.1391,
+            "tp": 3915.1321,
+            "risk": 13.440900000000056,
+            "crossed_nonconsecutive_minutes": false
+          },
+          "accepted_quote_drift_r": {
+            "min": 0,
+            "max": 0.039742755979526416
+          },
+          "reference_file": "F:\\Projects\\boxtheory\\boxtheory\\storage\\app\\private\\signal-research\\rsi-scalper-backtest-2026-11-02\\utcplus3-last30-tp2-fixed-assumed-costs.json",
+          "reference_metrics": {
+            "closed_trades": 40,
+            "wins": 12,
+            "losses": 28,
+            "breakeven": 0,
+            "win_rate": 0.3,
+            "net_r": 0.6409143744530859,
+            "expectancy_r": 0.016022859361327146,
+            "profit_factor_r": 1.0225642247732338,
+            "max_closed_trade_drawdown_r": 12.176796733987398
+          },
+          "reference_rejections": {
+            "existing_position": 147,
+            "market_closed": 0,
+            "invalid_plan": 0,
+            "quote_drift": 0,
+            "quote_bracket": 0,
+            "fill_bracket": 0,
+            "no_immediate_next_open": 0
+          },
+          "reference_trade_count": 40,
+          "reference_mismatches": []
+        }
+      ]
+    }
+  ]
+}

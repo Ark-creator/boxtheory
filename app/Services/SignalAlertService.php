@@ -6,15 +6,15 @@ use App\Mail\StrategySignalAlertMail;
 use App\Models\SignalDelivery;
 use App\Models\Strategy;
 use App\Models\User;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 
 class SignalAlertService
 {
-    public function __construct(private readonly TradingService $tradingService)
-    {
-    }
+    public function __construct(
+        private readonly TradingService $tradingService,
+        private readonly MarketDataGuard $marketDataGuard = new MarketDataGuard,
+    ) {}
 
     /**
      * Dispatch signal emails for strategies whose signal snapshot changed.
@@ -45,42 +45,72 @@ class SignalAlertService
 
         if ($recipients === []) {
             $result['errors'][] = 'No admin email recipients found. Set ADMIN_SIGNAL_EMAILS or create admin users with email.';
+
             return $result;
         }
 
         foreach ($strategies as $strategy) {
+            if (strtolower(trim($strategy->slug)) === 'gold-trend-retest-v2'
+                && ! filter_var(config('services.signal_alerts.retest_v2_enabled', false), FILTER_VALIDATE_BOOLEAN)) {
+                $result['skipped']++;
+
+                continue;
+            }
+            // A force run bypasses duplicate suppression only. Do not fetch or
+            // send last-session prices while the configured market is closed.
+            if (! $this->marketDataGuard->marketStatus((string) config('trading.default_pair', 'XAUUSD'), now()->utc())['open']) {
+                $result['skipped']++;
+
+                continue;
+            }
             try {
                 $signal = $this->tradingService->getSignalForStrategy($strategy->slug);
-                if (!empty($signal['expires_at']) && Carbon::parse($signal['expires_at'])->lte(now())) {
-                    $result['skipped']++;
-                    continue;
-                }
             } catch (\Throwable $exception) {
                 $result['errors'][] = sprintf('Failed to evaluate %s: %s', $strategy->name, $exception->getMessage());
+
                 continue;
             }
             $action = strtoupper((string) ($signal['action'] ?? 'NO_DATA'));
 
-            if ($action === 'NO_DATA') {
-                $result['errors'][] = sprintf('No signal data for %s: %s', $strategy->name, $signal['error'] ?? $signal['message'] ?? 'Market data unavailable.');
+            if (! $this->marketDataGuard->marketStatus((string) ($signal['symbol_code'] ?? config('trading.default_pair', 'XAUUSD')), now()->utc())['open']) {
                 $result['skipped']++;
+
                 continue;
             }
 
-            if (!in_array($action, $allowedActions, true)) {
+            if ($action === 'NO_DATA') {
+                $result['errors'][] = sprintf('No signal data for %s: %s', $strategy->name, $signal['error'] ?? $signal['message'] ?? 'Market data unavailable.');
                 $result['skipped']++;
+
+                continue;
+            }
+
+            if (! in_array($action, $allowedActions, true)) {
+                $result['skipped']++;
+
+                continue;
+            }
+            if ($this->marketDataGuard->validateSignal($signal, now()->utc()) !== null) {
+                $result['skipped']++;
+
                 continue;
             }
 
             $signature = $this->buildSignature($signal);
             $sent = false;
             $attempted = false;
+            $blockedBeforeMail = false;
 
             foreach ($recipients as $email) {
                 $cacheKey = $this->cacheKey($strategy->id, $signal, $email);
                 try {
-                    Cache::lock($cacheKey . ':lock', 120)->get(function () use ($cacheKey, $signature, $force, $email, $strategy, $signal, &$attempted, &$sent) {
-                        if (!$force) {
+                    Cache::lock($cacheKey.':lock', 120)->get(function () use ($cacheKey, $signature, $force, $email, $strategy, $signal, &$attempted, &$sent, &$blockedBeforeMail) {
+                        // Recheck after acquiring the lock and for every recipient:
+                        // earlier deliveries or lock contention may consume freshness.
+                        if ($this->marketDataGuard->validateSignal($signal, now()->utc()) !== null) {
+                            return;
+                        }
+                        if (! $force) {
                             if (Cache::get($cacheKey) === $signature) {
                                 return;
                             }
@@ -98,7 +128,7 @@ class SignalAlertService
                                 return;
                             }
                         }
-                        if (!empty($signal['expires_at']) && Carbon::parse($signal['expires_at'])->lte(now())) {
+                        if ($this->marketDataGuard->validateSignal($signal, now()->utc()) !== null) {
                             return;
                         }
 
@@ -122,6 +152,18 @@ class SignalAlertService
                         ]);
 
                         try {
+                            // Persistence itself can outlast expiry or a session
+                            // boundary. Preserve the aborted attempt and send nothing.
+                            $rejection = $this->marketDataGuard->validateSignal($signal, now()->utc());
+                            if ($rejection !== null) {
+                                $delivery->update([
+                                    'status' => 'failed',
+                                    'error_message' => 'Not sent: '.$rejection,
+                                ]);
+                                $blockedBeforeMail = true;
+
+                                return;
+                            }
                             Mail::to($email)->send(
                                 new StrategySignalAlertMail($strategy, $signal, $attemptedAt)
                             );
@@ -156,7 +198,7 @@ class SignalAlertService
 
             if ($sent) {
                 $result['sent']++;
-            } elseif (!$attempted) {
+            } elseif (! $attempted || $blockedBeforeMail) {
                 $result['skipped']++;
             }
         }
@@ -209,6 +251,13 @@ class SignalAlertService
 
     private function buildSignature(array $signal): string
     {
+        // Production IDs identify a strategy/pair/source/closed-candle/action.
+        // Price or wording changes within that setup must not resend the alert.
+        $signalId = $signal['signal_id'] ?? null;
+        if (is_string($signalId) && preg_match('/\A[0-9a-fA-F]{64}\z/', $signalId)) {
+            return strtolower($signalId);
+        }
+
         $payload = [
             'action' => strtoupper((string) ($signal['action'] ?? '')),
             'timestamp' => (string) ($signal['timestamp'] ?? ''),
@@ -224,11 +273,11 @@ class SignalAlertService
     {
         $pair = (string) ($signal['symbol_code'] ?? config('trading.default_pair', 'XAUUSD'));
 
-        return 'signal_alert:last_signature:' . $strategyId . ':' . $pair . ':' . hash('sha256', strtolower($email));
+        return 'signal_alert:last_signature:'.$strategyId.':'.$pair.':'.hash('sha256', strtolower($email));
     }
 
     /**
-     * @param array<int,string> $emails
+     * @param  array<int,string>  $emails
      * @return array<int,string>
      */
     private function filterValidEmails(array $emails): array

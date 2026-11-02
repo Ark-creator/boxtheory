@@ -6,11 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\Strategy;
 use App\Models\User;
 use App\Services\AutoTraderService;
+use App\Services\MarketDataGuard;
 use App\Services\SignalAlertService;
+use App\Services\SignalSnapshotCache;
 use App\Services\TradingService;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
@@ -121,6 +122,7 @@ class AdminController extends Controller
         $matrix = [];
         $refreshedPairs = 0;
         $pendingPairs = 0;
+        $snapshotCache = app(SignalSnapshotCache::class);
 
         foreach ($pairs as $pairCode => $pairMeta) {
             $hasColdCells = false;
@@ -133,16 +135,20 @@ class AdminController extends Controller
                     $positionKey
                 );
 
-                $cachedSignal = Cache::get($cacheKey);
+                $cachedSignal = $snapshotCache->get($cacheKey, (string) $pairCode);
                 if (is_array($cachedSignal)) {
                     $matrix[$pairCode][$strategy->id] = $cachedSignal;
+
                     continue;
                 }
 
                 $hasColdCells = true;
             }
 
-            if ($hasColdCells && $refreshedPairs < $pairRefreshBudget) {
+            $marketOpen = app(MarketDataGuard::class)->marketStatus((string) $pairCode, now()->utc())['open'];
+            // Closed-market evaluation performs no provider requests, so show its
+            // actual status even when the open-market refresh budget is exhausted.
+            if ($hasColdCells && (! $marketOpen || $refreshedPairs < $pairRefreshBudget)) {
                 foreach ($strategies as $strategy) {
                     $signal = $service->getSignalForStrategy($strategy->slug, $position, $pairCode);
                     $matrix[$pairCode][$strategy->id] = $signal;
@@ -153,10 +159,13 @@ class AdminController extends Controller
                         (int) $strategy->id,
                         $positionKey
                     );
-                    Cache::put($cacheKey, $signal, $matrixCacheSeconds);
+                    $snapshotCache->put($cacheKey, $signal, $matrixCacheSeconds);
                 }
 
-                $refreshedPairs++;
+                if ($marketOpen) {
+                    $refreshedPairs++;
+                }
+
                 continue;
             }
 
@@ -165,7 +174,7 @@ class AdminController extends Controller
             }
 
             foreach ($strategies as $strategy) {
-                if (!isset($matrix[$pairCode][$strategy->id])) {
+                if (! isset($matrix[$pairCode][$strategy->id])) {
                     $matrix[$pairCode][$strategy->id] = [
                         'action' => 'NO_DATA',
                         'price' => 0.0,
@@ -180,6 +189,12 @@ class AdminController extends Controller
                         'error' => 'matrix_cache_pending',
                     ];
                 }
+            }
+        }
+
+        foreach ($matrix as $pairCode => $cells) {
+            foreach ($cells as $strategyId => $signal) {
+                $matrix[$pairCode][$strategyId] = $snapshotCache->forView($signal, (string) $pairCode);
             }
         }
 
@@ -212,10 +227,10 @@ class AdminController extends Controller
 
         $redirect = back()->with('success', $message);
 
-        if (!empty($result['errors'])) {
+        if (! empty($result['errors'])) {
             $preview = array_slice($result['errors'], 0, 2);
             $suffix = count($result['errors']) > 2 ? ' (plus more errors)' : '';
-            $redirect = $redirect->with('error', implode(' | ', $preview) . $suffix);
+            $redirect = $redirect->with('error', implode(' | ', $preview).$suffix);
         }
 
         return $redirect;

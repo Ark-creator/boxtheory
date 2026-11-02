@@ -23,7 +23,9 @@ class Mt5BridgeClient
         if (! is_array($data['capabilities'] ?? null) || ! in_array('entry_extension_limit', $data['capabilities'], true)) {
             throw new \RuntimeException('Update the MT5 bridge to enforce the breakout entry limit before using this strategy.');
         }
-        if ($settings && ($data['symbol'] ?? '') !== $settings->mt5_symbol) {
+        $accountType = $settings?->account_type ?: config('trading.auto_trader.default_account_type', 'cent');
+        $expectedSymbol = $settings?->mt5_symbol ?: config('trading.auto_trader.symbols.'.$accountType, 'XAUUSD');
+        if (($data['symbol'] ?? '') !== $expectedSymbol) {
             throw new \RuntimeException('The bridge symbol differs from the configured MT5 symbol.');
         }
         $observed = \Illuminate\Support\Carbon::parse($data['observed_at'] ?? '1970-01-01')->utc();

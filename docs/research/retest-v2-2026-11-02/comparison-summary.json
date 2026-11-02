@@ -1,0 +1,3151 @@
+{
+  "analysis_date": "2026-11-02",
+  "source": {
+    "file": "XAUUSD-STD_M1_202609010100_202610302356.csv",
+    "bytes": 3749252,
+    "sha256": "c67ea70ca5715726daa93df84bc073632aed03643fc28f58550195df1d54f6ab",
+    "timestamp_semantics": "Printed broker wall-clock fields. Epoch seconds are arithmetic coordinates only; broker UTC offset not established.",
+    "schema": [
+      "<DATE>",
+      "<TIME>",
+      "<OPEN>",
+      "<HIGH>",
+      "<LOW>",
+      "<CLOSE>",
+      "<TICKVOL>",
+      "<VOL>",
+      "<SPREAD>"
+    ],
+    "timeframe": "M1",
+    "rows": 60475,
+    "first_open_printed": "2026-09-01T01:00:00",
+    "last_open_printed": "2026-10-30T23:56:00",
+    "last_bar_closes_printed": "2026-10-30T23:57:00",
+    "strict_ohlc_and_ascending_timestamp_validation": "passed",
+    "distinct_printed_dates": 44,
+    "weekend_calendar_date_bars": 0,
+    "price_decimal_places_observed": {
+      "2": 241900
+    },
+    "point_size": null,
+    "point_size_note": "Printed decimal precision is not independently verified SYMBOL_POINT or tick size. SPREAD is in broker points.",
+    "spread_points": {
+      "count": 60475,
+      "min": 21,
+      "median": 21,
+      "max": 28
+    },
+    "spread_points_counts": {
+      "21": 57956,
+      "22": 8,
+      "23": 12,
+      "25": 1,
+      "26": 2474,
+      "27": 3,
+      "28": 21
+    },
+    "price_range": {
+      "lowest_low": 3870.14,
+      "highest_high": 4510.78
+    },
+    "nonconsecutive_intervals": 43,
+    "absent_minute_intervals_including_scheduled_closures": 25862,
+    "gap_note": "Intervals include scheduled broker closures as well as possible missing data. Session metadata is absent; gaps are not assumed tradable.",
+    "gaps": [
+      {
+        "previous_open_printed": "2026-09-01T23:57:00",
+        "next_open_printed": "2026-09-02T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-09-02T23:57:00",
+        "next_open_printed": "2026-09-03T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-09-03T23:57:00",
+        "next_open_printed": "2026-09-04T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-09-04T23:56:00",
+        "next_open_printed": "2026-09-07T01:00:00",
+        "elapsed_minutes": 2944,
+        "absent_minute_intervals": 2943
+      },
+      {
+        "previous_open_printed": "2026-09-07T21:29:00",
+        "next_open_printed": "2026-09-08T01:00:00",
+        "elapsed_minutes": 211,
+        "absent_minute_intervals": 210
+      },
+      {
+        "previous_open_printed": "2026-09-08T23:57:00",
+        "next_open_printed": "2026-09-09T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-09-09T23:57:00",
+        "next_open_printed": "2026-09-10T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-09-10T23:57:00",
+        "next_open_printed": "2026-09-11T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-09-11T23:56:00",
+        "next_open_printed": "2026-09-14T01:00:00",
+        "elapsed_minutes": 2944,
+        "absent_minute_intervals": 2943
+      },
+      {
+        "previous_open_printed": "2026-09-14T23:57:00",
+        "next_open_printed": "2026-09-15T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-09-15T23:57:00",
+        "next_open_printed": "2026-09-16T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-09-16T23:57:00",
+        "next_open_printed": "2026-09-17T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-09-17T23:57:00",
+        "next_open_printed": "2026-09-18T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-09-18T23:56:00",
+        "next_open_printed": "2026-09-21T01:00:00",
+        "elapsed_minutes": 2944,
+        "absent_minute_intervals": 2943
+      },
+      {
+        "previous_open_printed": "2026-09-21T23:57:00",
+        "next_open_printed": "2026-09-22T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-09-22T23:57:00",
+        "next_open_printed": "2026-09-23T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-09-23T23:57:00",
+        "next_open_printed": "2026-09-24T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-09-24T23:57:00",
+        "next_open_printed": "2026-09-25T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-09-25T23:56:00",
+        "next_open_printed": "2026-09-28T01:00:00",
+        "elapsed_minutes": 2944,
+        "absent_minute_intervals": 2943
+      },
+      {
+        "previous_open_printed": "2026-09-28T23:57:00",
+        "next_open_printed": "2026-09-29T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-09-29T23:57:00",
+        "next_open_printed": "2026-09-30T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-09-30T23:57:00",
+        "next_open_printed": "2026-10-01T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-10-01T23:57:00",
+        "next_open_printed": "2026-10-02T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-10-02T23:56:00",
+        "next_open_printed": "2026-10-05T01:00:00",
+        "elapsed_minutes": 2944,
+        "absent_minute_intervals": 2943
+      },
+      {
+        "previous_open_printed": "2026-10-05T23:57:00",
+        "next_open_printed": "2026-10-06T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-10-06T23:57:00",
+        "next_open_printed": "2026-10-07T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-10-07T23:57:00",
+        "next_open_printed": "2026-10-08T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-10-08T23:57:00",
+        "next_open_printed": "2026-10-09T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-10-09T23:56:00",
+        "next_open_printed": "2026-10-12T01:00:00",
+        "elapsed_minutes": 2944,
+        "absent_minute_intervals": 2943
+      },
+      {
+        "previous_open_printed": "2026-10-12T23:57:00",
+        "next_open_printed": "2026-10-13T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-10-13T23:57:00",
+        "next_open_printed": "2026-10-14T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-10-14T23:57:00",
+        "next_open_printed": "2026-10-15T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-10-15T23:57:00",
+        "next_open_printed": "2026-10-16T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-10-16T23:56:00",
+        "next_open_printed": "2026-10-19T01:00:00",
+        "elapsed_minutes": 2944,
+        "absent_minute_intervals": 2943
+      },
+      {
+        "previous_open_printed": "2026-10-19T23:57:00",
+        "next_open_printed": "2026-10-20T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-10-20T23:57:00",
+        "next_open_printed": "2026-10-21T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-10-21T23:57:00",
+        "next_open_printed": "2026-10-22T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-10-22T23:57:00",
+        "next_open_printed": "2026-10-23T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-10-23T23:56:00",
+        "next_open_printed": "2026-10-26T01:00:00",
+        "elapsed_minutes": 2944,
+        "absent_minute_intervals": 2943
+      },
+      {
+        "previous_open_printed": "2026-10-26T23:57:00",
+        "next_open_printed": "2026-10-27T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-10-27T23:57:00",
+        "next_open_printed": "2026-10-28T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-10-28T23:57:00",
+        "next_open_printed": "2026-10-29T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      },
+      {
+        "previous_open_printed": "2026-10-29T23:57:00",
+        "next_open_printed": "2026-10-30T01:00:00",
+        "elapsed_minutes": 63,
+        "absent_minute_intervals": 62
+      }
+    ],
+    "daily_counts_printed_dates": [
+      {
+        "date": "2026-09-01",
+        "rows": 1378
+      },
+      {
+        "date": "2026-09-02",
+        "rows": 1378
+      },
+      {
+        "date": "2026-09-03",
+        "rows": 1378
+      },
+      {
+        "date": "2026-09-04",
+        "rows": 1377
+      },
+      {
+        "date": "2026-09-07",
+        "rows": 1230
+      },
+      {
+        "date": "2026-09-08",
+        "rows": 1378
+      },
+      {
+        "date": "2026-09-09",
+        "rows": 1378
+      },
+      {
+        "date": "2026-09-10",
+        "rows": 1378
+      },
+      {
+        "date": "2026-09-11",
+        "rows": 1377
+      },
+      {
+        "date": "2026-09-14",
+        "rows": 1378
+      },
+      {
+        "date": "2026-09-15",
+        "rows": 1378
+      },
+      {
+        "date": "2026-09-16",
+        "rows": 1378
+      },
+      {
+        "date": "2026-09-17",
+        "rows": 1378
+      },
+      {
+        "date": "2026-09-18",
+        "rows": 1377
+      },
+      {
+        "date": "2026-09-21",
+        "rows": 1378
+      },
+      {
+        "date": "2026-09-22",
+        "rows": 1378
+      },
+      {
+        "date": "2026-09-23",
+        "rows": 1378
+      },
+      {
+        "date": "2026-09-24",
+        "rows": 1378
+      },
+      {
+        "date": "2026-09-25",
+        "rows": 1377
+      },
+      {
+        "date": "2026-09-28",
+        "rows": 1378
+      },
+      {
+        "date": "2026-09-29",
+        "rows": 1378
+      },
+      {
+        "date": "2026-09-30",
+        "rows": 1378
+      },
+      {
+        "date": "2026-10-01",
+        "rows": 1378
+      },
+      {
+        "date": "2026-10-02",
+        "rows": 1377
+      },
+      {
+        "date": "2026-10-05",
+        "rows": 1378
+      },
+      {
+        "date": "2026-10-06",
+        "rows": 1378
+      },
+      {
+        "date": "2026-10-07",
+        "rows": 1378
+      },
+      {
+        "date": "2026-10-08",
+        "rows": 1378
+      },
+      {
+        "date": "2026-10-09",
+        "rows": 1377
+      },
+      {
+        "date": "2026-10-12",
+        "rows": 1378
+      },
+      {
+        "date": "2026-10-13",
+        "rows": 1378
+      },
+      {
+        "date": "2026-10-14",
+        "rows": 1378
+      },
+      {
+        "date": "2026-10-15",
+        "rows": 1378
+      },
+      {
+        "date": "2026-10-16",
+        "rows": 1377
+      },
+      {
+        "date": "2026-10-19",
+        "rows": 1378
+      },
+      {
+        "date": "2026-10-20",
+        "rows": 1378
+      },
+      {
+        "date": "2026-10-21",
+        "rows": 1378
+      },
+      {
+        "date": "2026-10-22",
+        "rows": 1378
+      },
+      {
+        "date": "2026-10-23",
+        "rows": 1377
+      },
+      {
+        "date": "2026-10-26",
+        "rows": 1378
+      },
+      {
+        "date": "2026-10-27",
+        "rows": 1378
+      },
+      {
+        "date": "2026-10-28",
+        "rows": 1378
+      },
+      {
+        "date": "2026-10-29",
+        "rows": 1378
+      },
+      {
+        "date": "2026-10-30",
+        "rows": 1377
+      }
+    ]
+  },
+  "source_files_sha256_before_and_after_verified_equal": {
+    "v1": "5a722103aa6dd4282099298bc44e41020174b4f2ed0fa45f35ff6d15373dd46c",
+    "v2": "6de728e40118b0581b61760719a547ce4f9533ecece8e1b8481f8991c5630603",
+    "minute_backtester": "af6949e3a6bcfe56d8ccbe1d52c436b41de7b3a0f0e41f3d1cd349f3900396bb",
+    "input_parser": "48e669bb0c70766c2dc05f0a1cb48fa7445828e57036fffa9f4f724c1b4a7254",
+    "preparation_script": "aa7beb4770ed0749e68f3ddce4e649c8911ddd0d71e0438786a2f5e95d3fa68e"
+  },
+  "objective": "Compare one prespecified bounded-state engineering revision with the frozen original. No parameter grid or return-selected timezone.",
+  "cautions": [
+    "UTC+3 is the working broker-clock assumption; UTC is a sensitivity. Neither is confirmed terminal metadata.",
+    "Broker point size0.01 is assumed. MT5 M1 spread is the minute MINIMUM and cannot reconstruct intraminute ask extrema or spread at entry.",
+    "Per-fill slippage0.10 and round-trip fee0.07 USD/oz are declared research assumptions, not verified charges.",
+    "The already-inspected final30% is a chronological diagnostic, not an untouched holdout. Segments retain prior warmup and reset position/execution gates at their start.",
+    "Both-hit M1 candles resolve stop first in this diagnostic. Gap-crossing paths are reported separately. No actual account P/L, portfolio equity sizing, swaps, news or margin simulation.",
+    "More signals, positive sample returns or a higher sample win rate do not prove superiority or establish a current live setup."
+  ],
+  "comparisons": [
+    {
+      "version": "v1",
+      "offset_hours": 3,
+      "segment": "full",
+      "cost": "gross",
+      "file": "v1-utcplus3-full-gross.json",
+      "engine_class": "App\\Services\\GoldTrendRetestStrategy",
+      "engine_slug": "gold-trend-retest",
+      "signal_history_sha256": "842509dcd5e09cd7a4bbbe32d3a2b350e22144b60b8472780a61361cef0426e0",
+      "full_history_signal_count": 1,
+      "split_utc": "2026-10-12T21:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+3 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 1,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 0,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 1,
+        "wins": 1,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 2.0000000000000897,
+        "expectancy_r": 2.0000000000000897,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 1,
+        "wins": 1,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 2.0000000000000897,
+        "expectancy_r": 2.0000000000000897,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v1",
+      "offset_hours": 3,
+      "segment": "full",
+      "cost": "minimum-spread-only",
+      "file": "v1-utcplus3-full-minimum-spread-only.json",
+      "engine_class": "App\\Services\\GoldTrendRetestStrategy",
+      "engine_slug": "gold-trend-retest",
+      "signal_history_sha256": "842509dcd5e09cd7a4bbbe32d3a2b350e22144b60b8472780a61361cef0426e0",
+      "full_history_signal_count": 1,
+      "split_utc": "2026-10-12T21:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+3 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 1,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 0,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 1,
+        "wins": 1,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 2.0000000000000897,
+        "expectancy_r": 2.0000000000000897,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 1,
+        "wins": 1,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 2.0000000000000897,
+        "expectancy_r": 2.0000000000000897,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v1",
+      "offset_hours": 3,
+      "segment": "full",
+      "cost": "assumed-costs",
+      "file": "v1-utcplus3-full-assumed-costs.json",
+      "engine_class": "App\\Services\\GoldTrendRetestStrategy",
+      "engine_slug": "gold-trend-retest",
+      "signal_history_sha256": "842509dcd5e09cd7a4bbbe32d3a2b350e22144b60b8472780a61361cef0426e0",
+      "full_history_signal_count": 1,
+      "split_utc": "2026-10-12T21:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+3 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 1,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 0,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 1,
+        "wins": 1,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 1.9541545712769073,
+        "expectancy_r": 1.9541545712769073,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 1,
+        "wins": 1,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 1.9541545712769073,
+        "expectancy_r": 1.9541545712769073,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v1",
+      "offset_hours": 3,
+      "segment": "full",
+      "cost": "double-assumed-costs",
+      "file": "v1-utcplus3-full-double-assumed-costs.json",
+      "engine_class": "App\\Services\\GoldTrendRetestStrategy",
+      "engine_slug": "gold-trend-retest",
+      "signal_history_sha256": "842509dcd5e09cd7a4bbbe32d3a2b350e22144b60b8472780a61361cef0426e0",
+      "full_history_signal_count": 1,
+      "split_utc": "2026-10-12T21:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+3 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 1,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 0,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 1,
+        "wins": 1,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 1.9091948870926887,
+        "expectancy_r": 1.9091948870926887,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 1,
+        "wins": 1,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 1.9091948870926887,
+        "expectancy_r": 1.9091948870926887,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v1",
+      "offset_hours": 3,
+      "segment": "first70",
+      "cost": "gross",
+      "file": "v1-utcplus3-first70-gross.json",
+      "engine_class": "App\\Services\\GoldTrendRetestStrategy",
+      "engine_slug": "gold-trend-retest",
+      "signal_history_sha256": "842509dcd5e09cd7a4bbbe32d3a2b350e22144b60b8472780a61361cef0426e0",
+      "full_history_signal_count": 1,
+      "split_utc": "2026-10-12T21:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+3 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 1,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 0,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 1,
+        "wins": 1,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 2.0000000000000897,
+        "expectancy_r": 2.0000000000000897,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 1,
+        "wins": 1,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 2.0000000000000897,
+        "expectancy_r": 2.0000000000000897,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v1",
+      "offset_hours": 3,
+      "segment": "first70",
+      "cost": "minimum-spread-only",
+      "file": "v1-utcplus3-first70-minimum-spread-only.json",
+      "engine_class": "App\\Services\\GoldTrendRetestStrategy",
+      "engine_slug": "gold-trend-retest",
+      "signal_history_sha256": "842509dcd5e09cd7a4bbbe32d3a2b350e22144b60b8472780a61361cef0426e0",
+      "full_history_signal_count": 1,
+      "split_utc": "2026-10-12T21:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+3 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 1,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 0,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 1,
+        "wins": 1,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 2.0000000000000897,
+        "expectancy_r": 2.0000000000000897,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 1,
+        "wins": 1,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 2.0000000000000897,
+        "expectancy_r": 2.0000000000000897,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v1",
+      "offset_hours": 3,
+      "segment": "first70",
+      "cost": "assumed-costs",
+      "file": "v1-utcplus3-first70-assumed-costs.json",
+      "engine_class": "App\\Services\\GoldTrendRetestStrategy",
+      "engine_slug": "gold-trend-retest",
+      "signal_history_sha256": "842509dcd5e09cd7a4bbbe32d3a2b350e22144b60b8472780a61361cef0426e0",
+      "full_history_signal_count": 1,
+      "split_utc": "2026-10-12T21:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+3 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 1,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 0,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 1,
+        "wins": 1,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 1.9541545712769073,
+        "expectancy_r": 1.9541545712769073,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 1,
+        "wins": 1,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 1.9541545712769073,
+        "expectancy_r": 1.9541545712769073,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v1",
+      "offset_hours": 3,
+      "segment": "first70",
+      "cost": "double-assumed-costs",
+      "file": "v1-utcplus3-first70-double-assumed-costs.json",
+      "engine_class": "App\\Services\\GoldTrendRetestStrategy",
+      "engine_slug": "gold-trend-retest",
+      "signal_history_sha256": "842509dcd5e09cd7a4bbbe32d3a2b350e22144b60b8472780a61361cef0426e0",
+      "full_history_signal_count": 1,
+      "split_utc": "2026-10-12T21:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+3 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 1,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 0,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 1,
+        "wins": 1,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 1.9091948870926887,
+        "expectancy_r": 1.9091948870926887,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 1,
+        "wins": 1,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 1.9091948870926887,
+        "expectancy_r": 1.9091948870926887,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v1",
+      "offset_hours": 3,
+      "segment": "last30",
+      "cost": "gross",
+      "file": "v1-utcplus3-last30-gross.json",
+      "engine_class": "App\\Services\\GoldTrendRetestStrategy",
+      "engine_slug": "gold-trend-retest",
+      "signal_history_sha256": "842509dcd5e09cd7a4bbbe32d3a2b350e22144b60b8472780a61361cef0426e0",
+      "full_history_signal_count": 1,
+      "split_utc": "2026-10-12T21:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+3 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 0,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 0,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": null,
+        "net_r": 0,
+        "expectancy_r": null,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": null,
+        "net_r": 0,
+        "expectancy_r": null,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v1",
+      "offset_hours": 3,
+      "segment": "last30",
+      "cost": "minimum-spread-only",
+      "file": "v1-utcplus3-last30-minimum-spread-only.json",
+      "engine_class": "App\\Services\\GoldTrendRetestStrategy",
+      "engine_slug": "gold-trend-retest",
+      "signal_history_sha256": "842509dcd5e09cd7a4bbbe32d3a2b350e22144b60b8472780a61361cef0426e0",
+      "full_history_signal_count": 1,
+      "split_utc": "2026-10-12T21:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+3 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 0,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 0,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": null,
+        "net_r": 0,
+        "expectancy_r": null,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": null,
+        "net_r": 0,
+        "expectancy_r": null,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v1",
+      "offset_hours": 3,
+      "segment": "last30",
+      "cost": "assumed-costs",
+      "file": "v1-utcplus3-last30-assumed-costs.json",
+      "engine_class": "App\\Services\\GoldTrendRetestStrategy",
+      "engine_slug": "gold-trend-retest",
+      "signal_history_sha256": "842509dcd5e09cd7a4bbbe32d3a2b350e22144b60b8472780a61361cef0426e0",
+      "full_history_signal_count": 1,
+      "split_utc": "2026-10-12T21:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+3 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 0,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 0,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": null,
+        "net_r": 0,
+        "expectancy_r": null,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": null,
+        "net_r": 0,
+        "expectancy_r": null,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v1",
+      "offset_hours": 3,
+      "segment": "last30",
+      "cost": "double-assumed-costs",
+      "file": "v1-utcplus3-last30-double-assumed-costs.json",
+      "engine_class": "App\\Services\\GoldTrendRetestStrategy",
+      "engine_slug": "gold-trend-retest",
+      "signal_history_sha256": "842509dcd5e09cd7a4bbbe32d3a2b350e22144b60b8472780a61361cef0426e0",
+      "full_history_signal_count": 1,
+      "split_utc": "2026-10-12T21:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+3 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 0,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 0,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": null,
+        "net_r": 0,
+        "expectancy_r": null,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": null,
+        "net_r": 0,
+        "expectancy_r": null,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v2",
+      "offset_hours": 3,
+      "segment": "full",
+      "cost": "gross",
+      "file": "v2-utcplus3-full-gross.json",
+      "engine_class": "App\\Services\\GoldTrendRetestV2Strategy",
+      "engine_slug": "gold-trend-retest-v2",
+      "signal_history_sha256": "8a6084e1f45822b7181121838727b89a0543883edad0a4f7380301a0c463d17a",
+      "full_history_signal_count": 11,
+      "split_utc": "2026-10-12T21:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+3 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 11,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 2,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 9,
+        "wins": 3,
+        "losses": 6,
+        "breakeven": 0,
+        "win_rate": 0.3333333333333333,
+        "net_r": -6.208270837415597e-7,
+        "expectancy_r": -6.898078708239552e-8,
+        "profit_factor_r": 0.9999998965288194,
+        "max_closed_trade_drawdown_r": 4
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 8,
+        "wins": 2,
+        "losses": 6,
+        "breakeven": 0,
+        "win_rate": 0.25,
+        "net_r": -1.9999999999998064,
+        "expectancy_r": -0.2499999999999758,
+        "profit_factor_r": 0.6666666666666989,
+        "max_closed_trade_drawdown_r": 4
+      },
+      "trades_crossing_nonconsecutive_minutes": 1,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v2",
+      "offset_hours": 3,
+      "segment": "full",
+      "cost": "minimum-spread-only",
+      "file": "v2-utcplus3-full-minimum-spread-only.json",
+      "engine_class": "App\\Services\\GoldTrendRetestV2Strategy",
+      "engine_slug": "gold-trend-retest-v2",
+      "signal_history_sha256": "8a6084e1f45822b7181121838727b89a0543883edad0a4f7380301a0c463d17a",
+      "full_history_signal_count": 11,
+      "split_utc": "2026-10-12T21:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+3 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 11,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 2,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 9,
+        "wins": 3,
+        "losses": 6,
+        "breakeven": 0,
+        "win_rate": 0.3333333333333333,
+        "net_r": -6.208270837415597e-7,
+        "expectancy_r": -6.898078708239552e-8,
+        "profit_factor_r": 0.9999998965288194,
+        "max_closed_trade_drawdown_r": 4
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 8,
+        "wins": 2,
+        "losses": 6,
+        "breakeven": 0,
+        "win_rate": 0.25,
+        "net_r": -1.9999999999998064,
+        "expectancy_r": -0.2499999999999758,
+        "profit_factor_r": 0.6666666666666989,
+        "max_closed_trade_drawdown_r": 4
+      },
+      "trades_crossing_nonconsecutive_minutes": 1,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v2",
+      "offset_hours": 3,
+      "segment": "full",
+      "cost": "assumed-costs",
+      "file": "v2-utcplus3-full-assumed-costs.json",
+      "engine_class": "App\\Services\\GoldTrendRetestV2Strategy",
+      "engine_slug": "gold-trend-retest-v2",
+      "signal_history_sha256": "8a6084e1f45822b7181121838727b89a0543883edad0a4f7380301a0c463d17a",
+      "full_history_signal_count": 11,
+      "split_utc": "2026-10-12T21:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+3 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 11,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 2,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 9,
+        "wins": 3,
+        "losses": 6,
+        "breakeven": 0,
+        "win_rate": 0.3333333333333333,
+        "net_r": -0.2045441980948588,
+        "expectancy_r": -0.022727133121650978,
+        "profit_factor_r": 0.9663392982220932,
+        "max_closed_trade_drawdown_r": 4.049279991052484
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 8,
+        "wins": 2,
+        "losses": 6,
+        "breakeven": 0,
+        "win_rate": 0.25,
+        "net_r": -2.1755447324140804,
+        "expectancy_r": -0.27194309155176005,
+        "profit_factor_r": 0.6419826955525516,
+        "max_closed_trade_drawdown_r": 4.1296993036909875
+      },
+      "trades_crossing_nonconsecutive_minutes": 1,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v2",
+      "offset_hours": 3,
+      "segment": "full",
+      "cost": "double-assumed-costs",
+      "file": "v2-utcplus3-full-double-assumed-costs.json",
+      "engine_class": "App\\Services\\GoldTrendRetestV2Strategy",
+      "engine_slug": "gold-trend-retest-v2",
+      "signal_history_sha256": "8a6084e1f45822b7181121838727b89a0543883edad0a4f7380301a0c463d17a",
+      "full_history_signal_count": 11,
+      "split_utc": "2026-10-12T21:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+3 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 11,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 2,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 9,
+        "wins": 3,
+        "losses": 6,
+        "breakeven": 0,
+        "win_rate": 0.3333333333333333,
+        "net_r": -0.40550773943971197,
+        "expectancy_r": -0.04505641549330133,
+        "profit_factor_r": 0.9340867116153505,
+        "max_closed_trade_drawdown_r": 4.0978431912277715
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 8,
+        "wins": 2,
+        "losses": 6,
+        "breakeven": 0,
+        "win_rate": 0.25,
+        "net_r": -2.347865078437532,
+        "expectancy_r": -0.2934831348046915,
+        "profit_factor_r": 0.6183660804671053,
+        "max_closed_trade_drawdown_r": 4.257059965530221
+      },
+      "trades_crossing_nonconsecutive_minutes": 1,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v2",
+      "offset_hours": 3,
+      "segment": "first70",
+      "cost": "gross",
+      "file": "v2-utcplus3-first70-gross.json",
+      "engine_class": "App\\Services\\GoldTrendRetestV2Strategy",
+      "engine_slug": "gold-trend-retest-v2",
+      "signal_history_sha256": "8a6084e1f45822b7181121838727b89a0543883edad0a4f7380301a0c463d17a",
+      "full_history_signal_count": 11,
+      "split_utc": "2026-10-12T21:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+3 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 8,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 2,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 6,
+        "wins": 2,
+        "losses": 4,
+        "breakeven": 0,
+        "win_rate": 0.3333333333333333,
+        "net_r": 1.936228954946273e-13,
+        "expectancy_r": 3.2270482582437886e-14,
+        "profit_factor_r": 1.0000000000000484,
+        "max_closed_trade_drawdown_r": 4
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 6,
+        "wins": 2,
+        "losses": 4,
+        "breakeven": 0,
+        "win_rate": 0.3333333333333333,
+        "net_r": 1.936228954946273e-13,
+        "expectancy_r": 3.2270482582437886e-14,
+        "profit_factor_r": 1.0000000000000484,
+        "max_closed_trade_drawdown_r": 4
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v2",
+      "offset_hours": 3,
+      "segment": "first70",
+      "cost": "minimum-spread-only",
+      "file": "v2-utcplus3-first70-minimum-spread-only.json",
+      "engine_class": "App\\Services\\GoldTrendRetestV2Strategy",
+      "engine_slug": "gold-trend-retest-v2",
+      "signal_history_sha256": "8a6084e1f45822b7181121838727b89a0543883edad0a4f7380301a0c463d17a",
+      "full_history_signal_count": 11,
+      "split_utc": "2026-10-12T21:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+3 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 8,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 2,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 6,
+        "wins": 2,
+        "losses": 4,
+        "breakeven": 0,
+        "win_rate": 0.3333333333333333,
+        "net_r": 1.936228954946273e-13,
+        "expectancy_r": 3.2270482582437886e-14,
+        "profit_factor_r": 1.0000000000000484,
+        "max_closed_trade_drawdown_r": 4
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 6,
+        "wins": 2,
+        "losses": 4,
+        "breakeven": 0,
+        "win_rate": 0.3333333333333333,
+        "net_r": 1.936228954946273e-13,
+        "expectancy_r": 3.2270482582437886e-14,
+        "profit_factor_r": 1.0000000000000484,
+        "max_closed_trade_drawdown_r": 4
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v2",
+      "offset_hours": 3,
+      "segment": "first70",
+      "cost": "assumed-costs",
+      "file": "v2-utcplus3-first70-assumed-costs.json",
+      "engine_class": "App\\Services\\GoldTrendRetestV2Strategy",
+      "engine_slug": "gold-trend-retest-v2",
+      "signal_history_sha256": "8a6084e1f45822b7181121838727b89a0543883edad0a4f7380301a0c463d17a",
+      "full_history_signal_count": 11,
+      "split_utc": "2026-10-12T21:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+3 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 8,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 2,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 6,
+        "wins": 2,
+        "losses": 4,
+        "breakeven": 0,
+        "win_rate": 0.3333333333333333,
+        "net_r": -0.1481778536406999,
+        "expectancy_r": -0.02469630894011665,
+        "profit_factor_r": 0.9634063700292096,
+        "max_closed_trade_drawdown_r": 4.049279991052484
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 6,
+        "wins": 2,
+        "losses": 4,
+        "breakeven": 0,
+        "win_rate": 0.3333333333333333,
+        "net_r": -0.1481778536406999,
+        "expectancy_r": -0.02469630894011665,
+        "profit_factor_r": 0.9634063700292096,
+        "max_closed_trade_drawdown_r": 4.049279991052484
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v2",
+      "offset_hours": 3,
+      "segment": "first70",
+      "cost": "double-assumed-costs",
+      "file": "v2-utcplus3-first70-double-assumed-costs.json",
+      "engine_class": "App\\Services\\GoldTrendRetestV2Strategy",
+      "engine_slug": "gold-trend-retest-v2",
+      "signal_history_sha256": "8a6084e1f45822b7181121838727b89a0543883edad0a4f7380301a0c463d17a",
+      "full_history_signal_count": 11,
+      "split_utc": "2026-10-12T21:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+3 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 8,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 2,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 6,
+        "wins": 2,
+        "losses": 4,
+        "breakeven": 0,
+        "win_rate": 0.3333333333333333,
+        "net_r": -0.2935688547222388,
+        "expectancy_r": -0.04892814245370647,
+        "profit_factor_r": 0.9283601541048033,
+        "max_closed_trade_drawdown_r": 4.0978431912277715
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 6,
+        "wins": 2,
+        "losses": 4,
+        "breakeven": 0,
+        "win_rate": 0.3333333333333333,
+        "net_r": -0.2935688547222388,
+        "expectancy_r": -0.04892814245370647,
+        "profit_factor_r": 0.9283601541048033,
+        "max_closed_trade_drawdown_r": 4.0978431912277715
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v2",
+      "offset_hours": 3,
+      "segment": "last30",
+      "cost": "gross",
+      "file": "v2-utcplus3-last30-gross.json",
+      "engine_class": "App\\Services\\GoldTrendRetestV2Strategy",
+      "engine_slug": "gold-trend-retest-v2",
+      "signal_history_sha256": "8a6084e1f45822b7181121838727b89a0543883edad0a4f7380301a0c463d17a",
+      "full_history_signal_count": 11,
+      "split_utc": "2026-10-12T21:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+3 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 3,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 0,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 3,
+        "wins": 1,
+        "losses": 2,
+        "breakeven": 0,
+        "win_rate": 0.3333333333333333,
+        "net_r": -6.208272773644552e-7,
+        "expectancy_r": -2.0694242578815172e-7,
+        "profit_factor_r": 0.9999996895863613,
+        "max_closed_trade_drawdown_r": 2
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 2,
+        "wins": 0,
+        "losses": 2,
+        "breakeven": 0,
+        "win_rate": 0,
+        "net_r": -2,
+        "expectancy_r": -1,
+        "profit_factor_r": 0,
+        "max_closed_trade_drawdown_r": 2
+      },
+      "trades_crossing_nonconsecutive_minutes": 1,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v2",
+      "offset_hours": 3,
+      "segment": "last30",
+      "cost": "minimum-spread-only",
+      "file": "v2-utcplus3-last30-minimum-spread-only.json",
+      "engine_class": "App\\Services\\GoldTrendRetestV2Strategy",
+      "engine_slug": "gold-trend-retest-v2",
+      "signal_history_sha256": "8a6084e1f45822b7181121838727b89a0543883edad0a4f7380301a0c463d17a",
+      "full_history_signal_count": 11,
+      "split_utc": "2026-10-12T21:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+3 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 3,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 0,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 3,
+        "wins": 1,
+        "losses": 2,
+        "breakeven": 0,
+        "win_rate": 0.3333333333333333,
+        "net_r": -6.208272773644552e-7,
+        "expectancy_r": -2.0694242578815172e-7,
+        "profit_factor_r": 0.9999996895863613,
+        "max_closed_trade_drawdown_r": 2
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 2,
+        "wins": 0,
+        "losses": 2,
+        "breakeven": 0,
+        "win_rate": 0,
+        "net_r": -2,
+        "expectancy_r": -1,
+        "profit_factor_r": 0,
+        "max_closed_trade_drawdown_r": 2
+      },
+      "trades_crossing_nonconsecutive_minutes": 1,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v2",
+      "offset_hours": 3,
+      "segment": "last30",
+      "cost": "assumed-costs",
+      "file": "v2-utcplus3-last30-assumed-costs.json",
+      "engine_class": "App\\Services\\GoldTrendRetestV2Strategy",
+      "engine_slug": "gold-trend-retest-v2",
+      "signal_history_sha256": "8a6084e1f45822b7181121838727b89a0543883edad0a4f7380301a0c463d17a",
+      "full_history_signal_count": 11,
+      "split_utc": "2026-10-12T21:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+3 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 3,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 0,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 3,
+        "wins": 1,
+        "losses": 2,
+        "breakeven": 0,
+        "win_rate": 0.3333333333333333,
+        "net_r": -0.05636634445415889,
+        "expectancy_r": -0.01878878148471963,
+        "profit_factor_r": 0.972197264814614,
+        "max_closed_trade_drawdown_r": 2.0273668787733805
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 2,
+        "wins": 0,
+        "losses": 2,
+        "breakeven": 0,
+        "win_rate": 0,
+        "net_r": -2.0273668787733805,
+        "expectancy_r": -1.0136834393866903,
+        "profit_factor_r": 0,
+        "max_closed_trade_drawdown_r": 2.0273668787733805
+      },
+      "trades_crossing_nonconsecutive_minutes": 1,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v2",
+      "offset_hours": 3,
+      "segment": "last30",
+      "cost": "double-assumed-costs",
+      "file": "v2-utcplus3-last30-double-assumed-costs.json",
+      "engine_class": "App\\Services\\GoldTrendRetestV2Strategy",
+      "engine_slug": "gold-trend-retest-v2",
+      "signal_history_sha256": "8a6084e1f45822b7181121838727b89a0543883edad0a4f7380301a0c463d17a",
+      "full_history_signal_count": 11,
+      "split_utc": "2026-10-12T21:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+3 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 3,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 0,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 3,
+        "wins": 1,
+        "losses": 2,
+        "breakeven": 0,
+        "win_rate": 0.3333333333333333,
+        "net_r": -0.11193888471747315,
+        "expectancy_r": -0.03731296157249105,
+        "profit_factor_r": 0.9455098620027513,
+        "max_closed_trade_drawdown_r": 2.0542962237152933
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 2,
+        "wins": 0,
+        "losses": 2,
+        "breakeven": 0,
+        "win_rate": 0,
+        "net_r": -2.0542962237152933,
+        "expectancy_r": -1.0271481118576467,
+        "profit_factor_r": 0,
+        "max_closed_trade_drawdown_r": 2.0542962237152933
+      },
+      "trades_crossing_nonconsecutive_minutes": 1,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v1",
+      "offset_hours": 0,
+      "segment": "full",
+      "cost": "gross",
+      "file": "v1-utcplus0-full-gross.json",
+      "engine_class": "App\\Services\\GoldTrendRetestStrategy",
+      "engine_slug": "gold-trend-retest",
+      "signal_history_sha256": "a7a087a45ffde4113e96e3caaaf936daa9ef90d13218b9a9feed3b617a1d167b",
+      "full_history_signal_count": 3,
+      "split_utc": "2026-10-13T00:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+0 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 3,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 1,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 2,
+        "wins": 2,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 3.994804819160361,
+        "expectancy_r": 1.9974024095801806,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 2,
+        "wins": 2,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 3.994804819160361,
+        "expectancy_r": 1.9974024095801806,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v1",
+      "offset_hours": 0,
+      "segment": "full",
+      "cost": "minimum-spread-only",
+      "file": "v1-utcplus0-full-minimum-spread-only.json",
+      "engine_class": "App\\Services\\GoldTrendRetestStrategy",
+      "engine_slug": "gold-trend-retest",
+      "signal_history_sha256": "a7a087a45ffde4113e96e3caaaf936daa9ef90d13218b9a9feed3b617a1d167b",
+      "full_history_signal_count": 3,
+      "split_utc": "2026-10-13T00:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+0 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 3,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 1,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 2,
+        "wins": 2,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 3.994804819160361,
+        "expectancy_r": 1.9974024095801806,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 2,
+        "wins": 2,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 3.994804819160361,
+        "expectancy_r": 1.9974024095801806,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v1",
+      "offset_hours": 0,
+      "segment": "full",
+      "cost": "assumed-costs",
+      "file": "v1-utcplus0-full-assumed-costs.json",
+      "engine_class": "App\\Services\\GoldTrendRetestStrategy",
+      "engine_slug": "gold-trend-retest",
+      "signal_history_sha256": "a7a087a45ffde4113e96e3caaaf936daa9ef90d13218b9a9feed3b617a1d167b",
+      "full_history_signal_count": 3,
+      "split_utc": "2026-10-13T00:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+0 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 3,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 1,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 2,
+        "wins": 2,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 3.908651087189588,
+        "expectancy_r": 1.954325543594794,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 2,
+        "wins": 2,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 3.908651087189588,
+        "expectancy_r": 1.954325543594794,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v1",
+      "offset_hours": 0,
+      "segment": "full",
+      "cost": "double-assumed-costs",
+      "file": "v1-utcplus0-full-double-assumed-costs.json",
+      "engine_class": "App\\Services\\GoldTrendRetestStrategy",
+      "engine_slug": "gold-trend-retest",
+      "signal_history_sha256": "a7a087a45ffde4113e96e3caaaf936daa9ef90d13218b9a9feed3b617a1d167b",
+      "full_history_signal_count": 3,
+      "split_utc": "2026-10-13T00:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+0 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 3,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 1,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 2,
+        "wins": 2,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 3.824069359734855,
+        "expectancy_r": 1.9120346798674275,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 2,
+        "wins": 2,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 3.824069359734855,
+        "expectancy_r": 1.9120346798674275,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v1",
+      "offset_hours": 0,
+      "segment": "first70",
+      "cost": "gross",
+      "file": "v1-utcplus0-first70-gross.json",
+      "engine_class": "App\\Services\\GoldTrendRetestStrategy",
+      "engine_slug": "gold-trend-retest",
+      "signal_history_sha256": "a7a087a45ffde4113e96e3caaaf936daa9ef90d13218b9a9feed3b617a1d167b",
+      "full_history_signal_count": 3,
+      "split_utc": "2026-10-13T00:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+0 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 3,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 1,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 2,
+        "wins": 2,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 3.994804819160361,
+        "expectancy_r": 1.9974024095801806,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 2,
+        "wins": 2,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 3.994804819160361,
+        "expectancy_r": 1.9974024095801806,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v1",
+      "offset_hours": 0,
+      "segment": "first70",
+      "cost": "minimum-spread-only",
+      "file": "v1-utcplus0-first70-minimum-spread-only.json",
+      "engine_class": "App\\Services\\GoldTrendRetestStrategy",
+      "engine_slug": "gold-trend-retest",
+      "signal_history_sha256": "a7a087a45ffde4113e96e3caaaf936daa9ef90d13218b9a9feed3b617a1d167b",
+      "full_history_signal_count": 3,
+      "split_utc": "2026-10-13T00:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+0 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 3,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 1,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 2,
+        "wins": 2,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 3.994804819160361,
+        "expectancy_r": 1.9974024095801806,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 2,
+        "wins": 2,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 3.994804819160361,
+        "expectancy_r": 1.9974024095801806,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v1",
+      "offset_hours": 0,
+      "segment": "first70",
+      "cost": "assumed-costs",
+      "file": "v1-utcplus0-first70-assumed-costs.json",
+      "engine_class": "App\\Services\\GoldTrendRetestStrategy",
+      "engine_slug": "gold-trend-retest",
+      "signal_history_sha256": "a7a087a45ffde4113e96e3caaaf936daa9ef90d13218b9a9feed3b617a1d167b",
+      "full_history_signal_count": 3,
+      "split_utc": "2026-10-13T00:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+0 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 3,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 1,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 2,
+        "wins": 2,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 3.908651087189588,
+        "expectancy_r": 1.954325543594794,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 2,
+        "wins": 2,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 3.908651087189588,
+        "expectancy_r": 1.954325543594794,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v1",
+      "offset_hours": 0,
+      "segment": "first70",
+      "cost": "double-assumed-costs",
+      "file": "v1-utcplus0-first70-double-assumed-costs.json",
+      "engine_class": "App\\Services\\GoldTrendRetestStrategy",
+      "engine_slug": "gold-trend-retest",
+      "signal_history_sha256": "a7a087a45ffde4113e96e3caaaf936daa9ef90d13218b9a9feed3b617a1d167b",
+      "full_history_signal_count": 3,
+      "split_utc": "2026-10-13T00:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+0 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 3,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 1,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 2,
+        "wins": 2,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 3.824069359734855,
+        "expectancy_r": 1.9120346798674275,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 2,
+        "wins": 2,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": 1,
+        "net_r": 3.824069359734855,
+        "expectancy_r": 1.9120346798674275,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v1",
+      "offset_hours": 0,
+      "segment": "last30",
+      "cost": "gross",
+      "file": "v1-utcplus0-last30-gross.json",
+      "engine_class": "App\\Services\\GoldTrendRetestStrategy",
+      "engine_slug": "gold-trend-retest",
+      "signal_history_sha256": "a7a087a45ffde4113e96e3caaaf936daa9ef90d13218b9a9feed3b617a1d167b",
+      "full_history_signal_count": 3,
+      "split_utc": "2026-10-13T00:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+0 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 0,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 0,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": null,
+        "net_r": 0,
+        "expectancy_r": null,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": null,
+        "net_r": 0,
+        "expectancy_r": null,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v1",
+      "offset_hours": 0,
+      "segment": "last30",
+      "cost": "minimum-spread-only",
+      "file": "v1-utcplus0-last30-minimum-spread-only.json",
+      "engine_class": "App\\Services\\GoldTrendRetestStrategy",
+      "engine_slug": "gold-trend-retest",
+      "signal_history_sha256": "a7a087a45ffde4113e96e3caaaf936daa9ef90d13218b9a9feed3b617a1d167b",
+      "full_history_signal_count": 3,
+      "split_utc": "2026-10-13T00:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+0 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 0,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 0,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": null,
+        "net_r": 0,
+        "expectancy_r": null,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": null,
+        "net_r": 0,
+        "expectancy_r": null,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v1",
+      "offset_hours": 0,
+      "segment": "last30",
+      "cost": "assumed-costs",
+      "file": "v1-utcplus0-last30-assumed-costs.json",
+      "engine_class": "App\\Services\\GoldTrendRetestStrategy",
+      "engine_slug": "gold-trend-retest",
+      "signal_history_sha256": "a7a087a45ffde4113e96e3caaaf936daa9ef90d13218b9a9feed3b617a1d167b",
+      "full_history_signal_count": 3,
+      "split_utc": "2026-10-13T00:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+0 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 0,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 0,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": null,
+        "net_r": 0,
+        "expectancy_r": null,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": null,
+        "net_r": 0,
+        "expectancy_r": null,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v1",
+      "offset_hours": 0,
+      "segment": "last30",
+      "cost": "double-assumed-costs",
+      "file": "v1-utcplus0-last30-double-assumed-costs.json",
+      "engine_class": "App\\Services\\GoldTrendRetestStrategy",
+      "engine_slug": "gold-trend-retest",
+      "signal_history_sha256": "a7a087a45ffde4113e96e3caaaf936daa9ef90d13218b9a9feed3b617a1d167b",
+      "full_history_signal_count": 3,
+      "split_utc": "2026-10-13T00:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+0 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 0,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 0,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": null,
+        "net_r": 0,
+        "expectancy_r": null,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "breakeven": 0,
+        "win_rate": null,
+        "net_r": 0,
+        "expectancy_r": null,
+        "profit_factor_r": null,
+        "max_closed_trade_drawdown_r": 0
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v2",
+      "offset_hours": 0,
+      "segment": "full",
+      "cost": "gross",
+      "file": "v2-utcplus0-full-gross.json",
+      "engine_class": "App\\Services\\GoldTrendRetestV2Strategy",
+      "engine_slug": "gold-trend-retest-v2",
+      "signal_history_sha256": "7f4e70efd3a2e8a02ef9f005cbbd8cb72681c739f937ba9f3fb4b3d2b78e251d",
+      "full_history_signal_count": 10,
+      "split_utc": "2026-10-13T00:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+0 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 10,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 4,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 6,
+        "wins": 4,
+        "losses": 2,
+        "breakeven": 0,
+        "win_rate": 0.6666666666666666,
+        "net_r": 5.992332612938932,
+        "expectancy_r": 0.9987221021564886,
+        "profit_factor_r": 3.996166306469466,
+        "max_closed_trade_drawdown_r": 1
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 6,
+        "wins": 4,
+        "losses": 2,
+        "breakeven": 0,
+        "win_rate": 0.6666666666666666,
+        "net_r": 5.992332612938932,
+        "expectancy_r": 0.9987221021564886,
+        "profit_factor_r": 3.996166306469466,
+        "max_closed_trade_drawdown_r": 1
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v2",
+      "offset_hours": 0,
+      "segment": "full",
+      "cost": "minimum-spread-only",
+      "file": "v2-utcplus0-full-minimum-spread-only.json",
+      "engine_class": "App\\Services\\GoldTrendRetestV2Strategy",
+      "engine_slug": "gold-trend-retest-v2",
+      "signal_history_sha256": "7f4e70efd3a2e8a02ef9f005cbbd8cb72681c739f937ba9f3fb4b3d2b78e251d",
+      "full_history_signal_count": 10,
+      "split_utc": "2026-10-13T00:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+0 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 10,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 4,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 6,
+        "wins": 4,
+        "losses": 2,
+        "breakeven": 0,
+        "win_rate": 0.6666666666666666,
+        "net_r": 5.992332612938932,
+        "expectancy_r": 0.9987221021564886,
+        "profit_factor_r": 3.996166306469466,
+        "max_closed_trade_drawdown_r": 1
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 6,
+        "wins": 4,
+        "losses": 2,
+        "breakeven": 0,
+        "win_rate": 0.6666666666666666,
+        "net_r": 5.992332612938932,
+        "expectancy_r": 0.9987221021564886,
+        "profit_factor_r": 3.996166306469466,
+        "max_closed_trade_drawdown_r": 1
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v2",
+      "offset_hours": 0,
+      "segment": "full",
+      "cost": "assumed-costs",
+      "file": "v2-utcplus0-full-assumed-costs.json",
+      "engine_class": "App\\Services\\GoldTrendRetestV2Strategy",
+      "engine_slug": "gold-trend-retest-v2",
+      "signal_history_sha256": "7f4e70efd3a2e8a02ef9f005cbbd8cb72681c739f937ba9f3fb4b3d2b78e251d",
+      "full_history_signal_count": 10,
+      "split_utc": "2026-10-13T00:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+0 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 10,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 4,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 6,
+        "wins": 4,
+        "losses": 2,
+        "breakeven": 0,
+        "win_rate": 0.6666666666666666,
+        "net_r": 5.787220853642354,
+        "expectancy_r": 0.9645368089403923,
+        "profit_factor_r": 3.8543472645102197,
+        "max_closed_trade_drawdown_r": 1.014147696962982
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 6,
+        "wins": 4,
+        "losses": 2,
+        "breakeven": 0,
+        "win_rate": 0.6666666666666666,
+        "net_r": 5.787220853642354,
+        "expectancy_r": 0.9645368089403923,
+        "profit_factor_r": 3.8543472645102197,
+        "max_closed_trade_drawdown_r": 1.014147696962982
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v2",
+      "offset_hours": 0,
+      "segment": "full",
+      "cost": "double-assumed-costs",
+      "file": "v2-utcplus0-full-double-assumed-costs.json",
+      "engine_class": "App\\Services\\GoldTrendRetestV2Strategy",
+      "engine_slug": "gold-trend-retest-v2",
+      "signal_history_sha256": "7f4e70efd3a2e8a02ef9f005cbbd8cb72681c739f937ba9f3fb4b3d2b78e251d",
+      "full_history_signal_count": 10,
+      "split_utc": "2026-10-13T00:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+0 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 10,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 4,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 6,
+        "wins": 4,
+        "losses": 2,
+        "breakeven": 0,
+        "win_rate": 0.6666666666666666,
+        "net_r": 5.585929942109291,
+        "expectancy_r": 0.9309883236848818,
+        "profit_factor_r": 3.7187693856143014,
+        "max_closed_trade_drawdown_r": 1.0280618582397318
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 6,
+        "wins": 4,
+        "losses": 2,
+        "breakeven": 0,
+        "win_rate": 0.6666666666666666,
+        "net_r": 5.585929942109291,
+        "expectancy_r": 0.9309883236848818,
+        "profit_factor_r": 3.7187693856143014,
+        "max_closed_trade_drawdown_r": 1.0280618582397318
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v2",
+      "offset_hours": 0,
+      "segment": "first70",
+      "cost": "gross",
+      "file": "v2-utcplus0-first70-gross.json",
+      "engine_class": "App\\Services\\GoldTrendRetestV2Strategy",
+      "engine_slug": "gold-trend-retest-v2",
+      "signal_history_sha256": "7f4e70efd3a2e8a02ef9f005cbbd8cb72681c739f937ba9f3fb4b3d2b78e251d",
+      "full_history_signal_count": 10,
+      "split_utc": "2026-10-13T00:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+0 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 9,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 4,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 5,
+        "wins": 4,
+        "losses": 1,
+        "breakeven": 0,
+        "win_rate": 0.8,
+        "net_r": 6.992332612938932,
+        "expectancy_r": 1.3984665225877864,
+        "profit_factor_r": 7.992332612938932,
+        "max_closed_trade_drawdown_r": 1
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 5,
+        "wins": 4,
+        "losses": 1,
+        "breakeven": 0,
+        "win_rate": 0.8,
+        "net_r": 6.992332612938932,
+        "expectancy_r": 1.3984665225877864,
+        "profit_factor_r": 7.992332612938932,
+        "max_closed_trade_drawdown_r": 1
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v2",
+      "offset_hours": 0,
+      "segment": "first70",
+      "cost": "minimum-spread-only",
+      "file": "v2-utcplus0-first70-minimum-spread-only.json",
+      "engine_class": "App\\Services\\GoldTrendRetestV2Strategy",
+      "engine_slug": "gold-trend-retest-v2",
+      "signal_history_sha256": "7f4e70efd3a2e8a02ef9f005cbbd8cb72681c739f937ba9f3fb4b3d2b78e251d",
+      "full_history_signal_count": 10,
+      "split_utc": "2026-10-13T00:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+0 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 9,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 4,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 5,
+        "wins": 4,
+        "losses": 1,
+        "breakeven": 0,
+        "win_rate": 0.8,
+        "net_r": 6.992332612938932,
+        "expectancy_r": 1.3984665225877864,
+        "profit_factor_r": 7.992332612938932,
+        "max_closed_trade_drawdown_r": 1
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 5,
+        "wins": 4,
+        "losses": 1,
+        "breakeven": 0,
+        "win_rate": 0.8,
+        "net_r": 6.992332612938932,
+        "expectancy_r": 1.3984665225877864,
+        "profit_factor_r": 7.992332612938932,
+        "max_closed_trade_drawdown_r": 1
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v2",
+      "offset_hours": 0,
+      "segment": "first70",
+      "cost": "assumed-costs",
+      "file": "v2-utcplus0-first70-assumed-costs.json",
+      "engine_class": "App\\Services\\GoldTrendRetestV2Strategy",
+      "engine_slug": "gold-trend-retest-v2",
+      "signal_history_sha256": "7f4e70efd3a2e8a02ef9f005cbbd8cb72681c739f937ba9f3fb4b3d2b78e251d",
+      "full_history_signal_count": 10,
+      "split_utc": "2026-10-13T00:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+0 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 9,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 4,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 5,
+        "wins": 4,
+        "losses": 1,
+        "breakeven": 0,
+        "win_rate": 0.8,
+        "net_r": 6.801368550605336,
+        "expectancy_r": 1.3602737101210671,
+        "profit_factor_r": 7.711677483961427,
+        "max_closed_trade_drawdown_r": 1.013363435126053
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 5,
+        "wins": 4,
+        "losses": 1,
+        "breakeven": 0,
+        "win_rate": 0.8,
+        "net_r": 6.801368550605336,
+        "expectancy_r": 1.3602737101210671,
+        "profit_factor_r": 7.711677483961427,
+        "max_closed_trade_drawdown_r": 1.013363435126053
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v2",
+      "offset_hours": 0,
+      "segment": "first70",
+      "cost": "double-assumed-costs",
+      "file": "v2-utcplus0-first70-double-assumed-costs.json",
+      "engine_class": "App\\Services\\GoldTrendRetestV2Strategy",
+      "engine_slug": "gold-trend-retest-v2",
+      "signal_history_sha256": "7f4e70efd3a2e8a02ef9f005cbbd8cb72681c739f937ba9f3fb4b3d2b78e251d",
+      "full_history_signal_count": 10,
+      "split_utc": "2026-10-13T00:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+0 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 9,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 4,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 5,
+        "wins": 4,
+        "losses": 1,
+        "breakeven": 0,
+        "win_rate": 0.8,
+        "net_r": 6.613991800349023,
+        "expectancy_r": 1.3227983600698046,
+        "profit_factor_r": 7.443130211497674,
+        "max_closed_trade_drawdown_r": 1.0265184131381435
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 5,
+        "wins": 4,
+        "losses": 1,
+        "breakeven": 0,
+        "win_rate": 0.8,
+        "net_r": 6.613991800349023,
+        "expectancy_r": 1.3227983600698046,
+        "profit_factor_r": 7.443130211497674,
+        "max_closed_trade_drawdown_r": 1.0265184131381435
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v2",
+      "offset_hours": 0,
+      "segment": "last30",
+      "cost": "gross",
+      "file": "v2-utcplus0-last30-gross.json",
+      "engine_class": "App\\Services\\GoldTrendRetestV2Strategy",
+      "engine_slug": "gold-trend-retest-v2",
+      "signal_history_sha256": "7f4e70efd3a2e8a02ef9f005cbbd8cb72681c739f937ba9f3fb4b3d2b78e251d",
+      "full_history_signal_count": 10,
+      "split_utc": "2026-10-13T00:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+0 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 1,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 0,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 1,
+        "wins": 0,
+        "losses": 1,
+        "breakeven": 0,
+        "win_rate": 0,
+        "net_r": -1,
+        "expectancy_r": -1,
+        "profit_factor_r": 0,
+        "max_closed_trade_drawdown_r": 1
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 1,
+        "wins": 0,
+        "losses": 1,
+        "breakeven": 0,
+        "win_rate": 0,
+        "net_r": -1,
+        "expectancy_r": -1,
+        "profit_factor_r": 0,
+        "max_closed_trade_drawdown_r": 1
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v2",
+      "offset_hours": 0,
+      "segment": "last30",
+      "cost": "minimum-spread-only",
+      "file": "v2-utcplus0-last30-minimum-spread-only.json",
+      "engine_class": "App\\Services\\GoldTrendRetestV2Strategy",
+      "engine_slug": "gold-trend-retest-v2",
+      "signal_history_sha256": "7f4e70efd3a2e8a02ef9f005cbbd8cb72681c739f937ba9f3fb4b3d2b78e251d",
+      "full_history_signal_count": 10,
+      "split_utc": "2026-10-13T00:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+0 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 1,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 0,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 1,
+        "wins": 0,
+        "losses": 1,
+        "breakeven": 0,
+        "win_rate": 0,
+        "net_r": -1,
+        "expectancy_r": -1,
+        "profit_factor_r": 0,
+        "max_closed_trade_drawdown_r": 1
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 1,
+        "wins": 0,
+        "losses": 1,
+        "breakeven": 0,
+        "win_rate": 0,
+        "net_r": -1,
+        "expectancy_r": -1,
+        "profit_factor_r": 0,
+        "max_closed_trade_drawdown_r": 1
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v2",
+      "offset_hours": 0,
+      "segment": "last30",
+      "cost": "assumed-costs",
+      "file": "v2-utcplus0-last30-assumed-costs.json",
+      "engine_class": "App\\Services\\GoldTrendRetestV2Strategy",
+      "engine_slug": "gold-trend-retest-v2",
+      "signal_history_sha256": "7f4e70efd3a2e8a02ef9f005cbbd8cb72681c739f937ba9f3fb4b3d2b78e251d",
+      "full_history_signal_count": 10,
+      "split_utc": "2026-10-13T00:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+0 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 1,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 0,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 1,
+        "wins": 0,
+        "losses": 1,
+        "breakeven": 0,
+        "win_rate": 0,
+        "net_r": -1.0141476969629817,
+        "expectancy_r": -1.0141476969629817,
+        "profit_factor_r": 0,
+        "max_closed_trade_drawdown_r": 1.0141476969629817
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 1,
+        "wins": 0,
+        "losses": 1,
+        "breakeven": 0,
+        "win_rate": 0,
+        "net_r": -1.0141476969629817,
+        "expectancy_r": -1.0141476969629817,
+        "profit_factor_r": 0,
+        "max_closed_trade_drawdown_r": 1.0141476969629817
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    },
+    {
+      "version": "v2",
+      "offset_hours": 0,
+      "segment": "last30",
+      "cost": "double-assumed-costs",
+      "file": "v2-utcplus0-last30-double-assumed-costs.json",
+      "engine_class": "App\\Services\\GoldTrendRetestV2Strategy",
+      "engine_slug": "gold-trend-retest-v2",
+      "signal_history_sha256": "7f4e70efd3a2e8a02ef9f005cbbd8cb72681c739f937ba9f3fb4b3d2b78e251d",
+      "full_history_signal_count": 10,
+      "split_utc": "2026-10-13T00:30:00+00:00",
+      "timestamp_assumption": "Assume CSV wall time is UTC+0 throughout. Broker timezone is not independently verified.",
+      "aggregate_counts": {
+        "m1": 60475,
+        "m15": 3995,
+        "h1": 966,
+        "omitted_incomplete_m15": 43,
+        "omitted_incomplete_h1": 44
+      },
+      "signals": 1,
+      "entry_rejections": {
+        "duplicate_setup": 0,
+        "existing_position": 0,
+        "daily_entry_limit": 0,
+        "cooldown": 0,
+        "entry_bounds": 0,
+        "spread_or_reward_risk": 0,
+        "no_immediate_next_open": 0
+      },
+      "metrics": {
+        "closed_trades": 1,
+        "wins": 0,
+        "losses": 1,
+        "breakeven": 0,
+        "win_rate": 0,
+        "net_r": -1.0280618582397318,
+        "expectancy_r": -1.0280618582397318,
+        "profit_factor_r": 0,
+        "max_closed_trade_drawdown_r": 1.0280618582397318
+      },
+      "contiguous_path_metrics": {
+        "closed_trades": 1,
+        "wins": 0,
+        "losses": 1,
+        "breakeven": 0,
+        "win_rate": 0,
+        "net_r": -1.0280618582397318,
+        "expectancy_r": -1.0280618582397318,
+        "profit_factor_r": 0,
+        "max_closed_trade_drawdown_r": 1.0280618582397318
+      },
+      "trades_crossing_nonconsecutive_minutes": 0,
+      "ambiguous_minutes_stop_first": 0,
+      "open_position_at_end": null
+    }
+  ]
+}

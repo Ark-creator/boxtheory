@@ -1,0 +1,10 @@
+{
+  "verified_at_utc": "2026-11-02T04:41:49.885Z",
+  "scenarios_independently_reconciled": 48,
+  "source_hashes_still_match": true,
+  "primary_trades": 9,
+  "maximum_consecutive_losses": 4,
+  "strategy_or_cost_parameters_changed": false,
+  "emails_sent": 0,
+  "orders_sent": 0
+}

@@ -6,12 +6,13 @@ use App\Models\Strategy;
 use App\Services\SignalAlertService;
 use App\Services\TradingService;
 use Illuminate\Mail\PendingMail;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 
 beforeEach(function () {
-    $this->freezeTime();
+    $this->travelTo(Carbon::parse('2026-11-02T14:00:00Z'));
     Http::preventStrayRequests();
     Mail::fake();
     Cache::flush();
@@ -32,6 +33,11 @@ function historyTestSignal(string $action = 'BUY'): array
         'expires_at' => now()->addMinutes(3)->toIso8601String(),
         'price' => 2000,
         'message' => 'Confirmed entry setup',
+        'freshness' => [
+            'verified' => true, 'source' => 'twelvedata', 'interval_seconds' => 300,
+            'data_as_of' => now()->toIso8601String(), 'observed_at' => now()->toIso8601String(),
+            'generated_at' => now()->toIso8601String(), 'market_open' => true,
+        ],
         'indicators' => ['rsi' => 61.5, 'source' => 'test'],
         'trade_plan' => [
             'entry_price' => 2000, 'stop_loss' => 1995,

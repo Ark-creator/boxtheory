@@ -42,6 +42,9 @@ return [
     'twelvedata' => [
         'key' => env('TWELVEDATA_API_KEY'),
         'cache_seconds' => env('TRADING_INTRADAY_CACHE_SECONDS', 120),
+        // Optional trusted CA file / explicit proxy override. TLS verification stays enabled.
+        'ca_bundle' => env('TWELVEDATA_CA_BUNDLE'),
+        'proxy' => env('TWELVEDATA_PROXY'),
     ],
 
     'paymongo' => [
@@ -53,6 +56,8 @@ return [
     ],
 
     'signal_alerts' => [
+        // Experimental V2 alerts are opt-in; never treat a software revision as proof of an edge.
+        'retest_v2_enabled' => env('RETEST_V2_EMAILS_ENABLED', false),
         // Optional comma-separated list. If empty, all admin user emails are used.
         'admin_emails' => env('ADMIN_SIGNAL_EMAILS', ''),
         // Entry alerts by default. Add CLOSE or HOLD here if those updates are wanted.

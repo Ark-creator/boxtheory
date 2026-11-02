@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Strategy;
+use App\Services\SignalSnapshotCache;
 use App\Services\TradingService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 
 class WatchlistController extends Controller
@@ -36,6 +36,7 @@ class WatchlistController extends Controller
                 ->get();
 
         $matrix = [];
+        $snapshotCache = app(SignalSnapshotCache::class);
         foreach ($selectedPairCodes as $pairCode) {
             foreach ($strategies as $strategy) {
                 $cacheKey = sprintf(
@@ -46,9 +47,18 @@ class WatchlistController extends Controller
                     $positionKey
                 );
 
-                $matrix[$pairCode][$strategy->id] = Cache::remember($cacheKey, $cacheSeconds, function () use ($service, $strategy, $position, $pairCode) {
-                    return $service->getSignalForStrategy($strategy->slug, $position, $pairCode);
-                });
+                $signal = $snapshotCache->get($cacheKey, (string) $pairCode);
+                if ($signal === null) {
+                    $signal = $service->getSignalForStrategy($strategy->slug, $position, $pairCode);
+                    $snapshotCache->put($cacheKey, $signal, $cacheSeconds);
+                }
+                $matrix[$pairCode][$strategy->id] = $signal;
+            }
+        }
+
+        foreach ($matrix as $pairCode => $cells) {
+            foreach ($cells as $strategyId => $signal) {
+                $matrix[$pairCode][$strategyId] = $snapshotCache->forView($signal, (string) $pairCode);
             }
         }
 
@@ -67,7 +77,7 @@ class WatchlistController extends Controller
         $pairs = $service->getAvailablePairs();
         $maxPairs = max(1, (int) config('trading.watchlist.max_pairs', 6));
         $inputPairCodes = $request->input('pairs', []);
-        if (!is_array($inputPairCodes)) {
+        if (! is_array($inputPairCodes)) {
             $inputPairCodes = [];
         }
 
@@ -90,8 +100,8 @@ class WatchlistController extends Controller
     }
 
     /**
-     * @param array<int,string> $savedPairCodes
-     * @param array<string,array<string,mixed>> $pairs
+     * @param  array<int,string>  $savedPairCodes
+     * @param  array<string,array<string,mixed>>  $pairs
      * @return array<int,string>
      */
     private function resolveSelectedPairCodes(array $savedPairCodes, array $pairs, TradingService $service, int $maxPairs): array
@@ -105,8 +115,8 @@ class WatchlistController extends Controller
     }
 
     /**
-     * @param array<int,mixed> $codes
-     * @param array<string,array<string,mixed>> $pairs
+     * @param  array<int,mixed>  $codes
+     * @param  array<string,array<string,mixed>>  $pairs
      * @return array<int,string>
      */
     private function sanitizePairCodes(array $codes, array $pairs, TradingService $service, int $maxPairs): array
@@ -115,11 +125,11 @@ class WatchlistController extends Controller
 
         foreach ($codes as $rawCode) {
             $normalized = $service->normalizePairCode(is_string($rawCode) ? $rawCode : '');
-            if (!array_key_exists($normalized, $pairs)) {
+            if (! array_key_exists($normalized, $pairs)) {
                 continue;
             }
 
-            if (!in_array($normalized, $selected, true)) {
+            if (! in_array($normalized, $selected, true)) {
                 $selected[] = $normalized;
             }
 
@@ -132,7 +142,7 @@ class WatchlistController extends Controller
     }
 
     /**
-     * @param array<string,array<string,mixed>> $pairs
+     * @param  array<string,array<string,mixed>>  $pairs
      * @return array<int,string>
      */
     private function defaultPairCodes(array $pairs, TradingService $service, int $maxPairs): array
