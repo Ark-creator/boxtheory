@@ -15,6 +15,11 @@ class AutoTraderService
 
     private const ACTIVE_STATUSES = ['dry_run', 'pending', 'unknown', 'sent', 'accepted', 'executed', 'partial'];
 
+    private const RSI_ALIASES = ['rsi-moving-average', 'rsi-moving-averages', 'rsi-ma', 'rsi-ma-method',
+        'rsi-scalper', 'rsi-gold-scalper', RsiGoldScalperV2Strategy::SLUG];
+
+    private const RSI_DEMO_CAPABILITIES = ['m5_candles', 'quote_timestamp', 'rsi_scalper_v2_demo_execution'];
+
     private ?array $brokerSnapshot = null;
 
     public function __construct(private readonly TradingService $tradingService) {}
@@ -71,7 +76,7 @@ class AutoTraderService
         $positionKnown = $settings->execution_mode !== 'bridge';
         if ($settings->execution_mode === 'bridge') {
             try {
-                $this->brokerSnapshot = app(Mt5BridgeClient::class)->snapshot($settings);
+                $this->brokerSnapshot = app(Mt5BridgeClient::class)->snapshot($settings, $this->snapshotCapabilities($settings));
                 $positionKnown = true;
             } catch (\Throwable) {
                 $this->brokerSnapshot = null;
@@ -92,6 +97,19 @@ class AutoTraderService
 
     public function latestSignal(AutoTraderSetting $settings, ?string $position = null): array
     {
+        if ($settings->execution_mode === 'bridge' && $this->isRsiStrategy($settings)) {
+            $reason = $this->rsiConfigurationRejection($settings) ?? $this->rsiSnapshotRejection($settings);
+            if ($reason !== null) {
+                return $this->unavailableRsiSignal($reason);
+            }
+            try {
+                // Broker SL/full TP1 manage an existing position. Never request the
+                // legacy position-aware RSI momentum CLOSE or fetch another feed.
+                return $this->tradingService->evaluateRsiMt5Snapshot($this->brokerSnapshot, null, 'trend-session-v2');
+            } catch (\Throwable $exception) {
+                return $this->unavailableRsiSignal($exception->getMessage());
+            }
+        }
         if ($settings->strategy_slug === GoldBreakoutStrategy::SLUG && $this->brokerSnapshot !== null) {
             $signal = app(GoldBreakoutStrategy::class)->evaluate($this->brokerSnapshot['m15'], $this->brokerSnapshot['h1'], now()->utc(), $position);
             $signal['broker'] = ['account_key' => $this->brokerSnapshot['account_key'], 'symbol' => $this->brokerSnapshot['symbol']];
@@ -137,23 +155,40 @@ class AutoTraderService
         }
 
         if ($settings->execution_mode === 'bridge') {
-            if ($settings->strategy_slug !== GoldBreakoutStrategy::SLUG || $settings->pair_code !== 'XAUUSD') {
-                return ['status' => 'rejected', 'message' => 'MT5 execution requires the Gold Risk Breakout XAUUSD strategy.', 'order' => null, 'signal' => null];
+            $rsi = $this->isRsiStrategy($settings);
+            if (($settings->strategy_slug !== GoldBreakoutStrategy::SLUG && ! $rsi) || $settings->pair_code !== 'XAUUSD') {
+                return ['status' => 'rejected', 'message' => 'MT5 execution requires an allowed XAUUSD strategy.', 'order' => null, 'signal' => null];
+            }
+            if ($rsi && ($reason = $this->rsiConfigurationRejection($settings)) !== null) {
+                return ['status' => 'rejected', 'message' => $reason, 'order' => null, 'signal' => null];
+            }
+            if ($rsi && ! app(MarketDataGuard::class)->marketStatus('XAUUSD', now()->utc())['open']) {
+                return ['status' => 'rejected', 'message' => 'Gold market is closed; no demo entry is allowed.', 'order' => null, 'signal' => null];
             }
             try {
-                $this->brokerSnapshot = app(Mt5BridgeClient::class)->snapshot($settings);
+                $this->brokerSnapshot = app(Mt5BridgeClient::class)->snapshot($settings, $this->snapshotCapabilities($settings));
             } catch (\Throwable $e) {
                 return ['status' => 'rejected', 'message' => $e->getMessage(), 'order' => null, 'signal' => null];
+            }
+            if ($rsi && ($reason = $this->rsiSnapshotRejection($settings)) !== null) {
+                return ['status' => 'rejected', 'message' => $reason, 'order' => null, 'signal' => null];
             }
             $this->reconcile($settings);
             if (AutoTradeOrder::query()->where('execution_mode', 'bridge')->whereIn('status', ['pending', 'unknown', 'sent', 'accepted', 'partial'])->exists()) {
                 return ['status' => 'rejected', 'message' => 'An unresolved bridge order requires reconciliation before further trading.', 'order' => null, 'signal' => null];
+            }
+            if ($rsi && (! empty($this->brokerSnapshot['positions']) || ! empty($this->brokerSnapshot['pending_orders']))) {
+                return ['status' => 'rejected', 'message' => 'An existing broker position or pending order blocks RSI entry; its fixed SL/TP remains in control.', 'order' => null, 'signal' => null];
             }
         }
 
         $position = $this->currentPositionContext($settings);
         $signal = $this->latestSignal($settings, $position);
         $action = strtoupper((string) ($signal['action'] ?? 'NO_DATA'));
+        if ($settings->execution_mode === 'bridge' && $this->isRsiStrategy($settings)
+            && ($reason = $this->rsiSignalRejection($settings, $signal)) !== null) {
+            return ['status' => 'rejected', 'message' => $reason, 'order' => null, 'signal' => $signal];
+        }
 
         if (! in_array($action, self::ACTIONABLE, true)) {
             return [
@@ -221,6 +256,133 @@ class AutoTraderService
         $accountType = $this->normalizeAccountType($accountType);
 
         return (string) ($symbols[$accountType] ?? 'XAUUSD');
+    }
+
+    private function isRsiStrategy(AutoTraderSetting $settings): bool
+    {
+        return in_array(strtolower(trim((string) $settings->strategy_slug)), self::RSI_ALIASES, true);
+    }
+
+    private function snapshotCapabilities(AutoTraderSetting $settings): array
+    {
+        return $this->isRsiStrategy($settings) ? self::RSI_DEMO_CAPABILITIES : ['entry_extension_limit'];
+    }
+
+    private function rsiConfigurationRejection(AutoTraderSetting $settings): ?string
+    {
+        if ($settings->pair_code !== 'XAUUSD') {
+            return 'RSI demo execution supports XAUUSD only.';
+        }
+        if (strtolower(trim((string) config('scalper.gold.source', 'twelvedata'))) !== 'mt5') {
+            return 'RSI demo execution requires the MT5 data source; API signals cannot place orders.';
+        }
+        if (strtolower(trim((string) config('scalper.gold.version', 'trend-session-v2'))) !== 'trend-session-v2') {
+            return 'RSI demo execution requires the trend-session-v2 version; legacy and trend-only execution are disabled.';
+        }
+
+        return null;
+    }
+
+    private function rsiSnapshotRejection(AutoTraderSetting $settings): ?string
+    {
+        $snapshot = $this->brokerSnapshot;
+        if ($snapshot === null || ($snapshot['source'] ?? null) !== 'mt5') {
+            return 'A verified MT5 snapshot is required for RSI demo execution.';
+        }
+        if (($snapshot['account']['demo'] ?? null) !== true) {
+            return 'RSI execution is DEMO ONLY; live or unverified accounts are never allowed.';
+        }
+        if (! is_string($snapshot['account_key'] ?? null) || $snapshot['account_key'] === ''
+            || ($snapshot['symbol'] ?? null) !== $settings->mt5_symbol) {
+            return 'RSI snapshot account or symbol does not match the configured broker identity.';
+        }
+        if (! is_array($snapshot['positions'] ?? null) || ! is_array($snapshot['pending_orders'] ?? null)) {
+            return 'RSI demo execution requires verified broker positions and pending orders.';
+        }
+        $capabilities = is_array($snapshot['capabilities'] ?? null) ? $snapshot['capabilities'] : [];
+        foreach (self::RSI_DEMO_CAPABILITIES as $capability) {
+            if (! in_array($capability, $capabilities, true)) {
+                return 'Update the MT5 bridge: RSI demo execution requires capability '.$capability.'.';
+            }
+        }
+
+        return null;
+    }
+
+    private function rsiSignalRejection(AutoTraderSetting $settings, array $signal): ?string
+    {
+        $reason = $this->rsiConfigurationRejection($settings) ?? $this->rsiSnapshotRejection($settings);
+        if ($reason !== null) {
+            return $reason;
+        }
+        if (($signal['action'] ?? 'NO_DATA') === 'NO_DATA') {
+            return (string) ($signal['error'] ?? $signal['message'] ?? 'No verified RSI demo signal is available.');
+        }
+        if (($signal['strategy'] ?? null) !== RsiGoldScalperV2Strategy::SLUG || ($signal['strategy_version'] ?? null) !== 2
+            || ($signal['indicators']['candidate_filter'] ?? null) !== 'trend-session') {
+            return 'The evaluated signal must be the actual RSI Gold Scalper V2 trend-session strategy.';
+        }
+        if (($signal['freshness']['source'] ?? null) !== 'mt5' || ($signal['freshness']['interval_seconds'] ?? null) !== 300
+            || ($signal['symbol_code'] ?? null) !== 'XAUUSD'
+            || ($signal['broker']['account_key'] ?? null) !== $this->brokerSnapshot['account_key']
+            || ($signal['broker']['symbol'] ?? null) !== $this->brokerSnapshot['symbol']) {
+            return 'RSI signal provenance or broker identity differs from its execution snapshot.';
+        }
+        if (strtoupper((string) ($signal['action'] ?? '')) === 'CLOSE') {
+            return 'RSI demo positions use their original broker stop and full TP1; automatic momentum CLOSE is disabled.';
+        }
+        $reason = app(MarketDataGuard::class)->validateSignal($signal, now()->utc());
+        if ($reason !== null) {
+            return $reason;
+        }
+        $action = strtoupper((string) ($signal['action'] ?? 'NO_DATA'));
+        if (! in_array($action, ['BUY', 'SELL'], true)) {
+            return null;
+        }
+        $plan = $signal['trade_plan'] ?? [];
+        if (($plan['exit_policy'] ?? null) !== 'full_tp1' || ($plan['rr_tp1'] ?? null) !== 1.5
+            || ! array_key_exists('take_profit_2', $plan) || $plan['take_profit_2'] !== null
+            || ! array_key_exists('rr_tp2', $plan) || $plan['rr_tp2'] !== null
+            || ($signal['indicators']['entry_session_allowed'] ?? null) !== true) {
+            return 'RSI demo execution requires the original full TP1=1.5R plan and its UTC entry session.';
+        }
+        foreach (['entry_price', 'stop_loss', 'take_profit_1'] as $field) {
+            if (! isset($plan[$field]) || ! is_numeric($plan[$field]) || ! is_finite((float) $plan[$field]) || $plan[$field] <= 0) {
+                return 'RSI demo plan has invalid entry, stop or target prices.';
+            }
+        }
+        $quote = $this->brokerSnapshot['quote'] ?? [];
+        $price = $quote[$action === 'BUY' ? 'ask' : 'bid'] ?? null;
+        if (! is_numeric($price) || ! is_finite((float) $price) || $price <= 0
+            || ($signal['freshness']['observed_at'] ?? null) !== ($quote['timestamp'] ?? null)
+            || ! is_numeric($signal['quote_price'] ?? null) || abs((float) $signal['quote_price'] - (float) $price) > 1e-8) {
+            return 'RSI demo plan must use the same snapshot tick and source timestamp.';
+        }
+        $side = $action === 'BUY' ? 1 : -1;
+        $risk = ((float) $plan['entry_price'] - (float) $plan['stop_loss']) * $side;
+        $reward = ((float) $plan['take_profit_1'] - (float) $plan['entry_price']) * $side;
+        // Four-place entry/stop/target rounding can create up to0.00025 price error.
+        if ($risk <= 0 || $reward <= 0 || abs($reward - 1.5 * $risk) > 0.0003
+            || ($price - $plan['stop_loss']) * $side <= 0 || ($plan['take_profit_1'] - $price) * $side <= 0
+            || abs($price - $plan['entry_price']) > 0.1 * $risk) {
+            return 'RSI demo plan violates the fixed1.5R bracket or current0.1R entry-drift limit.';
+        }
+
+        return null;
+    }
+
+    private function unavailableRsiSignal(string $reason): array
+    {
+        return ['strategy' => RsiGoldScalperV2Strategy::SLUG, 'action' => 'NO_DATA', 'symbol_code' => 'XAUUSD',
+            'price' => 0.0, 'timestamp' => null, 'trade_plan' => [], 'research_only' => true,
+            'message' => $reason, 'error' => $reason];
+    }
+
+    private function executionStrategy(AutoTraderSetting $settings, array $signal): string
+    {
+        return $settings->execution_mode === 'bridge' && $this->isRsiStrategy($settings)
+            && ($signal['strategy'] ?? null) === RsiGoldScalperV2Strategy::SLUG
+            ? RsiGoldScalperV2Strategy::SLUG : (string) $settings->strategy_slug;
     }
 
     private function defaultSettings(): array
@@ -316,7 +478,7 @@ class AutoTraderService
 
         return AutoTradeOrder::query()->create([
             'uuid' => (string) Str::uuid(),
-            'strategy_slug' => (string) $settings->strategy_slug,
+            'strategy_slug' => $this->executionStrategy($settings, $signal),
             'pair_code' => (string) $settings->pair_code,
             'mt5_symbol' => (string) $settings->mt5_symbol,
             'account_type' => (string) $settings->account_type,
@@ -379,6 +541,13 @@ class AutoTraderService
             'cooldown_minutes' => (int) $settings->cooldown_minutes,
             'max_daily_loss' => $settings->max_daily_loss === null ? null : (float) $settings->max_daily_loss,
         ];
+        if ($this->isRsiStrategy($settings)) {
+            $payload += ['strategy_slug' => RsiGoldScalperV2Strategy::SLUG, 'strategy_version' => 2,
+                'exit_policy' => 'full_tp1', 'demo_only' => true, 'freshness' => $signal['freshness'] ?? []];
+            // The broker bridge sizes from account-currency stop risk. A local
+            // reference lot setting is never an executable RSI volume request.
+            unset($payload['volume']);
+        }
 
         try {
             $request = Http::timeout(20)->acceptJson();
@@ -386,6 +555,13 @@ class AutoTraderService
                 $request = $request->withToken((string) $settings->bridge_token);
             }
 
+            // Order persistence, reconciliation or other work may consume the
+            // source candle lifetime. Recheck immediately before submission.
+            if ($this->isRsiStrategy($settings) && ($reason = $this->rsiSignalRejection($settings, $signal)) !== null) {
+                $order->update(['status' => 'rejected', 'error_message' => $reason]);
+
+                return ['status' => 'rejected', 'message' => $reason, 'order' => $order->fresh(), 'signal' => $signal];
+            }
             $response = $request->post((string) $settings->bridge_url, $payload);
             $body = $response->json();
             $status = is_array($body) ? (string) ($body['status'] ?? 'unknown') : 'unknown';
@@ -532,7 +708,7 @@ class AutoTraderService
         $plan = $signal['trade_plan'] ?? [];
 
         return hash('sha256', json_encode([
-            'strategy' => $settings->strategy_slug,
+            'strategy' => $this->executionStrategy($settings, $signal),
             'execution_mode' => $settings->execution_mode,
             'account_key' => $signal['broker']['account_key'] ?? null,
             'symbol' => $settings->mt5_symbol,

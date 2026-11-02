@@ -1,0 +1,15 @@
+; GoldLogic RSI Scalper V2 -- tester/demo research example, not a profitability preset.
+; UTC+3 is an UNVERIFIED broker-clock assumption from prior CSV research.
+; Confirm historical broker UTC offsets and DST convention before enabling the confirmation input.
+; InpConfirmBrokerClock=false intentionally prevents initialization until checked.
+InpBrokerWinterUtcMinutes=180
+InpBrokerSummerUtcMinutes=180
+InpBrokerDstRule=0
+InpConfirmBrokerClock=false
+InpRiskPercent=0.25
+; Account-currency round-trip commission reserve per lot; does NOT charge tester fees.
+InpCommissionPerLotRoundTurn=0.0
+InpMagic=2601102
+InpMaxDeviationPoints=10
+InpHistoryBars=4096
+InpWriteSignalLog=true

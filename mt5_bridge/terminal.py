@@ -13,8 +13,9 @@ from uuid import UUID
 from urllib.parse import urlparse
 
 from journal import Journal
+from clock import ClockError, ClockPolicy
 from news import fetch_calendar
-from risk import Rejected, entry_checks, news_check, number, volume_for_risk
+from risk import Rejected, entry_checks, news_check, number, rsi_entry_checks, utc_time, volume_for_risk
 
 try:
     import MetaTrader5 as mt5
@@ -59,6 +60,8 @@ def initialize_mt5():
         raise Rejected("MT5 account or terminal is disconnected")
     if account.login != int(login) or account.server != server:
         raise Rejected("MT5 account does not match the pinned login and server")
+    if os.getenv("MT5_DEMO_ONLY", "false").lower() == "true" and account.trade_mode != mt5.ACCOUNT_TRADE_MODE_DEMO:
+        raise Rejected("This bridge is locked to DEMO accounts")
     if not mt5.symbol_select(SYMBOL, True):
         raise Rejected("Configured gold symbol is not available in Market Watch")
     return account, terminal
@@ -74,9 +77,25 @@ def require_result(value, name):
     return value
 
 
+def source_clock():
+    try:
+        return ClockPolicy.from_environment()
+    except ClockError as exc:
+        raise Rejected(f"Invalid configured broker clock: {exc}") from exc
+
+
+def source_utc(value, domain):
+    try:
+        return source_clock().normalize(value, domain=domain)
+    except ClockError as exc:
+        raise Rejected(f"Broker timestamp cannot be normalized: {exc}") from exc
+
+
 def bars(timeframe, count):
     rates = require_result(mt5.copy_rates_from_pos(SYMBOL, timeframe, 1, count), "candles")
-    return [{"timestamp": datetime.fromtimestamp(int(row["time"]), timezone.utc).isoformat(),
+    policy = source_clock()
+    return [{"timestamp": datetime.fromtimestamp(policy.normalize(float(row["time"]), domain="bar"), timezone.utc).isoformat(),
+             "raw_time": int(row["time"]),
              **{key: float(row[key]) for key in ("open", "high", "low", "close")}} for row in rates]
 
 
@@ -91,16 +110,26 @@ def snapshot():
         account_risk_check(account, {}, 0, now_utc())
     except Rejected as exc:
         risk_block = str(exc)
+    # Exclude the forming candle. Clock policy defaults to UTC; explicitly
+    # configured server-wall feeds are normalized while preserving raw labels.
+    # The RSI V2 entry filter needs 203 completed active bars after that filter.
+    m5 = bars(mt5.TIMEFRAME_M5, 4096)
+    if len(m5) < 203:
+        raise Rejected("MT5 snapshot requires at least 203 completed M5 candles; load more chart history")
     return {
         "status": "ok", "source": "mt5", "observed_at": now_utc().isoformat(),
-        "capabilities": ["entry_extension_limit", "quote_timestamp"],
+        "capabilities": ["entry_extension_limit", "quote_timestamp", "m5_candles", "rsi_scalper_v2_demo_execution", "explicit_clock_policy"],
+        "clock": {**source_clock().describe(),
+                  "profile_basis": os.getenv("MT5_CLOCK_PROFILE_BASIS", "explicit_configuration"),
+                  "history_status": os.getenv("MT5_CLOCK_HISTORY_STATUS", "configured_policy")},
         "quote": {"bid": float(tick.bid), "ask": float(tick.ask),
-                  "timestamp": datetime.fromtimestamp(int(tick.time), timezone.utc).isoformat()},
+                  "timestamp": datetime.fromtimestamp(source_utc(tick.time, "tick"), timezone.utc).isoformat(),
+                  "raw_time": int(tick.time), "raw_time_msc": getattr(tick, "time_msc", None)},
         "account_key": account_key(account), "symbol": SYMBOL, "risk_block": risk_block,
         "account": {"equity": account.equity, "balance": account.balance, "currency": account.currency,
                     "demo": account.trade_mode == mt5.ACCOUNT_TRADE_MODE_DEMO},
         "positions": [p._asdict() for p in positions], "pending_orders": [p._asdict() for p in orders],
-        "m15": bars(mt5.TIMEFRAME_M15, 300), "h1": bars(mt5.TIMEFRAME_H1, 300),
+        "m5": m5, "m15": bars(mt5.TIMEFRAME_M15, 300), "h1": bars(mt5.TIMEFRAME_H1, 300),
     }
 
 
@@ -120,14 +149,20 @@ def account_risk_check(account, payload, estimated_loss, now):
     balance = number(account.balance, "balance")
     start_day = now.replace(hour=0, minute=0, second=0, microsecond=0)
     start_week = start_day - timedelta(days=now.weekday())
-    deals = require_result(mt5.history_deals_get(start_week, now), "deal history")
+    policy = source_clock()
+    query_from, query_to = policy.query_bounds(start_week, now)
+    deals = require_result(mt5.history_deals_get(query_from, query_to), "deal history")
+    deal_time = lambda deal: policy.normalize(float(deal.time), domain="deal")
+    # Query carriers belong to the configured source domain; loss-day/week
+    # boundaries remain actual UTC after decoding and filtering returned rows.
+    deals = [deal for deal in deals if start_week.timestamp() <= deal_time(deal) <= now.timestamp()]
     trades = [d for d in deals if d.type in (mt5.DEAL_TYPE_BUY, mt5.DEAL_TYPE_SELL)]
     # Include separately posted commissions/charges; exclude funding and credits.
     funding_types = {getattr(mt5, key, -100) for key in ("DEAL_TYPE_BALANCE", "DEAL_TYPE_CREDIT", "DEAL_TYPE_BONUS")}
     pnl_deals = [d for d in deals if d.type not in funding_types]
     cash = lambda d: d.profit + d.commission + d.swap + d.fee
-    today = [d for d in trades if d.time >= start_day.timestamp()]
-    today_pnl = sum(cash(d) for d in pnl_deals if d.time >= start_day.timestamp())
+    today = [d for d in trades if deal_time(d) >= start_day.timestamp()]
+    today_pnl = sum(cash(d) for d in pnl_deals if deal_time(d) >= start_day.timestamp())
     week_pnl = sum(map(cash, pnl_deals))
     floating_loss = min(0.0, equity - balance)
     day_loss = max(0.0, -(today_pnl + floating_loss))
@@ -158,31 +193,93 @@ def account_risk_check(account, payload, estimated_loss, now):
     if len({d.order for d in entries}) >= max_entries:
         raise Rejected("Daily entry limit reached (account-wide)")
     cooldown = max(30, number(payload.get("cooldown_minutes", 30), "cooldown", strictly_positive=False))
-    if trades and now.timestamp() - max(d.time for d in trades) < cooldown * 60:
+    if trades and now.timestamp() - max(deal_time(d) for d in trades) < cooldown * 60:
         raise Rejected("Cooldown after the last account trade is active")
 
 
+def strategy_protocol(payload):
+    if not isinstance(payload, dict):
+        raise Rejected("JSON object required")
+    strategy = payload.get("strategy_slug", payload.get("strategy", "gold-risk-breakout"))
+    if "strategy" in payload and payload["strategy"] != strategy:
+        raise Rejected("Conflicting strategy and strategy_slug")
+    if strategy == "rsi-gold-scalper-v2":
+        if payload.get("strategy") != strategy or payload.get("strategy_slug") != strategy:
+            raise Rejected("RSI requires both canonical strategy fields")
+        if type(payload.get("strategy_version")) is not int or payload["strategy_version"] != 2:
+            raise Rejected("RSI requires strategy_version=2")
+        if payload.get("exit_policy") != "full_tp1" or payload.get("demo_only") is not True:
+            raise Rejected("RSI requires demo_only=true and exit_policy=full_tp1")
+        if not isinstance(payload.get("freshness"), dict) or payload["freshness"].get("source") != "mt5":
+            raise Rejected("RSI execution requires MT5 source provenance")
+    elif strategy != "gold-risk-breakout":
+        raise Rejected("Unexpected strategy")
+    return strategy
+
+
+def rsi_source_close_check(payload):
+    rates = require_result(mt5.copy_rates_from_pos(SYMBOL, mt5.TIMEFRAME_M5, 1, 1), "latest completed M5 candle")
+    if len(rates) != 1:
+        raise Rejected("Latest completed RSI M5 source candle is unavailable")
+    source_time = source_utc(number(rates[0]["time"], "M5 source time"), "bar")
+    source_close = number(rates[0]["close"], "M5 source close")
+    if source_time % 300 != 0 or source_time + 300 != utc_time(payload.get("signal_timestamp")).timestamp():
+        raise Rejected("RSI signal timestamp differs from the actual completed broker M5 candle")
+    if abs(source_close - number(payload.get("entry_price"), "RSI signal entry")) > 0.00005 + 1e-9:
+        raise Rejected("RSI entry differs from the actual source M5 close")
+
+
+def rsi_submission_check(payload, request):
+    """Last check after durable reservation; no price chase or order resubmit."""
+    account = require_result(mt5.account_info(), "current account")
+    if account.trade_mode != mt5.ACCOUNT_TRADE_MODE_DEMO or account_key(account) != payload.get("account_key"):
+        raise Rejected("RSI execution is DEMO-only and the pinned account must remain unchanged")
+    if require_result(mt5.positions_get(), "positions") or require_result(mt5.orders_get(), "pending orders"):
+        raise Rejected("An account position or pending order appeared before submission")
+    info = require_result(mt5.symbol_info(SYMBOL), "symbol specification")
+    tick = require_result(mt5.symbol_info_tick(SYMBOL), "final quote")
+    if (tick.bid, tick.ask) != request.get("_bridge_checked_quote"):
+        raise Rejected("RSI bid/ask changed after OrderCheck; skip without chasing")
+    point = number(info.point, "symbol point")
+    distance = number(info.trade_stops_level, "stop level", strictly_positive=False) * point
+    price, sl, tp = rsi_entry_checks(payload, tick.bid, tick.ask, source_utc(tick.time, "tick"), now_utc(), info.trade_tick_size, distance)
+    if (price, sl, tp) != (request["price"], request["sl"], request["tp"]):
+        raise Rejected("RSI quote or broker bracket changed after OrderCheck; skip without chasing")
+
+
 def prepare_trade(payload):
+    strategy = strategy_protocol(payload)
+    is_rsi = strategy == "rsi-gold-scalper-v2"
     account, terminal = initialize_mt5()
     if os.getenv("MT5_ENABLE_EXECUTION", "false").lower() != "true":
         raise Rejected("Bridge execution is disabled; use Laravel dry run first")
-    if account.trade_mode != mt5.ACCOUNT_TRADE_MODE_DEMO and os.getenv("MT5_ALLOW_LIVE", "false").lower() != "true":
+    if is_rsi and account.trade_mode != mt5.ACCOUNT_TRADE_MODE_DEMO:
+        raise Rejected("RSI Gold Scalper V2 execution is DEMO-only, including when MT5_ALLOW_LIVE=true")
+    if not is_rsi and account.trade_mode != mt5.ACCOUNT_TRADE_MODE_DEMO and os.getenv("MT5_ALLOW_LIVE", "false").lower() != "true":
         raise Rejected("Live accounts are locked; only demo execution is enabled")
     if not account.trade_allowed or not account.trade_expert or not terminal.trade_allowed or getattr(terminal, "tradeapi_disabled", True):
         raise Rejected("MT5 algorithmic/Python trading permissions are disabled")
     if payload.get("account_key") != account_key(account) or payload.get("symbol") != SYMBOL:
         raise Rejected("Signal account or symbol does not match the bridge")
-    if payload.get("strategy") != "gold-risk-breakout" or int(payload.get("magic", 0)) != MAGIC:
+    if int(payload.get("magic", 0)) != MAGIC:
         raise Rejected("Unexpected strategy or magic number")
     if require_result(mt5.positions_get(), "positions") or require_result(mt5.orders_get(), "pending orders"):
         raise Rejected("An account position or pending order blocks entry")
     if journal().unresolved():
         raise Rejected("An uncertain or partial execution requires reconciliation")
     now = now_utc()
-    news_check(NEWS_PATH, now, fetch_calendar(now))
+    if not is_rsi:
+        news_check(NEWS_PATH, now, fetch_calendar(now))
     info = require_result(mt5.symbol_info(SYMBOL), "symbol specification")
     tick = require_result(mt5.symbol_info_tick(SYMBOL), "quote")
-    price, sl, tp = entry_checks(payload, tick.bid, tick.ask, tick.time, now, info.trade_tick_size, info.trade_stops_level * info.point)
+    if is_rsi:
+        if getattr(info, "currency_base", None) != "XAU" or getattr(info, "currency_profit", None) != "USD":
+            raise Rejected("RSI requires the broker XAU/USD gold instrument")
+        rsi_source_close_check(payload)
+        distance = number(info.trade_stops_level, "stop level", strictly_positive=False) * number(info.point, "symbol point")
+        price, sl, tp = rsi_entry_checks(payload, tick.bid, tick.ask, source_utc(tick.time, "tick"), now, info.trade_tick_size, distance)
+    else:
+        price, sl, tp = entry_checks(payload, tick.bid, tick.ask, source_utc(tick.time, "tick"), now, info.trade_tick_size, info.trade_stops_level * info.point)
     side = mt5.ORDER_TYPE_BUY if payload["action"] == "buy" else mt5.ORDER_TYPE_SELL
     # Estimate at adverse execution, in account currency (also works for cent accounts).
     adverse = price + (1 if payload["action"] == "buy" else -1) * 30 * info.point
@@ -193,7 +290,8 @@ def prepare_trade(payload):
     volume, loss = volume_for_risk(account.equity, payload.get("risk_percent"), -profit, info.volume_min, info.volume_max, info.volume_step, commission)
     account_risk_check(account, payload, loss, now)
     margin = number(require_result(mt5.order_calc_margin(side, SYMBOL, volume, price), "margin calculation"), "margin", strictly_positive=False)
-    if margin > account.margin_free * 0.5:
+    free_margin = number(account.margin_free, "free margin", strictly_positive=False) if is_rsi else account.margin_free
+    if margin > free_margin * 0.5:
         raise Rejected("Entry requires more than half of free margin")
     request = {"action": mt5.TRADE_ACTION_DEAL, "symbol": SYMBOL, "volume": volume,
                "type": side, "price": price, "sl": sl, "tp": tp, "deviation": 30,
@@ -202,6 +300,9 @@ def prepare_trade(payload):
     check = require_result(mt5.order_check(request), "order check")
     if check.retcode != 0:
         raise Rejected(f"Broker rejected order check: {check.retcode} {check.comment}")
+    if is_rsi:
+        request["_bridge_checked_quote"] = (tick.bid, tick.ask)
+        rsi_submission_check(payload, request)
     return request
 
 
@@ -223,6 +324,14 @@ def execute_trade(payload):
         # Commit before order_send. Never retry automatically after this boundary.
         journal().reserve(request_id, signal_key)
         try:
+            if strategy_protocol(payload) == "rsi-gold-scalper-v2":
+                try:
+                    rsi_submission_check(payload, request)
+                except Rejected as exc:
+                    response = {"status": "failed", "message": str(exc)}
+                    journal().finish(request_id, response)
+                    return response
+                request = {key: value for key, value in request.items() if key != "_bridge_checked_quote"}
             result = mt5.order_send(request)
             if result is None:
                 response = {"status": "unknown", "message": "MT5 returned no result; reconcile with broker history"}

@@ -44,7 +44,19 @@ class SignalSnapshotCache
     private function isFresh(array $signal): bool
     {
         return in_array($signal['action'] ?? null, ['BUY', 'SELL', 'CLOSE', 'HOLD', 'WAIT'], true)
+            && $this->usesConfiguredRsiSource($signal)
             && $this->guard->validateSignal($signal, now()->utc()) === null;
+    }
+
+    /** A provider switch must not preserve a fresh RSI cell from the prior feed. */
+    private function usesConfiguredRsiSource(array $signal): bool
+    {
+        $strategy = strtolower(trim((string) ($signal['strategy'] ?? '')));
+        if (($signal['symbol_code'] ?? null) !== 'XAUUSD' || ! str_starts_with($strategy, 'rsi')) {
+            return true;
+        }
+
+        return ($signal['freshness']['source'] ?? null) === strtolower(trim((string) config('scalper.gold.source', 'twelvedata')));
     }
 
     /** Other cells may take time to fetch after a cache hit; check again before rendering. */
@@ -55,6 +67,9 @@ class SignalSnapshotCache
         }
         $reason = ($signal['symbol_code'] ?? null) !== $pairCode ? 'Cached signal belongs to a different market.'
             : $this->guard->validateSignal($signal, now()->utc());
+        if ($reason === null && ! $this->usesConfiguredRsiSource($signal)) {
+            $reason = 'Cached RSI signal belongs to a different configured data source.';
+        }
         if ($reason === null) {
             return $signal;
         }

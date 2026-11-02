@@ -1,6 +1,7 @@
 """Durable at-most-once submissions. Unknown broker outcomes must be reconciled."""
 import json
 import sqlite3
+from contextlib import contextmanager
 
 
 class Journal:
@@ -10,10 +11,17 @@ class Journal:
             db.execute("CREATE TABLE IF NOT EXISTS requests (id TEXT PRIMARY KEY, signal_key TEXT UNIQUE NOT NULL, response TEXT NOT NULL)")
             db.execute("CREATE TABLE IF NOT EXISTS state (key TEXT PRIMARY KEY, value TEXT NOT NULL)")
 
+    @contextmanager
     def connect(self):
         db = sqlite3.connect(self.path, timeout=10)
-        db.execute("PRAGMA synchronous=FULL")
-        return db
+        try:
+            db.execute("PRAGMA synchronous=FULL")
+            # sqlite3's own context manager commits/rolls back, but does not
+            # close the connection. Close explicitly after either outcome.
+            with db:
+                yield db
+        finally:
+            db.close()
 
     def existing(self, request_id, signal_key):
         with self.connect() as db:

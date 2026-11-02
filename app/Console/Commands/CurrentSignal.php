@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\AutoTraderSetting;
 use App\Services\MarketDataGuard;
 use App\Services\TradingService;
 use Illuminate\Console\Command;
@@ -10,6 +11,11 @@ use Illuminate\Support\Carbon;
 /** Evaluates current data only. No email, trade, catalog update or signal archive replay. */
 class CurrentSignal extends Command
 {
+    private const RSI_STRATEGIES = [
+        'rsi-moving-average', 'rsi-moving-averages', 'rsi-ma', 'rsi-ma-method',
+        'rsi-scalper', 'rsi-gold-scalper', 'rsi-gold-scalper-v2',
+    ];
+
     private const SUPPORTED_STRATEGIES = [
         'gold-trend-retest-v2', 'gold-risk-breakout', 'box-theory', 'box',
         'conservative-v2', 'conservative-v2-final', 'conservative',
@@ -48,11 +54,13 @@ class CurrentSignal extends Command
         $researchOnly = in_array($strategy, ['gold-trend-retest-v2', 'rsi-gold-scalper-v2'], true) || ($signal['research_only'] ?? false) === true;
         $freshness = $signal['freshness'] ?? [];
         $expires = $signal['expires_at'] ?? null;
-        $quoteError = null;
+        $requiresMt5 = $pair === 'XAUUSD' && str_starts_with($strategy, 'rsi')
+            && strtolower(trim((string) config('scalper.gold.source', 'twelvedata'))) === 'mt5';
+        $quoteError = $requiresMt5 ? ($signal['error'] ?? $reason) : null;
         $sourceQuote = $reason === null ? ['source' => $freshness['source'] ?? null, 'price' => $signal['quote_price'] ?? null,
             'observed_at_utc' => $freshness['observed_at'] ?? null,
             'age_seconds' => isset($freshness['observed_at']) ? $now->timestamp - Carbon::parse($freshness['observed_at'])->timestamp : null] : null;
-        if ($sourceQuote === null && $market['open']) {
+        if ($sourceQuote === null && $market['open'] && ! $requiresMt5) {
             // A fresh price is useful even when there is no valid strategy entry.
             // It never supplies or revives the rejected trade plan.
             $quote = $trading->getMarketData($pair);
@@ -79,10 +87,29 @@ class CurrentSignal extends Command
                 $sourceQuote = null;
             }
         }
+        $demoConfigured = false;
+        if ($requiresMt5 && in_array($strategy, self::RSI_STRATEGIES, true)
+            && strtolower(trim((string) config('scalper.gold.version'))) === 'trend-session-v2') {
+            // Read existing configuration only. A status command must never
+            // create trader settings or infer that a polling process is alive.
+            $settings = AutoTraderSetting::query()->find(1);
+            $demoConfigured = $settings !== null && $settings->enabled && $settings->execution_mode === 'bridge'
+                && $settings->pair_code === 'XAUUSD'
+                && in_array(strtolower(trim((string) $settings->strategy_slug)), self::RSI_STRATEGIES, true);
+        }
+        $demoExecutionEnabled = $demoConfigured && $verified
+            && ($signal['freshness']['source'] ?? null) === 'mt5'
+            && ($signal['strategy'] ?? null) === 'rsi-gold-scalper-v2'
+            && ($signal['strategy_version'] ?? null) === 2
+            && ($signal['indicators']['candidate_filter'] ?? null) === 'trend-session'
+            && ($signal['broker']['demo'] ?? null) === true;
         $result = [
             'state' => $state, 'action' => $canEnter ? $action : ($action === 'HOLD' && $reason === null ? 'HOLD' : 'WAIT'),
             'can_enter' => $canEnter && ! $researchOnly, 'paper_setup_available' => $canEnter && $researchOnly,
-            'research_only' => $researchOnly, 'automatic_execution_enabled' => false, 'checked_at_utc' => $now->toIso8601String(),
+            'research_only' => $researchOnly, 'automatic_execution_enabled' => $demoExecutionEnabled,
+            'demo_auto_trader_configured' => $demoConfigured, 'command_places_orders' => false,
+            'live_execution_enabled' => false, 'worker_process_health' => 'not_checked',
+            'checked_at_utc' => $now->toIso8601String(),
             'checked_at_manila' => $now->copy()->setTimezone('Asia/Manila')->toIso8601String(),
             'strategy' => $strategy, 'pair' => $pair,
             'message' => $action === 'NO_DATA' ? ($signal['message'] ?? 'Market data unavailable.') : ($reason ?? $signal['message'] ?? 'No confirmed entry.'),
@@ -94,7 +121,7 @@ class CurrentSignal extends Command
             'trade_plan' => $canEnter ? ($signal['trade_plan'] ?? []) : [],
             'signal_id' => $canEnter ? ($signal['signal_id'] ?? null) : null,
             'emails_sent' => 0, 'orders_sent' => 0,
-            'note' => 'Research decision, not a broker fill or a profitability claim. Recheck after expiry; unavailable data never becomes a BUY/SELL.',
+            'note' => 'Research decision, not a broker fill or a profitability claim. This command places no orders. Demo auto-trader configuration and verified account data do not establish worker process health. Recheck after expiry; unavailable data never becomes a BUY/SELL.',
         ];
         $this->line(json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR));
 

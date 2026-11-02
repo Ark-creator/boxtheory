@@ -1,0 +1,125 @@
+{
+  "release_date": "2026-11-02",
+  "model": "RSI Gold Scalper V2 / trend-session-v2 / full_tp1",
+  "status": "source_compiled_and_offline_verified",
+  "mt5_build": "5.0.0.6295",
+  "native_compilation": {
+    "ea": {
+      "errors": 0,
+      "warnings": 0
+    },
+    "core_self_test": {
+      "errors": 0,
+      "warnings": 0
+    },
+    "terminal_launched": false,
+    "native_script_executed": false,
+    "strategy_tester_executed": false,
+    "orders_submitted": false
+  },
+  "offline_verification": {
+    "method": "Restricted JavaScript translation of actual MQL numeric functions with explicit API shims, compared with actual PHP 8.5.11 strategy outputs; not native MQL execution.",
+    "golden_frames": 1760,
+    "golden_numeric_fields": 21120,
+    "rounding_cases": 30,
+    "malformed_input_checks": 12,
+    "clock_quote_checks": 26,
+    "mocked_risk_execution_checks": 19,
+    "static_wiring_checks": 13,
+    "differences": 0,
+    "cohorts": {
+      "mt5-source-utcplus3": {
+        "cases": 515,
+        "buy": 45,
+        "sell": 50,
+        "hold": 420
+      },
+      "mt5-source-utcplus0": {
+        "cases": 485,
+        "buy": 39,
+        "sell": 46,
+        "hold": 400
+      },
+      "external-five-decimal-source": {
+        "cases": 760,
+        "buy": 49,
+        "sell": 68,
+        "hold": 643
+      }
+    },
+    "fixture_sha256": "164f674aa1535a82f83fea0a8482acee502cf304418975bcde2b3bb0417bf33c",
+    "verifier_sha256": "dbf29bfdd034e6f2366ca258506ab4cfa4fdf5c18b15b65bbec6277c4012cdcf"
+  },
+  "existing_php_regression_tests": {
+    "tests_passed": 71,
+    "assertions": 580
+  },
+  "package_files_before_manifest": [
+    {
+      "name": "CoreSelfTest.compile.log",
+      "length": 3434,
+      "sha256": "ad2329b001370747146796612b933707cd8ec916c2362dea5a3a6a4ba7427f6a"
+    },
+    {
+      "name": "CoreSelfTest.ex5",
+      "length": 21170,
+      "sha256": "7f6f1a00ec354cfbd391940a537e7bd02d8ba0795512265e86e475fd6bbe4fdd"
+    },
+    {
+      "name": "CoreSelfTest.mq5",
+      "length": 8562,
+      "sha256": "abfe393951d72cda80de5101e91a0fbc32a2402f927f1c0cfbf90a875373a163"
+    },
+    {
+      "name": "GoldLogic_RSI_Scalper_V2.compile.log",
+      "length": 7042,
+      "sha256": "609ab26d99b89e79e71ddac318204f91da803c8d7455fae4b31db0825020746b"
+    },
+    {
+      "name": "GoldLogic_RSI_Scalper_V2.ex5",
+      "length": 52510,
+      "sha256": "1b0026032e3061255b06fa3b47452076b73256d77dc391bedcbc5e7096372322"
+    },
+    {
+      "name": "GoldLogic_RSI_Scalper_V2.mq5",
+      "length": 19808,
+      "sha256": "a70dbb12e40d3db325e01662081886b082bfe8b083ad2998d93485c20e4e33a1"
+    },
+    {
+      "name": "README.md",
+      "length": 9863,
+      "sha256": "d84651ea6b74c06e9b52d9e8558e66d7bf30a3257258f7bb198452f555b15727"
+    },
+    {
+      "name": "ScalperCore.mqh",
+      "length": 11301,
+      "sha256": "48f5d5b622ec6464817529b693e018ecbe8bab677ff799bc779bb178cb52d78c"
+    },
+    {
+      "name": "Tester-UTCplus3.set",
+      "length": 676,
+      "sha256": "38d69959f41bd05257a91a333c870d8684022bc3b6399f201dc10c5f0ad60e4d"
+    }
+  ],
+  "limits": [
+    "This release has not been run in native MT5 Strategy Tester, on demo, or against a live broker. Compilation and translated-source parity do not establish native execution correctness or profitability.",
+    "Historical cases are existing research fixtures, not unseen profitability validation. Different broker feeds, tick grids, fees, spread and fills can produce different trades and returns.",
+    "The UTC+3 preset is unverified. Initialization intentionally requires operator confirmation of historical broker UTC offsets/DST. Live-account operation is blocked.",
+    "Sizing estimates stop risk in account currency, including configured deviation/commission reserves. Actual gaps, slippage, swaps and costs can exceed that estimate.",
+    "After a restart, existing server stops/targets remain; exact original levels cannot be reconstructed if manually altered while the EA was stopped.",
+    "Broker holiday/early-close handling, actual event ordering and trade responses require broker-history and demo testing. No news filter, daily loss cap or fixed holding-time exit is implemented.",
+    "Compiled CoreSelfTest numeric constants were independently compared with actual PHP (20 golden values, zero differences); its native runtime assertions have not been executed."
+  ],
+  "official_api_references": [
+    "https://www.mql5.com/en/docs/dateandtime/timegmt",
+    "https://www.mql5.com/en/docs/series/copyrates",
+    "https://www.mql5.com/en/docs/trading/ordercalcprofit",
+    "https://www.mql5.com/en/docs/trading/ordercheck",
+    "https://www.mql5.com/en/docs/trading/ordersend",
+    "https://www.mql5.com/en/docs/constants/environment_state/marketinfoconstants"
+  ],
+  "reproduction": [
+    "php -d memory_limit=1G scripts/research/export_mt5_scalper_fixtures.php",
+    "node scripts/research/verify_mt5_scalper.cjs"
+  ]
+}

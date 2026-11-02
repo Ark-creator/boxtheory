@@ -7,6 +7,7 @@ use App\Models\Strategy;
 use App\Models\User;
 use App\Services\AutoTraderService;
 use App\Services\MarketDataGuard;
+use App\Services\RsiGoldScalperV2Strategy;
 use App\Services\SignalAlertService;
 use App\Services\SignalSnapshotCache;
 use App\Services\TradingService;
@@ -257,7 +258,11 @@ class AdminController extends Controller
             'account_type' => ['required', Rule::in(['cent', 'dollar'])],
             'pair_code' => ['required', 'string', 'max:20'],
             'mt5_symbol' => ['required', 'string', 'max:40'],
-            'strategy_slug' => ['required', 'exists:strategies,slug'],
+            'strategy_slug' => ['required', 'string', function (string $attribute, mixed $value, \Closure $fail): void {
+                if ($value !== RsiGoldScalperV2Strategy::SLUG && ! Strategy::query()->where('slug', $value)->exists()) {
+                    $fail('Select an existing strategy or RSI Gold Scalper V2.');
+                }
+            }],
             'lot_size' => ['required', 'numeric', 'min:0.01', 'max:100'],
             'risk_percent_per_trade' => ['required', 'numeric', 'min:0.01', 'max:0.5'],
             'max_trades_per_day' => ['required', 'integer', 'min:1', 'max:100'],

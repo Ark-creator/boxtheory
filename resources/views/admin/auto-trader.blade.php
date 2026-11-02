@@ -57,7 +57,9 @@
             <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between mb-6">
                 <div>
                     <h2 class="text-sm uppercase tracking-[0.18em] text-slate-300 font-semibold">Trading Controls</h2>
-                    <p class="text-sm text-slate-400 mt-2">VT Markets gold automation. Gold Risk Breakout is a research candidate with unverified profitability. Start with dry run and demo. MT5 enforces risk sizing, one position, 1% daily loss, 3% weekly loss and 5% drawdown limits. A current news calendar is required. Confirm your exact Market Watch symbol. Dry run logs signals without simulating fills.</p>
+                    <p class="text-sm text-slate-400 mt-2">Supports Gold Risk Breakout and RSI Gold Scalper V2. RSI V2 execution is DEMO ONLY and requires the MT5 feed with the combined trend/session version. It keeps the original stop and full TP1; no momentum CLOSE or RSI news-calendar filter. Gold Risk Breakout still requires a current news calendar. Profitability is unverified. Dry run logs intents without simulating fills.</p>
+                    <p class="text-xs text-slate-500 mt-2">The bridge caps risk at 0.5%, reserves 10% of the sizing budget, and checks account-wide 1% daily / 3% weekly loss and 5% drawdown. It allows at most three entries per day, a 30-minute minimum cooldown, no existing account position or pending order, and margin up to half of free margin. These execution limits differ from the research simulation.</p>
+                    <p class="text-xs text-slate-500 mt-2">Keep the standalone EA and other auto controllers off this account. For RSI V2 in bridge mode, an enabled run can submit a demo order when all checks pass. Confirm the exact Market Watch symbol and review the audit log.</p>
                 </div>
                 <label class="inline-flex items-center gap-3 rounded-xl border border-white/10 bg-slate-950/50 px-4 py-3 text-sm font-semibold">
                     <input type="checkbox" name="enabled" value="1" @checked($settings->enabled) class="rounded border-white/20 bg-slate-900 text-amber-400 focus:ring-amber-400">
@@ -99,6 +101,9 @@
                 <div>
                     <label for="strategy_slug" class="block text-xs uppercase tracking-[0.12em] text-slate-400 mb-2">Strategy</label>
                     <select id="strategy_slug" name="strategy_slug" class="w-full bg-slate-900 border border-white/15 rounded-xl px-3 py-2 text-sm">
+                        @unless($strategies->contains('slug', 'rsi-gold-scalper-v2'))
+                            <option value="rsi-gold-scalper-v2" @selected($settings->strategy_slug === 'rsi-gold-scalper-v2')>RSI Gold Scalper V2 (Demo Research)</option>
+                        @endunless
                         @foreach($strategies as $strategy)
                             <option value="{{ $strategy->slug }}" @selected($settings->strategy_slug === $strategy->slug)>{{ $strategy->name }}</option>
                         @endforeach
@@ -126,7 +131,7 @@
                 </div>
 
                 <div>
-                    <label for="risk_percent_per_trade" class="block text-xs uppercase tracking-[0.12em] text-slate-400 mb-2">Equity risk per trade (0.01?0.5%)</label>
+                    <label for="risk_percent_per_trade" class="block text-xs uppercase tracking-[0.12em] text-slate-400 mb-2">Equity risk per trade (0.01-0.5%)</label>
                     <input id="risk_percent_per_trade" name="risk_percent_per_trade" type="number" step="0.01" min="0.01" max="0.5" required value="{{ old('risk_percent_per_trade', $settings->risk_percent_per_trade ?? 0.25) }}" class="w-full bg-slate-900 border border-white/15 rounded-xl px-3 py-2 text-sm" placeholder="Optional">
                 </div>
 

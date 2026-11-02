@@ -159,19 +159,8 @@ class TradingService
                     $m15, $h1, now()->utc(), $currentPosition
                 );
                 $signal['broker'] = ['account_key' => $snapshot['account_key'], 'symbol' => $snapshot['symbol']];
-                $tick = $snapshot['quote'] ?? [];
-                foreach (['bid', 'ask'] as $field) {
-                    if (! isset($tick[$field]) || ! is_numeric($tick[$field]) || ! is_finite((float) $tick[$field]) || $tick[$field] <= 0) {
-                        throw new \RuntimeException('Update the MT5 bridge: a current, timestamped bid/ask quote is required for signals.');
-                    }
-                }
-                if ($tick['ask'] < $tick['bid'] || empty($tick['timestamp'])) {
-                    throw new \RuntimeException('MT5 quote is invalid or has no source timestamp.');
-                }
-                $quote = ['price' => (float) $tick['bid'], 'bid' => (float) $tick['bid'], 'ask' => (float) $tick['ask'],
-                    'observed_at' => $tick['timestamp'], 'market_open' => true, 'source' => 'mt5'];
 
-                return $this->finishLiveSignal($signal, $pair, $m15, 900, $quote);
+                return $this->finishLiveSignal($signal, $pair, $m15, 900, $this->mt5Quote($snapshot));
             } catch (\Throwable $e) {
                 return $this->attachPairContext($this->makeNoDataSignal($slug, $e->getMessage(), $currentPosition), $pair);
             }
@@ -232,6 +221,16 @@ class TradingService
                 throw new \RuntimeException('RSI Gold Scalper V2 supports XAUUSD only.');
             }
             $useGoldV2 = $pair['code'] === 'XAUUSD' && ($version !== 'legacy' || $slug === RsiGoldScalperV2Strategy::SLUG);
+            $source = $pair['code'] === 'XAUUSD' ? strtolower(trim((string) config('scalper.gold.source', 'twelvedata'))) : 'twelvedata';
+            if (! in_array($source, ['mt5', 'twelvedata'], true)) {
+                throw new \RuntimeException('RSI_GOLD_SCALPER_SOURCE must be mt5 or twelvedata.');
+            }
+            if ($source === 'mt5') {
+                $snapshot = app(Mt5BridgeClient::class)->snapshot(null, ['m5_candles', 'quote_timestamp']);
+
+                return $this->evaluateRsiMt5Snapshot($snapshot, $currentPosition,
+                    $useGoldV2 && $version === 'legacy' ? 'trend-v2' : $version);
+            }
             $payload = $this->getCandles($pair['code'], '5min', $useGoldV2 ? 250 : 200);
             if ($payload['error'] !== null) {
                 return $this->attachPairContext(
@@ -260,6 +259,74 @@ class TradingService
             ),
             $pair
         );
+    }
+
+    /** Evaluate one broker snapshot without making a second data request. */
+    public function evaluateRsiMt5Snapshot(array $snapshot, ?string $position = null, ?string $version = null): array
+    {
+        $pair = $this->resolvePair('XAUUSD');
+        try {
+            $version ??= strtolower(trim((string) config('scalper.gold.version', 'trend-session-v2')));
+            if (! in_array($version, ['legacy', 'trend-v2', 'trend-session-v2'], true)) {
+                throw new \RuntimeException('RSI_GOLD_SCALPER_VERSION must be legacy, trend-v2 or trend-session-v2.');
+            }
+            if (($snapshot['status'] ?? null) !== 'ok' || ($snapshot['source'] ?? null) !== 'mt5' || empty($snapshot['account_key'])) {
+                throw new \RuntimeException('Invalid MT5 snapshot.');
+            }
+            if (! preg_match('/^XAU[\/_-]?USD(?:[._#-]?[A-Za-z0-9]+)?$/i', $snapshot['symbol'] ?? '')) {
+                throw new \RuntimeException('The MT5 snapshot is not an XAUUSD gold instrument.');
+            }
+            if (! is_array($snapshot['m5'] ?? null)) {
+                throw new \RuntimeException('Update the MT5 bridge: completed M5 candles are required for RSI signals.');
+            }
+            $guard = app(MarketDataGuard::class);
+            $market = $guard->marketStatus('XAUUSD', now()->utc());
+            if (! $market['open']) {
+                throw new \RuntimeException($market['reason']);
+            }
+            $closed = $guard->validateCandles($snapshot['m5'], 300, now()->utc());
+            $closed = array_values(array_filter($closed, static function ($bar) use ($guard): bool {
+                $open = Carbon::parse($bar['timestamp'])->utc();
+
+                return $guard->marketStatus('XAUUSD', $open)['open']
+                    && $guard->marketStatus('XAUUSD', $open->copy()->addSeconds(299))['open'];
+            }));
+            $closed = $guard->validateCandles($closed, 300, now()->utc());
+            $useV2 = $version !== 'legacy';
+            $candles = array_slice($closed, -($useV2 ? 250 : 200));
+            $source = 'MT5 '.$snapshot['symbol'];
+            $signal = $useV2
+                ? (new RsiGoldScalperV2Strategy($this, $guard))->evaluate($candles, $position, $source, now()->utc(), $version === 'trend-session-v2')
+                : $this->evaluateRsiMovingAverage($candles, $position, [], $source);
+            $signal['broker'] = ['account_key' => $snapshot['account_key'], 'symbol' => $snapshot['symbol']];
+            if (is_bool($snapshot['account']['demo'] ?? null)) {
+                $signal['broker']['demo'] = $snapshot['account']['demo'];
+            }
+            if (is_array($snapshot['clock'] ?? null)) {
+                $signal['broker']['clock'] = $snapshot['clock'];
+            }
+
+            return $this->finishLiveSignal($signal, $pair, $candles, 300, $this->mt5Quote($snapshot));
+        } catch (\Throwable $exception) {
+            return $this->attachPairContext($this->makeNoDataSignal('rsi-gold-scalper-v2', $exception->getMessage(), $position), $pair);
+        }
+    }
+
+    /** A snapshot generation timestamp never replaces the broker's actual tick time. */
+    private function mt5Quote(array $snapshot): array
+    {
+        $tick = $snapshot['quote'] ?? [];
+        foreach (['bid', 'ask'] as $field) {
+            if (! isset($tick[$field]) || ! is_numeric($tick[$field]) || ! is_finite((float) $tick[$field]) || $tick[$field] <= 0) {
+                throw new \RuntimeException('Update the MT5 bridge: a current, timestamped bid/ask quote is required for signals.');
+            }
+        }
+        if ($tick['ask'] < $tick['bid'] || empty($tick['timestamp'])) {
+            throw new \RuntimeException('MT5 quote is invalid or has no source timestamp.');
+        }
+
+        return ['price' => (float) $tick['bid'], 'bid' => (float) $tick['bid'], 'ask' => (float) $tick['ask'],
+            'observed_at' => $tick['timestamp'], 'market_open' => true, 'source' => 'mt5'];
     }
 
     /**

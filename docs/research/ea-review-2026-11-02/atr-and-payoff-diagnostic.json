@@ -1,0 +1,191 @@
+{
+  "method": "Parameter-fit diagnostic only, not an EA trade backtest. Closed H1/M1 ATR proxies; no tick management, entries or win/loss outcomes are inferred.",
+  "source": {
+    "file": "XAUUSD-STD_M1_202609010100_202610302356.csv",
+    "sha256": "c67ea70ca5715726daa93df84bc073632aed03643fc28f58550195df1d54f6ab",
+    "m1_rows": 60475,
+    "assumed_broker_utc_offset_hours": 3,
+    "first_m1_open_utc": "2026-08-31T22:00:00.000Z",
+    "last_m1_open_utc": "2026-10-30T20:56:00.000Z"
+  },
+  "ea_safe_source_sha256": "83cde4c54f84f36a651e7be7a3af90fe1388b5030f5578638b53a3b3b8c97300",
+  "h1": {
+    "complete_bars": 966,
+    "incomplete_buckets_omitted": 44,
+    "intended_closed_h1_atr14_sma_tr": {
+      "eligible_bars": 952,
+      "below_1_80": 0,
+      "within_1_80_to_5_50": 0,
+      "above_5_50": 952,
+      "pass_fraction": 0,
+      "atr_usd_per_ounce": {
+        "count": 952,
+        "min": 8.473571428571372,
+        "median": 15.738214285714223,
+        "max": 30.682142857143067
+      }
+    },
+    "wilder_sensitivity": {
+      "eligible_bars": 952,
+      "below_1_80": 0,
+      "within_1_80_to_5_50": 0,
+      "above_5_50": 952,
+      "pass_fraction": 0,
+      "atr_usd_per_ounce": {
+        "count": 952,
+        "min": 10.351752846119584,
+        "median": 16.07141703420028,
+        "max": 25.564552120894867
+      }
+    },
+    "sma_tr_after_100_bar_warmup": {
+      "eligible_bars": 866,
+      "below_1_80": 0,
+      "within_1_80_to_5_50": 0,
+      "above_5_50": 866,
+      "pass_fraction": 0,
+      "atr_usd_per_ounce": {
+        "count": 866,
+        "min": 8.473571428571372,
+        "median": 15.521785714285686,
+        "max": 30.682142857143067
+      }
+    },
+    "wilder_after_100_bar_warmup": {
+      "eligible_bars": 866,
+      "below_1_80": 0,
+      "within_1_80_to_5_50": 0,
+      "above_5_50": 866,
+      "pass_fraction": 0,
+      "atr_usd_per_ounce": {
+        "count": 866,
+        "min": 10.351752846119584,
+        "median": 15.803602180408966,
+        "max": 25.564552120894867
+      }
+    }
+  },
+  "entry_session_diagnostics": [
+    {
+      "configured_server_minus_gmt_hours": 2,
+      "interpretation": "EA default clock; under the working CSV UTC+3 assumption this shifts both windows one hour earlier in true UTC.",
+      "session_minute_opportunities": 15224,
+      "printed_utc_dates_with_session_minutes": 44,
+      "unavailable_fresh_complete_h1_reference_minutes": 195,
+      "sma14_tr": {
+        "eligible_bars": 15029,
+        "below_1_80": 0,
+        "within_1_80_to_5_50": 0,
+        "above_5_50": 15029,
+        "pass_fraction": 0,
+        "atr_usd_per_ounce": {
+          "count": 15029,
+          "min": 8.473571428571372,
+          "median": 15.20928571428554,
+          "max": 29.652857142857297
+        }
+      },
+      "wilder14": {
+        "eligible_bars": 15029,
+        "below_1_80": 0,
+        "within_1_80_to_5_50": 0,
+        "above_5_50": 15029,
+        "pass_fraction": 0,
+        "atr_usd_per_ounce": {
+          "count": 15029,
+          "min": 10.512705944977013,
+          "median": 16.05439799733851,
+          "max": 24.95110908598266
+        }
+      }
+    },
+    {
+      "configured_server_minus_gmt_hours": 3,
+      "interpretation": "Clock-corrected comparison under the working CSV UTC+3 assumption; not selected from returns.",
+      "session_minute_opportunities": 15224,
+      "printed_utc_dates_with_session_minutes": 44,
+      "unavailable_fresh_complete_h1_reference_minutes": 151,
+      "sma14_tr": {
+        "eligible_bars": 15073,
+        "below_1_80": 0,
+        "within_1_80_to_5_50": 0,
+        "above_5_50": 15073,
+        "pass_fraction": 0,
+        "atr_usd_per_ounce": {
+          "count": 15073,
+          "min": 8.797142857142783,
+          "median": 15.517142857142776,
+          "max": 29.652857142857297
+        }
+      },
+      "wilder14": {
+        "eligible_bars": 15073,
+        "below_1_80": 0,
+        "within_1_80_to_5_50": 0,
+        "above_5_50": 15073,
+        "pass_fraction": 0,
+        "atr_usd_per_ounce": {
+          "count": 15073,
+          "min": 10.827087271684421,
+          "median": 16.26510698020063,
+          "max": 24.996859510300734
+        }
+      }
+    }
+  ],
+  "closed_m1_atr7_plan_proxy_in_default_clock_sessions": {
+    "observations": 15224,
+    "atr7_sma_tr": {
+      "count": 15224,
+      "min": 0.7585714285713558,
+      "median": 2.0785714285715198,
+      "max": 13.074285714285777
+    },
+    "initial_stop_before_unknown_broker_minimum": {
+      "count": 15224,
+      "min": 1.5,
+      "median": 3.1178571428572797,
+      "max": 4
+    },
+    "raw_stop_below_min_1_50": 174,
+    "raw_stop_above_max_4": 4409,
+    "stop_floor_fraction": 0.011429322122963742,
+    "stop_cap_fraction": 0.2896085128744088,
+    "tp1_initial_r": {
+      "count": 15224,
+      "min": 0.6068571428570847,
+      "median": 0.8,
+      "max": 3.922285714285733
+    },
+    "ideal_60pct_tp1_40pct_tp2_gross_r": {
+      "count": 15224,
+      "min": 0.9641142857142508,
+      "median": 1.1466666666666667,
+      "max": 5.6219428571428836
+    },
+    "ideal_60pct_tp1_40pct_be_plus_0_20_gross_r": {
+      "count": 15224,
+      "min": 0.41744761904758415,
+      "median": 0.5136033603360292,
+      "max": 2.37337142857144
+    }
+  },
+  "algebraic_example_atr_2": {
+    "sl": 3,
+    "tp1": 2.4,
+    "tp2": 5,
+    "ideal_tp1_r": 0.8,
+    "ideal_60pct_tp1_40pct_tp2_gross_r": 1.1466666666666667,
+    "ideal_60pct_tp1_40pct_be_plus_0_20_gross_r": 0.5066666666666667,
+    "generic_break_even_formula": "p=(1+c)/(1+W), where W is ideal gross winner R and c is additional round-trip fee/slippage R, with a -1R gross loser.",
+    "spread_note": "EA entry is ASK for BUY and BID for SELL; TP profit is measured on executable opposite quote. Spread changes the price path/required move; do not subtract it a second time from payoff measured between those executable fills."
+  },
+  "limitations": [
+    "Native MT5 ATR source could not yet be downloaded here. SMA14 true-range and seeded Wilder14 are explicitly separate sensitivities, not a claim of native terminal equivalence.",
+    "Only complete H1 buckets are retained. Native broker H1 bars can contain fewer than 60 observed M1 bars, and unseen pre-export warmup differs.",
+    "EA static-array indexing actually selects forming H1/entry ATR in its two-element buffers. This diagnostic studies the stated intended closed-bar parameter scale, not that intrabar implementation.",
+    "Broker UTC+3 and point size are not terminal metadata verified by this file; offset2/3 session comparisons are clock diagnostics, not return optimization.",
+    "M1 plan proxies omit all EMA/RSI/VWAP entry selection, broker minimum stop distances, tick ordering, partial fills, changing management ATR, trailing stops, time exits, fees and lot rounding.",
+    "The 60/40 payoff illustration assumes frozen ATR and successful exact partial sizes. Actual EA TP1 changes with current ATR and broker volume steps alter the fraction."
+  ]
+}

@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Http;
 
 class Mt5BridgeClient
 {
-    public function snapshot(?AutoTraderSetting $settings = null): array
+    public function snapshot(?AutoTraderSetting $settings = null, array $requiredCapabilities = ['entry_extension_limit']): array
     {
         $settings ??= AutoTraderSetting::query()->find(1);
         $url = (string) ($settings?->bridge_url ?: config('trading.auto_trader.bridge_url'));
@@ -20,8 +20,10 @@ class Mt5BridgeClient
         if (! is_array($data) || ($data['status'] ?? '') !== 'ok' || ($data['source'] ?? '') !== 'mt5' || empty($data['account_key'])) {
             throw new \RuntimeException('Invalid MT5 snapshot.');
         }
-        if (! is_array($data['capabilities'] ?? null) || ! in_array('entry_extension_limit', $data['capabilities'], true)) {
-            throw new \RuntimeException('Update the MT5 bridge to enforce the breakout entry limit before using this strategy.');
+        foreach ($requiredCapabilities as $capability) {
+            if (! is_array($data['capabilities'] ?? null) || ! in_array($capability, $data['capabilities'], true)) {
+                throw new \RuntimeException('Update the MT5 bridge: this snapshot requires capability '.$capability.'.');
+            }
         }
         $accountType = $settings?->account_type ?: config('trading.auto_trader.default_account_type', 'cent');
         $expectedSymbol = $settings?->mt5_symbol ?: config('trading.auto_trader.symbols.'.$accountType, 'XAUUSD');

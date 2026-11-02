@@ -9,6 +9,8 @@
 - [V2 backtest rerun and trade-by-trade ledger](docs/research/retest-v2-backtest-2026-11-02/REPORT.md)
 - [Existing RSI Gold Scalper backtest and trade ledgers](docs/research/rsi-scalper-backtest-2026-11-02/REPORT.md)
 - [Updated RSI Gold Scalper V2 and email-PC pull procedure](docs/RSI_SCALPER_UPDATE.md)
+- [RSI Gold Scalper V2 native MT5 EA, source and tester guide](mt5/GoldLogic_RSI_Scalper_V2/README.md)
+- [RSI Gold Scalper V2 MT5 connection and demo auto trading](docs/MT5_SCALPER_CONNECTION.md)
 - [Scalper upgrade: primary-source research and validation](docs/research/scalper-upgrade-2026-11-02/RESEARCH.md)
 - [Four-strategy signal audit and Gold Trend Retest research](docs/research/signal-audit-2026-11-01/REPORT.md)
 - [M1 signal replay, timezone scenarios, and candidate results](docs/research/signal-replay-2026-11-01/REPORT.md)

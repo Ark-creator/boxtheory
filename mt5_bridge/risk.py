@@ -4,7 +4,7 @@ from __future__ import annotations
 import json
 import math
 from datetime import datetime, timedelta, timezone
-from decimal import Decimal, ROUND_FLOOR
+from decimal import Decimal, ROUND_CEILING, ROUND_FLOOR
 from pathlib import Path
 
 
@@ -63,6 +63,8 @@ def volume_for_risk(equity, risk_percent, loss_per_lot, min_lot, max_lot, step, 
     cost = number(loss_per_lot, "stop loss per lot") + number(commission_per_lot, "commission", strictly_positive=False)
     minimum = number(min_lot, "minimum volume")
     maximum = number(max_lot, "maximum volume")
+    if maximum < minimum:
+        raise Rejected("Maximum broker volume is below its minimum")
     increment = Decimal(str(number(step, "volume step")))
     # Reserve 10% for extra execution costs; a stop is not a guaranteed loss cap.
     budget = equity * risk_percent / 100 * 0.9
@@ -109,4 +111,52 @@ def entry_checks(payload, bid, ask, tick_time, now, tick_size, stops_distance):
         raise Rejected("Broker minimum stop distance is not met")
     if abs(tp - price) / distance < 1.8:
         raise Rejected("Reward/risk after price drift is below 1.8")
+    return price, sl, tp
+
+
+def rsi_entry_checks(payload, bid, ask, tick_time, now, tick_size, stops_distance):
+    """RSI V2 source levels and broker-grid validation; no breakout/news rule."""
+    bid, ask = number(bid, "bid"), number(ask, "ask")
+    stamp = number(tick_time, "tick timestamp")
+    if ask < bid or not 0 <= now.timestamp() - stamp <= 90:
+        raise Rejected("RSI quote is stale, future-dated or invalid")
+    if now.weekday() >= 5 or not 7 <= now.hour < 17:
+        raise Rejected("RSI entries allowed only 07:00-17:00 UTC weekdays")
+    issued = utc_time(payload.get("signal_timestamp"))
+    expiry = utc_time(payload.get("expires_at"))
+    if issued.timestamp() % 300 != 0 or issued.timestamp() != int(now.timestamp()) // 300 * 300:
+        raise Rejected("RSI signal must identify the latest completed M5 candle close")
+    if expiry != issued + timedelta(seconds=180) or not issued <= now < expiry:
+        raise Rejected("RSI signal expired or has invalid M5 expiry")
+    side = payload.get("action")
+    if side not in ("buy", "sell"):
+        raise Rejected("RSI supports only buy/sell; original broker SL/full TP1 manages exits")
+    direction = 1 if side == "buy" else -1
+    expected = number(payload.get("entry_price"), "RSI signal entry")
+    original_sl = number(payload.get("stop_loss"), "RSI stop loss")
+    original_tp = number(payload.get("take_profit_1"), "RSI full TP1")
+    for value in (expected, original_sl, original_tp):
+        if abs(value - float(Decimal(str(value)).quantize(Decimal("0.0001")))) > 1e-9:
+            raise Rejected("RSI source entry/SL/TP1 must retain four-decimal strategy precision")
+    original_risk = direction * (expected - original_sl)
+    reward = direction * (original_tp - expected)
+    # Four-decimal entry, SL and TP rounding can propagate up to 0.00025.
+    if original_risk <= 0 or reward <= 0 or abs(reward - 1.5 * original_risk) > 0.00025 + 1e-9:
+        raise Rejected("RSI requires the original full TP1 at 1.5R")
+    if payload.get("take_profit_2") is not None:
+        raise Rejected("RSI full_tp1 protocol does not permit a second target")
+    price = ask if side == "buy" else bid
+    if not (original_sl < price < original_tp if side == "buy" else original_tp < price < original_sl):
+        raise Rejected("RSI quote is outside the original SL/TP1 bracket")
+    if abs(price - expected) > 0.1 * original_risk + 1e-9:
+        raise Rejected("RSI price moved more than 0.1R from the original entry")
+    increment = Decimal(str(number(tick_size, "tick size")))
+    minimum_distance = number(stops_distance, "minimum stop distance", strictly_positive=False)
+    rounding = ROUND_FLOOR if side == "buy" else ROUND_CEILING
+    grid_price = lambda value: float((Decimal(str(value)) / increment).to_integral_value(rounding=rounding) * increment)
+    sl, tp = grid_price(original_sl), grid_price(original_tp)
+    reference = bid if side == "buy" else ask
+    bracket = sl < price < tp and sl < reference < tp if side == "buy" else tp < price < sl and tp < reference < sl
+    if not bracket or min(abs(reference - sl), abs(reference - tp)) + 1e-9 < minimum_distance:
+        raise Rejected("RSI original bracket cannot satisfy broker tick/stop-distance rules")
     return price, sl, tp
